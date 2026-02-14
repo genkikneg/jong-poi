@@ -4,7 +4,7 @@ import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFo
 * @see app/Http/Controllers/UserAvatarController.php:12
 * @route '/avatars/{user}'
 */
-const UserAvatarController = (args: { user: string | number | { id: string | number } } | [user: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+const UserAvatarController = (args: { user: number | { id: number } } | [user: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: UserAvatarController.url(args, options),
     method: 'get',
 })
@@ -19,7 +19,7 @@ UserAvatarController.definition = {
 * @see app/Http/Controllers/UserAvatarController.php:12
 * @route '/avatars/{user}'
 */
-UserAvatarController.url = (args: { user: string | number | { id: string | number } } | [user: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
+UserAvatarController.url = (args: { user: number | { id: number } } | [user: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { user: args }
     }
@@ -52,7 +52,7 @@ UserAvatarController.url = (args: { user: string | number | { id: string | numbe
 * @see app/Http/Controllers/UserAvatarController.php:12
 * @route '/avatars/{user}'
 */
-UserAvatarController.get = (args: { user: string | number | { id: string | number } } | [user: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+UserAvatarController.get = (args: { user: number | { id: number } } | [user: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: UserAvatarController.url(args, options),
     method: 'get',
 })
@@ -62,7 +62,7 @@ UserAvatarController.get = (args: { user: string | number | { id: string | numbe
 * @see app/Http/Controllers/UserAvatarController.php:12
 * @route '/avatars/{user}'
 */
-UserAvatarController.head = (args: { user: string | number | { id: string | number } } | [user: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+UserAvatarController.head = (args: { user: number | { id: number } } | [user: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: UserAvatarController.url(args, options),
     method: 'head',
 })
@@ -72,7 +72,7 @@ UserAvatarController.head = (args: { user: string | number | { id: string | numb
 * @see app/Http/Controllers/UserAvatarController.php:12
 * @route '/avatars/{user}'
 */
-const UserAvatarControllerForm = (args: { user: string | number | { id: string | number } } | [user: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+const UserAvatarControllerForm = (args: { user: number | { id: number } } | [user: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: UserAvatarController.url(args, options),
     method: 'get',
 })
@@ -82,7 +82,7 @@ const UserAvatarControllerForm = (args: { user: string | number | { id: string |
 * @see app/Http/Controllers/UserAvatarController.php:12
 * @route '/avatars/{user}'
 */
-UserAvatarControllerForm.get = (args: { user: string | number | { id: string | number } } | [user: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+UserAvatarControllerForm.get = (args: { user: number | { id: number } } | [user: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: UserAvatarController.url(args, options),
     method: 'get',
 })
@@ -92,7 +92,7 @@ UserAvatarControllerForm.get = (args: { user: string | number | { id: string | n
 * @see app/Http/Controllers/UserAvatarController.php:12
 * @route '/avatars/{user}'
 */
-UserAvatarControllerForm.head = (args: { user: string | number | { id: string | number } } | [user: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+UserAvatarControllerForm.head = (args: { user: number | { id: number } } | [user: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: UserAvatarController.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'HEAD',
