@@ -12,9 +12,8 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { dashboard } from '@/routes';
+import { dashboard, status as statusRoute } from '@/routes';
 import { index as friendsIndex } from '@/routes/friends';
-import { index as statusIndex } from '@/routes/status';
 import type { NavItem } from '@/types';
 import AppLogo from './app-logo';
 
@@ -31,7 +30,7 @@ const mainNavItems: NavItem[] = [
     },
     {
         title: 'Status',
-        href: statusIndex(),
+        href: statusRoute(),
         icon: BarChart3,
     },
 ];

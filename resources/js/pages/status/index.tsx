@@ -2,13 +2,13 @@ import { Head } from '@inertiajs/react';
 import Heading from '@/components/heading';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
-import { index as statusIndex } from '@/routes/status';
+import { status as statusRoute } from '@/routes';
 import type { BreadcrumbItem } from '@/types';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Status',
-        href: statusIndex().url,
+        href: statusRoute().url,
     },
 ];
 
