@@ -224,7 +224,7 @@ store.form = storeForm
 * @see app/Http/Controllers/Sessions/SessionController.php:53
 * @route '/sessions/{session}'
 */
-export const show = (args: { session: number | { id: number } } | [session: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+export const show = (args: { session: string | number | { id: string | number } } | [session: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: show.url(args, options),
     method: 'get',
 })
@@ -239,7 +239,7 @@ show.definition = {
 * @see app/Http/Controllers/Sessions/SessionController.php:53
 * @route '/sessions/{session}'
 */
-show.url = (args: { session: number | { id: number } } | [session: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
+show.url = (args: { session: string | number | { id: string | number } } | [session: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { session: args }
     }
@@ -272,7 +272,7 @@ show.url = (args: { session: number | { id: number } } | [session: number | { id
 * @see app/Http/Controllers/Sessions/SessionController.php:53
 * @route '/sessions/{session}'
 */
-show.get = (args: { session: number | { id: number } } | [session: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+show.get = (args: { session: string | number | { id: string | number } } | [session: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: show.url(args, options),
     method: 'get',
 })
@@ -282,7 +282,7 @@ show.get = (args: { session: number | { id: number } } | [session: number | { id
 * @see app/Http/Controllers/Sessions/SessionController.php:53
 * @route '/sessions/{session}'
 */
-show.head = (args: { session: number | { id: number } } | [session: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+show.head = (args: { session: string | number | { id: string | number } } | [session: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: show.url(args, options),
     method: 'head',
 })
@@ -292,7 +292,7 @@ show.head = (args: { session: number | { id: number } } | [session: number | { i
 * @see app/Http/Controllers/Sessions/SessionController.php:53
 * @route '/sessions/{session}'
 */
-const showForm = (args: { session: number | { id: number } } | [session: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+const showForm = (args: { session: string | number | { id: string | number } } | [session: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: show.url(args, options),
     method: 'get',
 })
@@ -302,7 +302,7 @@ const showForm = (args: { session: number | { id: number } } | [session: number 
 * @see app/Http/Controllers/Sessions/SessionController.php:53
 * @route '/sessions/{session}'
 */
-showForm.get = (args: { session: number | { id: number } } | [session: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+showForm.get = (args: { session: string | number | { id: string | number } } | [session: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: show.url(args, options),
     method: 'get',
 })
@@ -312,7 +312,7 @@ showForm.get = (args: { session: number | { id: number } } | [session: number | 
 * @see app/Http/Controllers/Sessions/SessionController.php:53
 * @route '/sessions/{session}'
 */
-showForm.head = (args: { session: number | { id: number } } | [session: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+showForm.head = (args: { session: string | number | { id: string | number } } | [session: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: show.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'HEAD',
@@ -329,7 +329,7 @@ show.form = showForm
 * @see app/Http/Controllers/Sessions/SessionController.php:194
 * @route '/sessions/{session}/close'
 */
-export const close = (args: { session: number | { id: number } } | [session: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
+export const close = (args: { session: string | number | { id: string | number } } | [session: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
     url: close.url(args, options),
     method: 'patch',
 })
@@ -344,7 +344,7 @@ close.definition = {
 * @see app/Http/Controllers/Sessions/SessionController.php:194
 * @route '/sessions/{session}/close'
 */
-close.url = (args: { session: number | { id: number } } | [session: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
+close.url = (args: { session: string | number | { id: string | number } } | [session: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { session: args }
     }
@@ -377,7 +377,7 @@ close.url = (args: { session: number | { id: number } } | [session: number | { i
 * @see app/Http/Controllers/Sessions/SessionController.php:194
 * @route '/sessions/{session}/close'
 */
-close.patch = (args: { session: number | { id: number } } | [session: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
+close.patch = (args: { session: string | number | { id: string | number } } | [session: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
     url: close.url(args, options),
     method: 'patch',
 })
@@ -387,7 +387,7 @@ close.patch = (args: { session: number | { id: number } } | [session: number | {
 * @see app/Http/Controllers/Sessions/SessionController.php:194
 * @route '/sessions/{session}/close'
 */
-const closeForm = (args: { session: number | { id: number } } | [session: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+const closeForm = (args: { session: string | number | { id: string | number } } | [session: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: close.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'PATCH',
@@ -402,7 +402,7 @@ const closeForm = (args: { session: number | { id: number } } | [session: number
 * @see app/Http/Controllers/Sessions/SessionController.php:194
 * @route '/sessions/{session}/close'
 */
-closeForm.patch = (args: { session: number | { id: number } } | [session: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+closeForm.patch = (args: { session: string | number | { id: string | number } } | [session: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: close.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'PATCH',

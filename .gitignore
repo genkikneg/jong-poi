@@ -4,7 +4,7 @@
 storage/*.key
 public/storage
 /public/hot
-/public/build
+.vite
 /.idea
 /.vscode
 npm-debug.log*

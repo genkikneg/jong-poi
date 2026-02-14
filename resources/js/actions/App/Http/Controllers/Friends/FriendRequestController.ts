@@ -60,7 +60,7 @@ store.form = storeForm
 * @see app/Http/Controllers/Friends/FriendRequestController.php:32
 * @route '/friend-requests/{friendRequest}/accept'
 */
-export const accept = (args: { friendRequest: number | { id: number } } | [friendRequest: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
+export const accept = (args: { friendRequest: string | number | { id: string | number } } | [friendRequest: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
     url: accept.url(args, options),
     method: 'patch',
 })
@@ -75,7 +75,7 @@ accept.definition = {
 * @see app/Http/Controllers/Friends/FriendRequestController.php:32
 * @route '/friend-requests/{friendRequest}/accept'
 */
-accept.url = (args: { friendRequest: number | { id: number } } | [friendRequest: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
+accept.url = (args: { friendRequest: string | number | { id: string | number } } | [friendRequest: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { friendRequest: args }
     }
@@ -108,7 +108,7 @@ accept.url = (args: { friendRequest: number | { id: number } } | [friendRequest:
 * @see app/Http/Controllers/Friends/FriendRequestController.php:32
 * @route '/friend-requests/{friendRequest}/accept'
 */
-accept.patch = (args: { friendRequest: number | { id: number } } | [friendRequest: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
+accept.patch = (args: { friendRequest: string | number | { id: string | number } } | [friendRequest: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
     url: accept.url(args, options),
     method: 'patch',
 })
@@ -118,7 +118,7 @@ accept.patch = (args: { friendRequest: number | { id: number } } | [friendReques
 * @see app/Http/Controllers/Friends/FriendRequestController.php:32
 * @route '/friend-requests/{friendRequest}/accept'
 */
-const acceptForm = (args: { friendRequest: number | { id: number } } | [friendRequest: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+const acceptForm = (args: { friendRequest: string | number | { id: string | number } } | [friendRequest: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: accept.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'PATCH',
@@ -133,7 +133,7 @@ const acceptForm = (args: { friendRequest: number | { id: number } } | [friendRe
 * @see app/Http/Controllers/Friends/FriendRequestController.php:32
 * @route '/friend-requests/{friendRequest}/accept'
 */
-acceptForm.patch = (args: { friendRequest: number | { id: number } } | [friendRequest: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+acceptForm.patch = (args: { friendRequest: string | number | { id: string | number } } | [friendRequest: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: accept.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'PATCH',
@@ -150,7 +150,7 @@ accept.form = acceptForm
 * @see app/Http/Controllers/Friends/FriendRequestController.php:54
 * @route '/friend-requests/{friendRequest}'
 */
-export const destroy = (args: { friendRequest: number | { id: number } } | [friendRequest: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
+export const destroy = (args: { friendRequest: string | number | { id: string | number } } | [friendRequest: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
     url: destroy.url(args, options),
     method: 'delete',
 })
@@ -165,7 +165,7 @@ destroy.definition = {
 * @see app/Http/Controllers/Friends/FriendRequestController.php:54
 * @route '/friend-requests/{friendRequest}'
 */
-destroy.url = (args: { friendRequest: number | { id: number } } | [friendRequest: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
+destroy.url = (args: { friendRequest: string | number | { id: string | number } } | [friendRequest: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { friendRequest: args }
     }
@@ -198,7 +198,7 @@ destroy.url = (args: { friendRequest: number | { id: number } } | [friendRequest
 * @see app/Http/Controllers/Friends/FriendRequestController.php:54
 * @route '/friend-requests/{friendRequest}'
 */
-destroy.delete = (args: { friendRequest: number | { id: number } } | [friendRequest: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
+destroy.delete = (args: { friendRequest: string | number | { id: string | number } } | [friendRequest: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
     url: destroy.url(args, options),
     method: 'delete',
 })
@@ -208,7 +208,7 @@ destroy.delete = (args: { friendRequest: number | { id: number } } | [friendRequ
 * @see app/Http/Controllers/Friends/FriendRequestController.php:54
 * @route '/friend-requests/{friendRequest}'
 */
-const destroyForm = (args: { friendRequest: number | { id: number } } | [friendRequest: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+const destroyForm = (args: { friendRequest: string | number | { id: string | number } } | [friendRequest: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: destroy.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'DELETE',
@@ -223,7 +223,7 @@ const destroyForm = (args: { friendRequest: number | { id: number } } | [friendR
 * @see app/Http/Controllers/Friends/FriendRequestController.php:54
 * @route '/friend-requests/{friendRequest}'
 */
-destroyForm.delete = (args: { friendRequest: number | { id: number } } | [friendRequest: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+destroyForm.delete = (args: { friendRequest: string | number | { id: string | number } } | [friendRequest: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: destroy.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'DELETE',
