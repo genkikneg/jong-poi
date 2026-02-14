@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Sessions\SessionViewController::view
-* @see app/Http/Controllers/Sessions/SessionViewController.php:33
+* @see app/Http/Controllers/Sessions/SessionViewController.php:34
 * @route '/sessions/join'
 */
 export const view = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ view.definition = {
 
 /**
 * @see \App\Http\Controllers\Sessions\SessionViewController::view
-* @see app/Http/Controllers/Sessions/SessionViewController.php:33
+* @see app/Http/Controllers/Sessions/SessionViewController.php:34
 * @route '/sessions/join'
 */
 view.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ view.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Sessions\SessionViewController::view
-* @see app/Http/Controllers/Sessions/SessionViewController.php:33
+* @see app/Http/Controllers/Sessions/SessionViewController.php:34
 * @route '/sessions/join'
 */
 view.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -35,7 +35,7 @@ view.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\Sessions\SessionViewController::view
-* @see app/Http/Controllers/Sessions/SessionViewController.php:33
+* @see app/Http/Controllers/Sessions/SessionViewController.php:34
 * @route '/sessions/join'
 */
 view.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -45,7 +45,7 @@ view.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\Sessions\SessionViewController::view
-* @see app/Http/Controllers/Sessions/SessionViewController.php:33
+* @see app/Http/Controllers/Sessions/SessionViewController.php:34
 * @route '/sessions/join'
 */
 const viewForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -55,7 +55,7 @@ const viewForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\Sessions\SessionViewController::view
-* @see app/Http/Controllers/Sessions/SessionViewController.php:33
+* @see app/Http/Controllers/Sessions/SessionViewController.php:34
 * @route '/sessions/join'
 */
 viewForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -65,7 +65,7 @@ viewForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\Sessions\SessionViewController::view
-* @see app/Http/Controllers/Sessions/SessionViewController.php:33
+* @see app/Http/Controllers/Sessions/SessionViewController.php:34
 * @route '/sessions/join'
 */
 viewForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

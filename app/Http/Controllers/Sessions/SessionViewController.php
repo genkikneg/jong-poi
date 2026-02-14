@@ -16,13 +16,14 @@ class SessionViewController extends Controller
     public function create(Request $request): Response
     {
         $friends = $request->user()->friends()
-            ->select('users.id', 'users.name', 'users.friend_code')
+            ->select('users.id', 'users.name', 'users.friend_code', 'users.avatar_path', 'users.email')
             ->orderBy('users.name')
             ->get()
             ->map(fn ($friend) => [
                 'id' => $friend->id,
                 'name' => $friend->name,
                 'friend_code' => $friend->friend_code,
+                'avatar' => $friend->avatar,
             ]);
 
         return Inertia::render('sessions/create', [

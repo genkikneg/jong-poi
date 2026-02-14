@@ -5,17 +5,34 @@ import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
 import { index as friendsIndex } from '@/routes/friends';
 import { accept as acceptFriendRequest, destroy as destroyFriendRequest, store as sendFriendRequest } from '@/routes/friend-requests';
+import { cn } from '@/lib/utils';
 import type { BreadcrumbItem } from '@/types';
 
 type Friend = {
     id: number;
     name: string;
     friend_code: string;
+    avatar: string;
+    stats?: {
+        total_points: string;
+        recent_games: Array<{
+            id: number;
+            points: string;
+            rank: number;
+            played_at: string | null;
+            session?: {
+                id: number;
+                name: string | null;
+            } | null;
+        }>;
+    };
 };
 
 type FriendRequestSummary = {
@@ -52,6 +69,7 @@ const useTimestamp = () =>
 export default function FriendsPage({ friendCode, friends, incomingRequests, outgoingRequests }: Props) {
     const formatter = useTimestamp();
     const [copied, setCopied] = useState(false);
+    const [selectedFriend, setSelectedFriend] = useState<Friend | null>(null);
 
     const handleCopyCode = async () => {
         try {
@@ -62,6 +80,28 @@ export default function FriendsPage({ friendCode, friends, incomingRequests, out
             console.error('Failed to copy friend code', error);
         }
     };
+
+    const getInitials = (name: string) => {
+        if (!name) {
+            return '?';
+        }
+
+        return name
+            .trim()
+            .split(' ')
+            .map((part) => part[0])
+            .join('')
+            .slice(0, 2)
+            .toUpperCase();
+    };
+
+    const formatPoints = (value?: string | number | null) =>
+        Number(value ?? 0).toLocaleString(undefined, {
+            maximumFractionDigits: 1,
+            minimumFractionDigits: 0,
+        });
+
+    const recentGames = selectedFriend?.stats?.recent_games ?? [];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -215,8 +255,21 @@ export default function FriendsPage({ friendCode, friends, incomingRequests, out
                             <div className="grid gap-4 md:grid-cols-2">
                                 {friends.map((friend) => (
                                     <div key={friend.id} className="rounded-lg border p-4">
-                                        <p className="font-medium">{friend.name}</p>
-                                        <p className="text-sm text-muted-foreground">Code: {friend.friend_code}</p>
+                                        <button
+                                            type="button"
+                                            onClick={() => setSelectedFriend(friend)}
+                                            className="flex w-full items-center gap-4 text-left"
+                                        >
+                                            <Avatar className="size-12">
+                                                <AvatarImage src={friend.avatar} alt={friend.name} />
+                                                <AvatarFallback>{getInitials(friend.name)}</AvatarFallback>
+                                            </Avatar>
+                                            <div className="flex-1">
+                                                <p className="font-medium">{friend.name}</p>
+                                                <p className="text-sm text-muted-foreground">Code: {friend.friend_code}</p>
+                                            </div>
+                                            <span className="text-sm font-semibold text-primary">詳細 →</span>
+                                        </button>
                                     </div>
                                 ))}
                             </div>
@@ -224,6 +277,73 @@ export default function FriendsPage({ friendCode, friends, incomingRequests, out
                     </CardContent>
                 </Card>
             </div>
+
+            <Dialog open={Boolean(selectedFriend)} onOpenChange={(open) => !open && setSelectedFriend(null)}>
+                <DialogContent className="sm:max-w-lg">
+                    <DialogHeader>
+                        <DialogTitle>フレンド詳細</DialogTitle>
+                        <DialogDescription>累計ポイントと直近10戦の記録を確認できます。</DialogDescription>
+                    </DialogHeader>
+
+                    {selectedFriend && (
+                        <div className="space-y-6">
+                            <div className="flex items-center gap-4">
+                                <Avatar className="size-16">
+                                    <AvatarImage src={selectedFriend.avatar} alt={selectedFriend.name} />
+                                    <AvatarFallback>{getInitials(selectedFriend.name)}</AvatarFallback>
+                                </Avatar>
+                                <div>
+                                    <p className="text-lg font-semibold">{selectedFriend.name}</p>
+                                    <p className="text-sm text-muted-foreground">Code: {selectedFriend.friend_code}</p>
+                                </div>
+                            </div>
+
+                            <div>
+                                <p className="text-sm text-muted-foreground">累計ポイント</p>
+                                <p className="text-3xl font-semibold">
+                                    {formatPoints(selectedFriend.stats?.total_points)} pt
+                                </p>
+                            </div>
+
+                            <div className="space-y-3">
+                                <p className="text-sm font-semibold">直近10戦</p>
+                                {recentGames.length ? (
+                                    <div className="max-h-72 space-y-2 overflow-y-auto pr-1">
+                                        {recentGames.map((entry) => {
+                                            const pointsValue = Number(entry.points ?? 0);
+                                            const trendClass = pointsValue > 0
+                                                ? 'text-emerald-600'
+                                                : pointsValue < 0
+                                                  ? 'text-rose-600'
+                                                  : 'text-muted-foreground';
+
+                                            return (
+                                                <div key={entry.id} className="rounded-lg border p-3">
+                                                    <div className="flex items-center justify-between gap-2 text-sm font-medium">
+                                                        <span>{entry.session?.name ?? 'セッション'}</span>
+                                                        <span className={cn('font-semibold', trendClass)}>
+                                                            {formatPoints(entry.points)} pt
+                                                        </span>
+                                                    </div>
+                                                    <p className="text-xs text-muted-foreground">
+                                                        {entry.played_at
+                                                            ? formatter.format(new Date(entry.played_at))
+                                                            : '日時不明'}
+                                                        {' ・ '}
+                                                        {entry.rank}位
+                                                    </p>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                ) : (
+                                    <p className="text-sm text-muted-foreground">まだ対局データがありません。</p>
+                                )}
+                            </div>
+                        </div>
+                    )}
+                </DialogContent>
+            </Dialog>
         </AppLayout>
     );
 }

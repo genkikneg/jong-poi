@@ -54,7 +54,7 @@ export default function SessionHistoryPage({ sessions }: Props = {}) {
                         {sessionItems.map((session) => (
                             <Card key={session.id}>
                                 <CardHeader>
-                                    <CardTitle className="flex flex-col gap-1 text-base md:flex-row md:items-center md:justify-between">
+                                    <CardTitle className="flex flex-col gap-1 text-base text-card-foreground md:flex-row md:items-center md:justify-between">
                                         <span>
                                             {session.name || 'セッション'} / {session.player_count}人打ち
                                         </span>
@@ -66,13 +66,13 @@ export default function SessionHistoryPage({ sessions }: Props = {}) {
                                 <CardContent className="flex flex-wrap items-center justify-between gap-4">
                                     <div>
                                         <p className="text-sm text-muted-foreground">合計ポイント</p>
-                                        <p className="text-2xl font-semibold">
+                                        <p className="text-2xl font-semibold text-card-foreground">
                                             {Number(session.total_points).toLocaleString()} pt
                                         </p>
                                     </div>
                                     <div>
                                         <p className="text-sm text-muted-foreground">最終順位</p>
-                                        <p className="text-2xl font-semibold">{session.rank}位</p>
+                                        <p className="text-2xl font-semibold text-card-foreground">{session.rank}位</p>
                                     </div>
                                     <Link href={`/sessions/${session.id}`} className="text-sm font-semibold text-primary">
                                         詳細を見る →

@@ -458,7 +458,7 @@ export default function SessionShowPage({ session, totals, currentUserId, draft 
                                                     <p className="text-xs text-muted-foreground">
                                                         {Number(result.final_score).toLocaleString()} 点
                                                     </p>
-                                                    <p className={`text-lg font-semibold text-primary`}>
+                                                    <p className="text-lg font-semibold text-black">
                                                         {Number(result.points).toLocaleString(undefined, {
                                                             maximumFractionDigits: 0,
                                                             minimumFractionDigits: 0,
@@ -525,7 +525,7 @@ export default function SessionShowPage({ session, totals, currentUserId, draft 
                                                         <p className="text-xs text-muted-foreground">
                                                             {Number(result.final_score).toLocaleString()} 点
                                                         </p>
-                                                        <p className="text-base font-semibold text-primary">
+                                                        <p className="text-base font-semibold text-black">
                                                             {Number(result.points).toLocaleString(undefined, {
                                                                 maximumFractionDigits: 0,
                                                                 minimumFractionDigits: 0,

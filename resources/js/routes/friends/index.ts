@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../wayfinder'
 /**
 * @see \App\Http\Controllers\Friends\FriendController::index
-* @see app/Http/Controllers/Friends/FriendController.php:12
+* @see app/Http/Controllers/Friends/FriendController.php:13
 * @route '/friends'
 */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ index.definition = {
 
 /**
 * @see \App\Http\Controllers\Friends\FriendController::index
-* @see app/Http/Controllers/Friends/FriendController.php:12
+* @see app/Http/Controllers/Friends/FriendController.php:13
 * @route '/friends'
 */
 index.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Friends\FriendController::index
-* @see app/Http/Controllers/Friends/FriendController.php:12
+* @see app/Http/Controllers/Friends/FriendController.php:13
 * @route '/friends'
 */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -35,7 +35,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\Friends\FriendController::index
-* @see app/Http/Controllers/Friends/FriendController.php:12
+* @see app/Http/Controllers/Friends/FriendController.php:13
 * @route '/friends'
 */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -45,7 +45,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\Friends\FriendController::index
-* @see app/Http/Controllers/Friends/FriendController.php:12
+* @see app/Http/Controllers/Friends/FriendController.php:13
 * @route '/friends'
 */
 const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -55,7 +55,7 @@ const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => (
 
 /**
 * @see \App\Http\Controllers\Friends\FriendController::index
-* @see app/Http/Controllers/Friends/FriendController.php:12
+* @see app/Http/Controllers/Friends/FriendController.php:13
 * @route '/friends'
 */
 indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -65,7 +65,7 @@ indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\Friends\FriendController::index
-* @see app/Http/Controllers/Friends/FriendController.php:12
+* @see app/Http/Controllers/Friends/FriendController.php:13
 * @route '/friends'
 */
 indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\SessionStatus;
+use App\Http\Controllers\Status\StatusController;
 use App\Http\Controllers\Sessions\SessionViewController;
 use App\Http\Controllers\UserAvatarController;
 use App\Models\Session;
@@ -43,6 +44,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/', $dashboardHandler)->name('home');
 
     Route::get('dashboard', $dashboardHandler)->name('dashboard');
+
+    Route::get('status', [StatusController::class, 'index'])
+        ->name('status');
 
 
     Route::get('sessions/create', [SessionViewController::class, 'create'])
