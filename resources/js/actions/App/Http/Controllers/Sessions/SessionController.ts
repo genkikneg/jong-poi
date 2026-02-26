@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Sessions\SessionController::store
-* @see app/Http/Controllers/Sessions/SessionController.php:18
+* @see app/Http/Controllers/Sessions/SessionController.php:19
 * @route '/sessions'
 */
 export const store = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -16,7 +16,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\Sessions\SessionController::store
-* @see app/Http/Controllers/Sessions/SessionController.php:18
+* @see app/Http/Controllers/Sessions/SessionController.php:19
 * @route '/sessions'
 */
 store.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ store.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Sessions\SessionController::store
-* @see app/Http/Controllers/Sessions/SessionController.php:18
+* @see app/Http/Controllers/Sessions/SessionController.php:19
 * @route '/sessions'
 */
 store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -35,7 +35,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
 * @see \App\Http\Controllers\Sessions\SessionController::store
-* @see app/Http/Controllers/Sessions/SessionController.php:18
+* @see app/Http/Controllers/Sessions/SessionController.php:19
 * @route '/sessions'
 */
 const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -45,7 +45,7 @@ const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => 
 
 /**
 * @see \App\Http\Controllers\Sessions\SessionController::store
-* @see app/Http/Controllers/Sessions/SessionController.php:18
+* @see app/Http/Controllers/Sessions/SessionController.php:19
 * @route '/sessions'
 */
 storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -57,7 +57,7 @@ store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\Sessions\SessionController::show
-* @see app/Http/Controllers/Sessions/SessionController.php:53
+* @see app/Http/Controllers/Sessions/SessionController.php:54
 * @route '/sessions/{session}'
 */
 export const show = (args: { session: number | { id: number } } | [session: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -72,7 +72,7 @@ show.definition = {
 
 /**
 * @see \App\Http\Controllers\Sessions\SessionController::show
-* @see app/Http/Controllers/Sessions/SessionController.php:53
+* @see app/Http/Controllers/Sessions/SessionController.php:54
 * @route '/sessions/{session}'
 */
 show.url = (args: { session: number | { id: number } } | [session: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -105,7 +105,7 @@ show.url = (args: { session: number | { id: number } } | [session: number | { id
 
 /**
 * @see \App\Http\Controllers\Sessions\SessionController::show
-* @see app/Http/Controllers/Sessions/SessionController.php:53
+* @see app/Http/Controllers/Sessions/SessionController.php:54
 * @route '/sessions/{session}'
 */
 show.get = (args: { session: number | { id: number } } | [session: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -115,7 +115,7 @@ show.get = (args: { session: number | { id: number } } | [session: number | { id
 
 /**
 * @see \App\Http\Controllers\Sessions\SessionController::show
-* @see app/Http/Controllers/Sessions/SessionController.php:53
+* @see app/Http/Controllers/Sessions/SessionController.php:54
 * @route '/sessions/{session}'
 */
 show.head = (args: { session: number | { id: number } } | [session: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -125,7 +125,7 @@ show.head = (args: { session: number | { id: number } } | [session: number | { i
 
 /**
 * @see \App\Http\Controllers\Sessions\SessionController::show
-* @see app/Http/Controllers/Sessions/SessionController.php:53
+* @see app/Http/Controllers/Sessions/SessionController.php:54
 * @route '/sessions/{session}'
 */
 const showForm = (args: { session: number | { id: number } } | [session: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -135,7 +135,7 @@ const showForm = (args: { session: number | { id: number } } | [session: number 
 
 /**
 * @see \App\Http\Controllers\Sessions\SessionController::show
-* @see app/Http/Controllers/Sessions/SessionController.php:53
+* @see app/Http/Controllers/Sessions/SessionController.php:54
 * @route '/sessions/{session}'
 */
 showForm.get = (args: { session: number | { id: number } } | [session: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -145,7 +145,7 @@ showForm.get = (args: { session: number | { id: number } } | [session: number | 
 
 /**
 * @see \App\Http\Controllers\Sessions\SessionController::show
-* @see app/Http/Controllers/Sessions/SessionController.php:53
+* @see app/Http/Controllers/Sessions/SessionController.php:54
 * @route '/sessions/{session}'
 */
 showForm.head = (args: { session: number | { id: number } } | [session: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -162,7 +162,7 @@ show.form = showForm
 
 /**
 * @see \App\Http\Controllers\Sessions\SessionController::close
-* @see app/Http/Controllers/Sessions/SessionController.php:194
+* @see app/Http/Controllers/Sessions/SessionController.php:281
 * @route '/sessions/{session}/close'
 */
 export const close = (args: { session: number | { id: number } } | [session: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
@@ -177,7 +177,7 @@ close.definition = {
 
 /**
 * @see \App\Http\Controllers\Sessions\SessionController::close
-* @see app/Http/Controllers/Sessions/SessionController.php:194
+* @see app/Http/Controllers/Sessions/SessionController.php:281
 * @route '/sessions/{session}/close'
 */
 close.url = (args: { session: number | { id: number } } | [session: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -210,7 +210,7 @@ close.url = (args: { session: number | { id: number } } | [session: number | { i
 
 /**
 * @see \App\Http\Controllers\Sessions\SessionController::close
-* @see app/Http/Controllers/Sessions/SessionController.php:194
+* @see app/Http/Controllers/Sessions/SessionController.php:281
 * @route '/sessions/{session}/close'
 */
 close.patch = (args: { session: number | { id: number } } | [session: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
@@ -220,7 +220,7 @@ close.patch = (args: { session: number | { id: number } } | [session: number | {
 
 /**
 * @see \App\Http\Controllers\Sessions\SessionController::close
-* @see app/Http/Controllers/Sessions/SessionController.php:194
+* @see app/Http/Controllers/Sessions/SessionController.php:281
 * @route '/sessions/{session}/close'
 */
 const closeForm = (args: { session: number | { id: number } } | [session: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -235,7 +235,7 @@ const closeForm = (args: { session: number | { id: number } } | [session: number
 
 /**
 * @see \App\Http\Controllers\Sessions\SessionController::close
-* @see app/Http/Controllers/Sessions/SessionController.php:194
+* @see app/Http/Controllers/Sessions/SessionController.php:281
 * @route '/sessions/{session}/close'
 */
 closeForm.patch = (args: { session: number | { id: number } } | [session: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

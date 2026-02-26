@@ -46,7 +46,7 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
         <div className="px-4 py-6">
             <Heading
                 title="Settings"
-                description="Manage your profile and account settings"
+                description="プロフィールやアカウントの設定を管理できます"
             />
 
             <div className="flex flex-col lg:flex-row lg:space-x-12">

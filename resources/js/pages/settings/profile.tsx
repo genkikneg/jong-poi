@@ -52,7 +52,7 @@ export default function Profile({
             await navigator.clipboard.writeText(auth.user.friend_code);
             setCopied(true);
         } catch (error) {
-            console.error('Failed to copy friend code', error);
+            console.error('フレンドコードのコピーに失敗しました', error);
         }
     };
 
@@ -60,48 +60,14 @@ export default function Profile({
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Profile settings" />
 
-            <h1 className="sr-only">Profile Settings</h1>
+            <h1 className="sr-only">Profile settings</h1>
 
             <SettingsLayout>
                 <div className="space-y-6">
                     <Heading
                         variant="small"
-                        title="Friend code"
-                        description="Share this code so friends can invite you to sessions"
-                    />
-
-                    <div className="rounded-lg border bg-card p-4 shadow-sm">
-                        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                            <div>
-                                <p className="text-sm text-muted-foreground">
-                                    Your friend code
-                                </p>
-                                <p className="font-mono text-2xl font-semibold tracking-wide">
-                                    {auth.user.friend_code}
-                                </p>
-                            </div>
-
-                            <Button
-                                type="button"
-                                variant="outline"
-                                className="w-full sm:w-auto"
-                                onClick={handleCopyCode}
-                                disabled={copied}
-                            >
-                                <Copy className="size-4" />
-                                {copied ? 'Copied' : 'Copy code'}
-                            </Button>
-                        </div>
-
-                        <p className="mt-4 text-sm text-muted-foreground">
-                            有効なフレンドコードは自動で発行されます。共有して友だち申請に使ってください。
-                        </p>
-                    </div>
-
-                    <Heading
-                        variant="small"
-                        title="Profile information"
-                        description="Update your name and email address"
+                        title="プロフィール情報"
+                        description="表示名やメールアドレスを最新の内容に更新しましょう"
                     />
 
                     <Form
@@ -115,7 +81,7 @@ export default function Profile({
                         {({ processing, recentlySuccessful, errors }) => (
                             <>
                                 <div className="space-y-2">
-                                    <Label>Profile image</Label>
+                                    <Label>プロフィール画像</Label>
                                     <div className="flex flex-wrap items-center gap-4">
                                         <Avatar className="h-20 w-20">
                                             <AvatarImage
@@ -142,7 +108,7 @@ export default function Profile({
                                 </div>
 
                                 <div className="grid gap-2">
-                                    <Label htmlFor="name">Name</Label>
+                                    <Label htmlFor="name">名前</Label>
 
                                     <Input
                                         id="name"
@@ -151,7 +117,7 @@ export default function Profile({
                                         name="name"
                                         required
                                         autoComplete="name"
-                                        placeholder="Full name"
+                                        placeholder="例：ジャンポイ 太郎"
                                     />
 
                                     <InputError
@@ -161,7 +127,7 @@ export default function Profile({
                                 </div>
 
                                 <div className="grid gap-2">
-                                    <Label htmlFor="email">Email address</Label>
+                                    <Label htmlFor="email">メールアドレス</Label>
 
                                     <Input
                                         id="email"
@@ -171,7 +137,7 @@ export default function Profile({
                                         name="email"
                                         required
                                         autoComplete="username"
-                                        placeholder="Email address"
+                                        placeholder="your@email.com"
                                     />
 
                                     <InputError
@@ -184,24 +150,21 @@ export default function Profile({
                                     auth.user.email_verified_at === null && (
                                         <div>
                                             <p className="-mt-4 text-sm text-muted-foreground">
-                                                Your email address is
-                                                unverified.{' '}
+                                                メールアドレスがまだ認証されていません。{' '}
                                                 <Link
                                                     href={send()}
                                                     as="button"
                                                     className="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
                                                 >
-                                                    Click here to resend the
-                                                    verification email.
+                                                    認証メールを再送する
                                                 </Link>
+                                                を押して確認を完了してください。
                                             </p>
 
                                             {status ===
                                                 'verification-link-sent' && (
                                                 <div className="mt-2 text-sm font-medium text-green-600">
-                                                    A new verification link has
-                                                    been sent to your email
-                                                    address.
+                                                    新しい認証リンクをメールで送信しました。
                                                 </div>
                                             )}
                                         </div>
@@ -212,7 +175,7 @@ export default function Profile({
                                         disabled={processing}
                                         data-test="update-profile-button"
                                     >
-                                        Save
+                                        保存する
                                     </Button>
 
                                     <Transition
@@ -223,7 +186,7 @@ export default function Profile({
                                         leaveTo="opacity-0"
                                     >
                                         <p className="text-sm text-neutral-600">
-                                            Saved
+                                            保存しました
                                         </p>
                                     </Transition>
                                 </div>

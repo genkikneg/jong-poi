@@ -9,15 +9,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { FriendDetailDialog } from '@/components/friend-detail-dialog';
+import type { FriendDetail as FriendDetailType } from '@/components/friend-detail-dialog';
 import AppLayout from '@/layouts/app-layout';
+import { store as sendFriendRequest } from '@/routes/friend-requests';
 import { close as sessionsClose, show as sessionsShow } from '@/routes/sessions';
 import draftRoutes from '@/routes/sessions/draft';
 import type { BreadcrumbItem } from '@/types';
 
-type SessionMember = {
-    id: number;
-    name: string;
-    avatar?: string | null;
+type SessionMember = FriendDetailType & {
     is_host: boolean;
     joined_at: string | null;
 };
@@ -138,6 +138,9 @@ export default function SessionShowPage({ session, totals, currentUserId, draft 
     const isClosed = session.status === 'closed';
     const rankOptions = Array.from({ length: session.player_count }, (_, idx) => idx + 1);
     const isOwner = session.owner_id === currentUserId;
+    const [copied, setCopied] = useState(false);
+    const [selectedFriend, setSelectedFriend] = useState<SessionMember | null>(null);
+    const [sendingFriendId, setSendingFriendId] = useState<number | null>(null);
     const draftEntries: DraftEntry[] =
         draft?.entries ??
         session.members.map((member) => ({
@@ -179,7 +182,7 @@ export default function SessionShowPage({ session, totals, currentUserId, draft 
     const draftDiffText = Math.abs(draftTotalDiff).toLocaleString();
     const draftDiffDirection = draftTotalDiff > 0 ? '多い' : '少ない';
     const [confirmProcessing, setConfirmProcessing] = useState(false);
-    const [copied, setCopied] = useState(false);
+    const membersMap = useMemo(() => new Map(session.members.map((member) => [member.id, member])), [session.members]);
 
     const handleConfirm = () => {
         if (!draft || !isOwner || draftTotalMismatch || !allSubmitted) {
@@ -210,6 +213,28 @@ export default function SessionShowPage({ session, totals, currentUserId, draft 
         }
     };
 
+    const handleSendFriendRequest = (friend: SessionMember) => {
+        if (!friend.friend_code || sendingFriendId === friend.id) {
+            return;
+        }
+
+        setSendingFriendId(friend.id);
+
+        router.post(
+            sendFriendRequest.url(),
+            { friend_code: friend.friend_code },
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    closePlayerDetails();
+                    router.reload({ only: ['session'] });
+                },
+                onFinish: () => setSendingFriendId(null),
+                onError: () => setSendingFriendId(null),
+            },
+        );
+    };
+
     const getInitials = useMemo(
         () =>
             (name: string) =>
@@ -221,19 +246,55 @@ export default function SessionShowPage({ session, totals, currentUserId, draft 
         [],
     );
 
-    const renderUserName = (name: string, size: 'sm' | 'md' = 'md', avatarUrl?: string | null) => (
-        <span className="flex items-center gap-2">
-            <Avatar className={size === 'sm' ? 'h-7 w-7' : 'h-9 w-9'}>
-                {avatarUrl && <AvatarImage src={avatarUrl} alt={name} />}
-                <AvatarFallback>{getInitials(name)}</AvatarFallback>
-            </Avatar>
-            <span>{name}</span>
-        </span>
-    );
+    const openPlayerDetails = (userId?: number | null) => {
+        if (typeof userId !== 'number') {
+            return;
+        }
+
+        const member = membersMap.get(userId);
+
+        if (member) {
+            setSelectedFriend(member);
+        }
+    };
+
+    const closePlayerDetails = () => setSelectedFriend(null);
+
+    const renderUserName = (
+        userId: number | null | undefined,
+        name: string,
+        size: 'sm' | 'md' = 'md',
+        avatarUrl?: string | null,
+    ) => {
+        const content = (
+            <>
+                <Avatar className={size === 'sm' ? 'h-7 w-7' : 'h-9 w-9'}>
+                    {avatarUrl && <AvatarImage src={avatarUrl} alt={name} />}
+                    <AvatarFallback>{getInitials(name)}</AvatarFallback>
+                </Avatar>
+                <span>{name}</span>
+            </>
+        );
+
+        if (!userId) {
+            return <span className="flex items-center gap-2">{content}</span>;
+        }
+
+        return (
+            <button
+                type="button"
+                onClick={() => openPlayerDetails(userId)}
+                className="flex items-center gap-2 text-left text-current transition hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2"
+            >
+                {content}
+            </button>
+        );
+    };
+
 
     return (
         <AppLayout breadcrumbs={breadcrumbs(session)}>
-            <Head title={session.name ? `${session.name} | セッション` : 'セッション詳細'} />
+                <Head title={session.name ? `${session.name} | セッション` : 'セッション詳細'} />
 
             <div className="space-y-6">
                 <Heading
@@ -287,7 +348,9 @@ export default function SessionShowPage({ session, totals, currentUserId, draft 
                                                         type="number"
                                                         step="100"
                                                         required
-                                                        defaultValue={currentEntry?.final_score ?? ''}
+                                                        defaultValue={currentEntry?.final_score
+                                                            ? Number(currentEntry.final_score).toString()
+                                                            : ''}
                                                     />
                                                     <InputError message={errors.final_score} />
                                                 </div>
@@ -312,7 +375,7 @@ export default function SessionShowPage({ session, totals, currentUserId, draft 
 
                                             <div className="flex flex-wrap justify-end gap-2">
                                                 <Button type="submit" disabled={processing}>
-                                                    {currentEntry?.final_score ? '更新する' : '送信する'}
+                                                    {currentEntry?.final_score ? '変更する' : '送信する'}
                                                 </Button>
                                                 {isOwner && draft && (
                                                     <Button
@@ -355,14 +418,17 @@ export default function SessionShowPage({ session, totals, currentUserId, draft 
                                         >
                                             <div>
                                                 <div className="font-medium">
-                                                    {renderUserName(entry.name, 'sm', entry.avatar)}
+                                                    {renderUserName(entry.user_id, entry.name, 'sm', entry.avatar)}
                                                     {entry.user_id === currentUserId && (
                                                         <span className="ml-2 text-xs text-primary">(自分)</span>
                                                     )}
                                                 </div>
                                                 <p className="text-xs text-muted-foreground">
                                                     {entry.final_score
-                                                        ? `${Number(entry.final_score).toLocaleString()} 点`
+                                                        ? `${Number(entry.final_score).toLocaleString(undefined, {
+                                                              maximumFractionDigits: 0,
+                                                              minimumFractionDigits: 0,
+                                                          })} 点`
                                                         : '未入力'}
                                                 </p>
                                             </div>
@@ -400,7 +466,7 @@ export default function SessionShowPage({ session, totals, currentUserId, draft 
                                 >
                                     <div className="flex items-center justify-between text-sm">
                                         <div className="text-muted-foreground">
-                                            {renderUserName(entry.name, 'sm', entry.avatar)}
+                                            {renderUserName(entry.user_id, entry.name, 'sm', entry.avatar)}
                                         </div>
                                         {rank && (
                                             <span
@@ -447,7 +513,7 @@ export default function SessionShowPage({ session, totals, currentUserId, draft 
                                                 >
                                                     <div className="flex items-center justify-between">
                                                         <div className="text-sm font-medium">
-                                                            {renderUserName(result.user.name, 'sm', result.user.avatar)}
+                                                            {renderUserName(result.user.id, result.user.name, 'sm', result.user.avatar)}
                                                         </div>
                                                         <span
                                                             className={`rounded-full px-2 py-0.5 text-xs font-semibold ${getRankStyle(result.rank).badge}`}
@@ -456,7 +522,11 @@ export default function SessionShowPage({ session, totals, currentUserId, draft 
                                                         </span>
                                                     </div>
                                                     <p className="text-xs text-muted-foreground">
-                                                        {Number(result.final_score).toLocaleString()} 点
+                                                        {Number(result.final_score).toLocaleString(undefined, {
+                                                            maximumFractionDigits: 0,
+                                                            minimumFractionDigits: 0,
+                                                        })}{' '}
+                                                        点
                                                     </p>
                                                     <p className="text-lg font-semibold text-black">
                                                         {Number(result.points).toLocaleString(undefined, {
@@ -514,7 +584,7 @@ export default function SessionShowPage({ session, totals, currentUserId, draft 
                                                     >
                                                         <div className="flex items-center justify-between text-sm">
                                                             <div className="font-medium">
-                                                                {renderUserName(result.user.name, 'sm', result.user.avatar)}
+                                                                {renderUserName(result.user.id, result.user.name, 'sm', result.user.avatar)}
                                                             </div>
                                                             <span
                                                                 className={`rounded-full px-2 py-0.5 text-xs font-semibold ${getRankStyle(result.rank).badge}`}
@@ -523,7 +593,11 @@ export default function SessionShowPage({ session, totals, currentUserId, draft 
                                                             </span>
                                                         </div>
                                                         <p className="text-xs text-muted-foreground">
-                                                            {Number(result.final_score).toLocaleString()} 点
+                                                            {Number(result.final_score).toLocaleString(undefined, {
+                                                                maximumFractionDigits: 0,
+                                                                minimumFractionDigits: 0,
+                                                            })}{' '}
+                                                            点
                                                         </p>
                                                         <p className="text-base font-semibold text-black">
                                                             {Number(result.points).toLocaleString(undefined, {
@@ -553,6 +627,19 @@ export default function SessionShowPage({ session, totals, currentUserId, draft 
                     </Form>
                 )}
             </div>
+
+            <FriendDetailDialog
+                friend={selectedFriend}
+                open={Boolean(selectedFriend)}
+                onOpenChange={(open) => {
+                    if (!open) {
+                        closePlayerDetails();
+                    }
+                }}
+                formatter={formatter}
+                onSendRequest={selectedFriend ? () => handleSendFriendRequest(selectedFriend) : undefined}
+                sending={selectedFriend ? sendingFriendId === selectedFriend.id : false}
+            />
         </AppLayout>
     );
 }

@@ -33,8 +33,8 @@ export default function Password() {
                 <div className="space-y-6">
                     <Heading
                         variant="small"
-                        title="Update password"
-                        description="Ensure your account is using a long, random password to stay secure"
+                        title="パスワードの更新"
+                        description="安全のため、十分に長く推測されにくいパスワードへ更新しましょう"
                     />
 
                     <Form
@@ -63,7 +63,7 @@ export default function Password() {
                             <>
                                 <div className="grid gap-2">
                                     <Label htmlFor="current_password">
-                                        Current password
+                                        現在のパスワード
                                     </Label>
 
                                     <Input
@@ -73,7 +73,7 @@ export default function Password() {
                                         type="password"
                                         className="mt-1 block w-full"
                                         autoComplete="current-password"
-                                        placeholder="Current password"
+                                        placeholder="現在のパスワード"
                                     />
 
                                     <InputError
@@ -83,7 +83,7 @@ export default function Password() {
 
                                 <div className="grid gap-2">
                                     <Label htmlFor="password">
-                                        New password
+                                        新しいパスワード
                                     </Label>
 
                                     <Input
@@ -93,7 +93,7 @@ export default function Password() {
                                         type="password"
                                         className="mt-1 block w-full"
                                         autoComplete="new-password"
-                                        placeholder="New password"
+                                        placeholder="新しいパスワード"
                                     />
 
                                     <InputError message={errors.password} />
@@ -101,7 +101,7 @@ export default function Password() {
 
                                 <div className="grid gap-2">
                                     <Label htmlFor="password_confirmation">
-                                        Confirm password
+                                        パスワード再入力
                                     </Label>
 
                                     <Input
@@ -110,7 +110,7 @@ export default function Password() {
                                         type="password"
                                         className="mt-1 block w-full"
                                         autoComplete="new-password"
-                                        placeholder="Confirm password"
+                                        placeholder="もう一度入力してください"
                                     />
 
                                     <InputError
@@ -123,7 +123,7 @@ export default function Password() {
                                         disabled={processing}
                                         data-test="update-password-button"
                                     >
-                                        Save password
+                                        パスワードを保存
                                     </Button>
 
                                     <Transition
@@ -134,7 +134,7 @@ export default function Password() {
                                         leaveTo="opacity-0"
                                     >
                                         <p className="text-sm text-neutral-600">
-                                            Saved
+                                            保存しました
                                         </p>
                                     </Transition>
                                 </div>

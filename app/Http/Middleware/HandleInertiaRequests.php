@@ -2,6 +2,9 @@
 
 namespace App\Http\Middleware;
 
+use App\Enums\SessionStatus;
+use App\Models\FriendRequest;
+use App\Models\SessionMember;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -42,6 +45,50 @@ class HandleInertiaRequests extends Middleware
                 'user' => $request->user(),
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
+            'notifications' => $this->notifications($request),
+        ];
+    }
+
+    /**
+     * @return array<string, int|bool>
+     */
+    protected function notifications(Request $request): array
+    {
+        $user = $request->user();
+
+        $defaults = [
+            'friendRequests' => 0,
+            'sessionInvites' => 0,
+            'hasActiveSession' => false,
+        ];
+
+        if (! $user) {
+            return $defaults;
+        }
+
+        $friendRequests = FriendRequest::query()
+            ->pending()
+            ->where('recipient_id', $user->id)
+            ->count();
+
+        $openStatus = SessionStatus::Open->value;
+
+        $sessionInvites = SessionMember::query()
+            ->where('user_id', $user->id)
+            ->whereNull('joined_at')
+            ->whereHas('session', fn ($query) => $query->where('status', $openStatus))
+            ->count();
+
+        $hasActiveSession = SessionMember::query()
+            ->where('user_id', $user->id)
+            ->whereNotNull('joined_at')
+            ->whereHas('session', fn ($query) => $query->where('status', $openStatus))
+            ->exists();
+
+        return [
+            'friendRequests' => $friendRequests,
+            'sessionInvites' => $sessionInvites,
+            'hasActiveSession' => $hasActiveSession,
         ];
     }
 }

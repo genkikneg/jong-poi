@@ -24,8 +24,8 @@ export default function Appearance() {
                 <div className="space-y-6">
                     <Heading
                         variant="small"
-                        title="Appearance settings"
-                        description="Update your account's appearance settings"
+                        title="外観の設定"
+                        description="テーマカラーやモードを選んで見た目を調整しましょう"
                     />
                     <AppearanceTabs />
                 </div>

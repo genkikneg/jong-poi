@@ -1,5 +1,5 @@
-import { Link } from '@inertiajs/react';
-import { BarChart3, LayoutGrid, Users } from 'lucide-react';
+import { Link, usePage } from '@inertiajs/react';
+import { BarChart3, LayoutGrid, Settings, Users } from 'lucide-react';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
@@ -14,30 +14,64 @@ import {
 } from '@/components/ui/sidebar';
 import { dashboard, status as statusRoute } from '@/routes';
 import { index as friendsIndex } from '@/routes/friends';
-import type { NavItem } from '@/types';
+import { edit as editProfile } from '@/routes/profile';
+import type { NavIndicator, NavItem, SidebarNotifications } from '@/types';
 import AppLogo from './app-logo';
 
-const mainNavItems: NavItem[] = [
+const defaultNotifications: SidebarNotifications = {
+    friendRequests: 0,
+    sessionInvites: 0,
+    hasActiveSession: false,
+};
+
+const footerNavItems: NavItem[] = [
     {
-        title: 'Dashboard',
-        href: dashboard(),
-        icon: LayoutGrid,
-    },
-    {
-        title: 'Friends',
-        href: friendsIndex(),
-        icon: Users,
-    },
-    {
-        title: 'Status',
-        href: statusRoute(),
-        icon: BarChart3,
+        title: 'Settings',
+        href: editProfile(),
+        icon: Settings,
     },
 ];
 
-const footerNavItems: NavItem[] = [];
-
 export function AppSidebar() {
+    const { notifications: notificationsProp } = usePage().props as {
+        notifications?: SidebarNotifications;
+    };
+
+    const notifications = notificationsProp ?? defaultNotifications;
+
+    const dashboardIndicators: NavIndicator[] = [];
+
+    if (notifications.sessionInvites > 0) {
+        dashboardIndicators.push({ color: 'red', label: 'セッションへの招待があります' });
+    }
+
+    if (notifications.hasActiveSession) {
+        dashboardIndicators.push({ color: 'green', label: '参加中のセッションがあります' });
+    }
+
+    const mainNavItems: NavItem[] = [
+        {
+            title: 'Dashboard',
+            href: dashboard(),
+            icon: LayoutGrid,
+            indicators: dashboardIndicators,
+        },
+        {
+            title: 'Friends',
+            href: friendsIndex(),
+            icon: Users,
+            indicators:
+                notifications.friendRequests > 0
+                    ? [{ color: 'red', label: '新しいフレンド申請があります' }]
+                    : undefined,
+        },
+        {
+            title: 'Status',
+            href: statusRoute(),
+            icon: BarChart3,
+        },
+    ];
+
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>

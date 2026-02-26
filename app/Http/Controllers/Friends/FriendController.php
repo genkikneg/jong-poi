@@ -57,6 +57,7 @@ class FriendController extends Controller
                         'name' => $friend->name,
                         'friend_code' => $friend->friend_code,
                         'avatar' => $friend->avatar,
+                        'relation_status' => 'friend',
                         'stats' => [
                             'total_points' => (string) ($totalPoints[$friend->id] ?? 0),
                             'recent_games' => $recentGames,

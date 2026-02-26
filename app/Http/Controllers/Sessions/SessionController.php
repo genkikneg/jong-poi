@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Sessions;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Sessions\StoreSessionRequest;
+use App\Models\FriendRequest;
 use App\Models\GameResult;
 use App\Models\Session;
 use App\Models\SessionMember;
@@ -52,11 +53,17 @@ class SessionController extends Controller
 
     public function show(Request $request, Session $session): Response
     {
-        $this->authorizeMember($request->user()?->id, $session);
+        $user = $request->user();
+
+        abort_unless($user, 403);
+
+        $this->authorizeMember($user->id, $session);
+
+        $user->loadMissing(['friends:id']);
 
         $session->load([
             'owner:id,name,avatar_path',
-            'members.user:id,name,avatar_path',
+            'members.user:id,name,avatar_path,friend_code',
             'games' => fn ($query) => $query
                 ->orderBy('ordinal')
                 ->with(['results.user:id,name,avatar_path']),
@@ -71,10 +78,90 @@ class SessionController extends Controller
         $memberList = $session->members->map(fn ($member) => [
             'id' => $member->user->id,
             'name' => $member->user->name,
+            'friend_code' => $member->user->friend_code,
             'avatar' => $member->user->avatar,
             'is_host' => (bool) $member->is_host,
             'joined_at' => optional($member->joined_at)->toIso8601String(),
         ])->values();
+
+        $memberIds = $memberList->pluck('id');
+
+        $overallPoints = GameResult::query()
+            ->whereIn('user_id', $memberIds)
+            ->selectRaw('user_id, COALESCE(SUM(points), 0) as total_points')
+            ->groupBy('user_id')
+            ->pluck('total_points', 'user_id');
+
+        $memberStats = $memberIds->mapWithKeys(function ($memberId) use ($overallPoints) {
+            $recentGames = GameResult::query()
+                ->where('user_id', $memberId)
+                ->with([
+                    'session:id,name',
+                    'game:id,session_id,ordinal,played_at',
+                ])
+                ->latest('created_at')
+                ->limit(10)
+                ->get()
+                ->map(fn ($result) => [
+                    'id' => $result->id,
+                    'points' => (string) $result->points,
+                    'rank' => $result->rank,
+                    'session' => $result->session ? [
+                        'id' => $result->session->id,
+                        'name' => $result->session->name,
+                    ] : null,
+                    'played_at' => optional($result->game?->played_at ?? $result->created_at)->toIso8601String(),
+                ])
+                ->values();
+
+            return [
+                $memberId => [
+                    'total_points' => (string) ($overallPoints[$memberId] ?? 0),
+                    'recent_games' => $recentGames,
+                ],
+            ];
+        });
+
+        $friendIds = $user->friends->pluck('id')->all();
+        $pendingOutgoing = FriendRequest::query()
+            ->pending()
+            ->where('sender_id', $user->id)
+            ->whereIn('recipient_id', $memberIds)
+            ->pluck('recipient_id')
+            ->all();
+        $pendingIncoming = FriendRequest::query()
+            ->pending()
+            ->where('recipient_id', $user->id)
+            ->whereIn('sender_id', $memberIds)
+            ->pluck('sender_id')
+            ->all();
+
+        $friendLookup = array_flip($friendIds);
+        $pendingOutgoingLookup = array_flip($pendingOutgoing);
+        $pendingIncomingLookup = array_flip($pendingIncoming);
+
+        $memberList = $memberList->map(function ($member) use ($user, $friendLookup, $pendingOutgoingLookup, $pendingIncomingLookup, $memberStats) {
+            $relationStatus = 'none';
+
+            if ($member['id'] === $user->id) {
+                $relationStatus = 'self';
+            } elseif (isset($friendLookup[$member['id']])) {
+                $relationStatus = 'friend';
+            } elseif (isset($pendingOutgoingLookup[$member['id']])) {
+                $relationStatus = 'pending_outgoing';
+            } elseif (isset($pendingIncomingLookup[$member['id']])) {
+                $relationStatus = 'pending_incoming';
+            }
+
+            return [
+                ...$member,
+                'relation_status' => $relationStatus,
+                'stats' => $memberStats->get($member['id']) ?? [
+                    'total_points' => '0',
+                    'recent_games' => [],
+                ],
+            ];
+        })->values();
 
         $players = $memberList->map(fn ($member) => [
             'id' => $member['id'],
@@ -187,7 +274,7 @@ class SessionController extends Controller
             'table' => $tableData,
             'draft' => $draftData,
             'totals' => $totalsPayload,
-            'currentUserId' => $request->user()->id,
+            'currentUserId' => $user->id,
         ]);
     }
 
