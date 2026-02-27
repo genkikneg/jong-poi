@@ -32,6 +32,10 @@ export type FriendDetail = {
         recent_games: FriendDetailRecentGame[];
     } | null;
     relation_status?: FriendRelationStatus;
+    rankings?: {
+        label: string;
+        value: string;
+    }[];
 };
 
 type FriendDetailDialogProps = {
@@ -97,6 +101,33 @@ export function FriendDetailDialog({ friend, open, onOpenChange, formatter, onSe
                             <div>
                                 <p className="text-lg font-semibold">{friend.name}</p>
                                 <p className="text-sm text-muted-foreground">コード：{friend.friend_code}</p>
+                                {friend.rankings && friend.rankings.length > 0 && (
+                                    <div className="mt-2 flex flex-wrap gap-1">
+                                        {friend.rankings.map((ranking, index) => {
+                                            const labelMap: Record<string, string> = {
+                                                '累計': '累',
+                                                '平均': '平',
+                                                'トップ率': 'ト',
+                                            };
+
+                                            const rankNumber = parseInt(ranking.value.replace(/[^0-9]/g, ''), 10);
+                                            const backgroundClass = rankNumber === 1
+                                                ? 'bg-amber-400'
+                                                : rankNumber === 2
+                                                    ? 'bg-slate-300'
+                                                    : 'bg-amber-700';
+
+                                            return (
+                                                <span
+                                                    key={`${friend.id}-name-ranking-${index}`}
+                                                    className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold text-white ${backgroundClass}`}
+                                                >
+                                                    {labelMap[ranking.label] ?? ranking.label}
+                                                </span>
+                                            );
+                                        })}
+                                    </div>
+                                )}
                             </div>
                         </div>
 

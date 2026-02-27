@@ -4,12 +4,17 @@ namespace App\Http\Controllers\Friends;
 
 use App\Http\Controllers\Controller;
 use App\Models\GameResult;
+use App\Services\RankingService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class FriendController extends Controller
 {
+    public function __construct(private readonly RankingService $rankingService)
+    {
+    }
+
     public function index(Request $request): Response
     {
         $user = $request->user()->loadMissing([
@@ -58,6 +63,7 @@ class FriendController extends Controller
                         'friend_code' => $friend->friend_code,
                         'avatar' => $friend->avatar,
                         'relation_status' => 'friend',
+                        'rankings' => $this->rankingService->rankingBadges($friend->id),
                         'stats' => [
                             'total_points' => (string) ($totalPoints[$friend->id] ?? 0),
                             'recent_games' => $recentGames,

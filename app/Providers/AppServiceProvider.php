@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\GameResult;
+use App\Observers\GameResultObserver;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
@@ -24,6 +26,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
+        GameResult::observe(GameResultObserver::class);
     }
 
     /**

@@ -13,6 +13,7 @@ import AppLayout from '@/layouts/app-layout';
 import { index as friendsIndex } from '@/routes/friends';
 import { accept as acceptFriendRequest, destroy as destroyFriendRequest, store as sendFriendRequest } from '@/routes/friend-requests';
 import type { BreadcrumbItem } from '@/types';
+import { useFriendDetailDialog } from '@/hooks/use-friend-detail-dialog';
 
 type Friend = FriendDetail;
 
@@ -50,7 +51,7 @@ const useTimestamp = () =>
 export default function FriendsPage({ friendCode, friends, incomingRequests, outgoingRequests }: Props) {
     const formatter = useTimestamp();
     const [copied, setCopied] = useState(false);
-    const [selectedFriend, setSelectedFriend] = useState<Friend | null>(null);
+    const { friendDetailDialogProps, openFriendDetail } = useFriendDetailDialog();
 
     const handleCopyCode = async () => {
         try {
@@ -228,11 +229,11 @@ export default function FriendsPage({ friendCode, friends, incomingRequests, out
                             <div className="grid gap-4 md:grid-cols-2">
                                 {friends.map((friend) => (
                                     <div key={friend.id} className="rounded-lg border p-4">
-                                        <button
-                                            type="button"
-                                            onClick={() => setSelectedFriend(friend)}
-                                            className="flex w-full items-center gap-4 text-left"
-                                        >
+                        <button
+                            type="button"
+                            onClick={() => openFriendDetail(friend)}
+                            className="flex w-full items-center gap-4 text-left"
+                        >
                                             <Avatar className="size-12">
                                                 <AvatarImage src={friend.avatar} alt={friend.name} />
                                                 <AvatarFallback>{getInitials(friend.name)}</AvatarFallback>
@@ -251,16 +252,7 @@ export default function FriendsPage({ friendCode, friends, incomingRequests, out
                 </Card>
             </div>
 
-            <FriendDetailDialog
-                friend={selectedFriend}
-                open={Boolean(selectedFriend)}
-                onOpenChange={(open) => {
-                    if (!open) {
-                        setSelectedFriend(null);
-                    }
-                }}
-                formatter={formatter}
-            />
+            <FriendDetailDialog {...friendDetailDialogProps} />
         </AppLayout>
     );
 }

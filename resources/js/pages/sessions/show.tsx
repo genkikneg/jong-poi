@@ -9,9 +9,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { FriendDetailDialog } from '@/components/friend-detail-dialog';
-import type { FriendDetail as FriendDetailType } from '@/components/friend-detail-dialog';
+import { FriendDetailDialog, type FriendDetail as FriendDetailType } from '@/components/friend-detail-dialog';
 import AppLayout from '@/layouts/app-layout';
+import { useFriendDetailDialog } from '@/hooks/use-friend-detail-dialog';
 import { store as sendFriendRequest } from '@/routes/friend-requests';
 import { close as sessionsClose, show as sessionsShow } from '@/routes/sessions';
 import draftRoutes from '@/routes/sessions/draft';
@@ -139,8 +139,8 @@ export default function SessionShowPage({ session, totals, currentUserId, draft 
     const rankOptions = Array.from({ length: session.player_count }, (_, idx) => idx + 1);
     const isOwner = session.owner_id === currentUserId;
     const [copied, setCopied] = useState(false);
-    const [selectedFriend, setSelectedFriend] = useState<SessionMember | null>(null);
     const [sendingFriendId, setSendingFriendId] = useState<number | null>(null);
+    const { friendDetailDialogProps, openFriendDetail, closeFriendDetail } = useFriendDetailDialog();
     const draftEntries: DraftEntry[] =
         draft?.entries ??
         session.members.map((member) => ({
@@ -226,7 +226,7 @@ export default function SessionShowPage({ session, totals, currentUserId, draft 
             {
                 preserveScroll: true,
                 onSuccess: () => {
-                    closePlayerDetails();
+                    closeFriendDetail();
                     router.reload({ only: ['session'] });
                 },
                 onFinish: () => setSendingFriendId(null),
@@ -254,11 +254,9 @@ export default function SessionShowPage({ session, totals, currentUserId, draft 
         const member = membersMap.get(userId);
 
         if (member) {
-            setSelectedFriend(member);
+            openFriendDetail(member);
         }
     };
-
-    const closePlayerDetails = () => setSelectedFriend(null);
 
     const renderUserName = (
         userId: number | null | undefined,
@@ -628,18 +626,11 @@ export default function SessionShowPage({ session, totals, currentUserId, draft 
                 )}
             </div>
 
-            <FriendDetailDialog
-                friend={selectedFriend}
-                open={Boolean(selectedFriend)}
-                onOpenChange={(open) => {
-                    if (!open) {
-                        closePlayerDetails();
-                    }
-                }}
-                formatter={formatter}
-                onSendRequest={selectedFriend ? () => handleSendFriendRequest(selectedFriend) : undefined}
-                sending={selectedFriend ? sendingFriendId === selectedFriend.id : false}
-            />
+                <FriendDetailDialog
+                    {...friendDetailDialogProps}
+                    onSendRequest={friendDetailDialogProps.friend ? () => handleSendFriendRequest(friendDetailDialogProps.friend as SessionMember) : undefined}
+                    sending={friendDetailDialogProps.friend ? sendingFriendId === friendDetailDialogProps.friend.id : false}
+                />
         </AppLayout>
     );
 }

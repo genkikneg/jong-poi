@@ -1,5 +1,5 @@
 import { Link, usePage } from '@inertiajs/react';
-import { BarChart3, LayoutGrid, Settings, Users } from 'lucide-react';
+import { BarChart3, LayoutGrid, Settings, Trophy, Users } from 'lucide-react';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
@@ -64,6 +64,11 @@ export function AppSidebar() {
                 notifications.friendRequests > 0
                     ? [{ color: 'red', label: '新しいフレンド申請があります' }]
                     : undefined,
+        },
+        {
+            title: 'Rankings',
+            href: '/rankings',
+            icon: Trophy,
         },
         {
             title: 'Status',

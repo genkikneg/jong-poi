@@ -8,6 +8,7 @@ use App\Models\FriendRequest;
 use App\Models\GameResult;
 use App\Models\Session;
 use App\Models\SessionMember;
+use App\Services\RankingService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -16,6 +17,9 @@ use Inertia\Response;
 
 class SessionController extends Controller
 {
+    public function __construct(private readonly RankingService $rankingService)
+    {
+    }
     public function store(StoreSessionRequest $request): RedirectResponse
     {
         $user = $request->user();
@@ -82,6 +86,7 @@ class SessionController extends Controller
             'avatar' => $member->user->avatar,
             'is_host' => (bool) $member->is_host,
             'joined_at' => optional($member->joined_at)->toIso8601String(),
+            'rankings' => $this->rankingService->rankingBadges($member->user->id),
         ])->values();
 
         $memberIds = $memberList->pluck('id');
