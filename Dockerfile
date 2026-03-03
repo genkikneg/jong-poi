@@ -2,11 +2,12 @@
 FROM node:20-bookworm-slim AS frontend
 WORKDIR /app
 
-# lockがあるなら npm ci、ないなら npm install に切り替える
-COPY src/package*.json ./
+# package.json をコピー
+COPY package*.json ./
 RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
 
-COPY src/ ./
+# ソース全体をコピー
+COPY . ./
 RUN npm run build
 
 
@@ -23,9 +24,9 @@ RUN apt-get update && apt-get install -y \
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www
-COPY src/ /var/www/
+COPY . /var/www/
 
-# Vite(laravel-vite-plugin) の標準出力先
+# Vite出力物を上書きコピー
 COPY --from=frontend /app/public/build /var/www/public/build
 
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader
