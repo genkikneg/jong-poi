@@ -1,17 +1,16 @@
-# --- 1) Frontend build (Node) ---
+# --- 1) Frontend build (Vite) ---
 FROM node:20-bookworm-slim AS frontend
 WORKDIR /app
 
-# package.json だけ先にコピーして依存を入れる（キャッシュ効く）
+# lockがあるなら npm ci、ないなら npm install に切り替える
 COPY src/package*.json ./
-RUN npm ci
+RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
 
-# ソースをコピーしてビルド
 COPY src/ ./
 RUN npm run build
 
 
-# --- 2) Backend (PHP) ---
+# --- 2) Backend (Laravel) ---
 FROM php:8.4-cli
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
@@ -26,7 +25,7 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www
 COPY src/ /var/www/
 
-# フロントビルド成果物をLaravelの public/build に入れる（Viteのデフォルト）
+# Vite(laravel-vite-plugin) の標準出力先
 COPY --from=frontend /app/public/build /var/www/public/build
 
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader
