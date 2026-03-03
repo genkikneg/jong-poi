@@ -26,6 +26,8 @@ RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
 # ビルド中だけ artisan が動く最低限の .env を作る（イメージには残さない）
 RUN if [ ! -f .env ]; then cp .env.example .env; fi \
  && php artisan key:generate --force \
+ && mkdir -p storage/framework/views storage/framework/cache storage/framework/sessions bootstrap/cache \
+ && chmod -R 777 storage bootstrap/cache \
  && php artisan wayfinder:generate --with-form \
  && npm run build \
  && rm -f .env
