@@ -29,9 +29,7 @@ class AppServiceProvider extends ServiceProvider
         $this->configureDefaults();
         GameResult::observe(GameResultObserver::class);
 
-        if (app()->environment('production')) {
-            URL::forceScheme('https');
-        }
+        URL::forceScheme('https');
     }
 
     /**
