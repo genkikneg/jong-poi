@@ -44,6 +44,11 @@ RUN rm -f .env \
  && npm run build \
  && rm -f .env
 
+RUN printf "%s\n" \
+ "upload_max_filesize=50M" \
+ "post_max_size=8M" \
+ > /usr/local/etc/php/conf.d/uploads.ini
+
 # 実行は php-fpm
 EXPOSE 9000
 CMD ["php-fpm"]
