@@ -20,7 +20,8 @@ class StatusController extends Controller
         $totalGames = (clone $baseQuery)->count();
 
         $rankCounts = (clone $baseQuery)
-            ->selectRaw('rank, COUNT(*) as total')
+            ->select('rank')
+            ->selectRaw('COUNT(*) as total')
             ->groupBy('rank')
             ->pluck('total', 'rank');
 
@@ -29,7 +30,8 @@ class StatusController extends Controller
 
         $sessionTotals = GameResult::query()
             ->where('user_id', $user->id)
-            ->selectRaw('session_id, COALESCE(SUM(points), 0) as total_points')
+            ->select('session_id')
+            ->selectRaw('COALESCE(SUM(points), 0) as total_points')
             ->groupBy('session_id')
             ->get();
 
