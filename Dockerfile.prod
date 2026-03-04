@@ -1,42 +1,37 @@
-# --- frontend build stage ---
-FROM node:20-bookworm-slim AS frontend
-WORKDIR /app
-
-# ★php を入れる（wayfinder が artisan を呼ぶため）
-RUN apt-get update && apt-get install -y --no-install-recommends php-cli \
- && rm -rf /var/lib/apt/lists/*
-
-COPY package*.json ./
-RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
-
-COPY . .
-RUN npm run build
-
-# --- php stage ---
 FROM php:8.4-fpm-bookworm
 
+ENV COMPOSER_ALLOW_SUPERUSER=1
+
+# OS packages + PHP extensions + Node.js
 RUN apt-get update && apt-get install -y \
-    git unzip libzip-dev libonig-dev libxml2-dev libcurl4-openssl-dev \
+    git unzip curl ca-certificates \
+    libzip-dev libonig-dev libxml2-dev libcurl4-openssl-dev \
+    nodejs npm \
  && docker-php-ext-install mbstring xml curl pdo pdo_mysql zip \
  && rm -rf /var/lib/apt/lists/*
 
+# Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www
-
-# PHP deps
-COPY composer.json composer.lock ./
-RUN composer install --no-interaction --prefer-dist --no-dev --optimize-autoloader
-
-# App source
 COPY . /var/www
 
-# bring built assets
-COPY --from=frontend /app/public/build /var/www/public/build
+# PHP deps (vendor を作る)
+RUN composer install --no-interaction --prefer-dist --no-dev --optimize-autoloader
 
-# Laravel perms（必要最低限）
-RUN mkdir -p storage/framework/{views,cache,sessions} bootstrap/cache \
- && chown -R www-data:www-data storage bootstrap/cache
+# フロント deps
+RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
 
+# ビルド中だけ artisan を動かすための最低限の準備
+# （Wayfinder が artisan を呼ぶので必要）
+RUN cp -n .env.example .env \
+ && php artisan key:generate --force \
+ && mkdir -p storage/framework/{views,cache,sessions} bootstrap/cache \
+ && chmod -R 777 storage bootstrap/cache \
+ && php artisan wayfinder:generate --with-form \
+ && npm run build \
+ && rm -f .env
+
+# 実行は php-fpm
 EXPOSE 9000
 CMD ["php-fpm"]
