@@ -25,9 +25,10 @@ RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
 # ビルド中だけ artisan を動かすための最低限の準備
 # （Wayfinder が artisan を呼ぶので必要）
 RUN cp -n .env.example .env \
- && php artisan key:generate --force \
- && mkdir -p storage/framework/{views,cache,sessions} bootstrap/cache \
+ && mkdir -p storage/framework/views storage/framework/cache storage/framework/sessions bootstrap/cache \
  && chmod -R 777 storage bootstrap/cache \
+ && php -r "echo 'VIEW_COMPILED_PATH=/var/www/storage/framework/views'.PHP_EOL;" >> .env \
+ && php artisan key:generate --force \
  && php artisan wayfinder:generate --with-form \
  && npm run build \
  && rm -f .env
