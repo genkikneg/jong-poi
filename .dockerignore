@@ -1,4 +1,10 @@
 .env
+.git
+.github
+.phpunit.result.cache
+bootstrap/cache/*.php
+docs
+public/build
 storage/logs
 storage/framework/cache
 storage/framework/sessions

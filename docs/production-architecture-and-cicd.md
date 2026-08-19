@@ -76,6 +76,7 @@ Internet
     ├── jong-poi/
     │   ├── compose.yaml
     │   ├── .env
+    │   ├── db.env
     │   ├── deploy.env
     │   ├── storage/
     │   └── backups/
@@ -89,6 +90,7 @@ Internet
 ```
 
 - `.env`はLaravelの本番設定を保持する。
+- `db.env`はアプリへ渡さないMySQL rootパスワードだけを保持する。
 - `deploy.env`はデプロイ対象のDockerイメージタグなど、秘密ではないリリース情報を保持する。
 - `storage`と`backups`はアプリごとに分離する。
 - VPSにはアプリのGit作業ツリーを置かず、実行物はContainer Registryから取得する。
@@ -341,6 +343,8 @@ docker compose \
 - gatewayとjong-poiのComposeを分離
 - 永続ストレージ、ヘルスチェック、再起動設定を追加
 - バックアップとデプロイスクリプトを作成
+
+実施済み。結果は[Phase 3 コンテナ基盤 実施記録](phase-3-container-platform.md)を参照。本番環境はまだ旧構成のままであり、切替はPhase 4で行う。
 
 ### Phase 4: 本番切替
 

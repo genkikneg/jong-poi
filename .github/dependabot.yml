@@ -8,3 +8,27 @@ updates:
     labels:
       - dependencies
       - github-actions
+
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: weekly
+    labels:
+      - dependencies
+      - docker
+
+  - package-ecosystem: docker
+    directory: /deploy/jong-poi
+    schedule:
+      interval: weekly
+    labels:
+      - dependencies
+      - docker
+
+  - package-ecosystem: docker
+    directory: /deploy/gateway
+    schedule:
+      interval: weekly
+    labels:
+      - dependencies
+      - docker
