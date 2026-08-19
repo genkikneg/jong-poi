@@ -1,0 +1,39 @@
+name: gateway
+
+services:
+    nginx:
+        image: nginx:1.28-alpine@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236
+        restart: unless-stopped
+        read_only: true
+        security_opt:
+            - no-new-privileges:true
+        ports:
+            - '80:80'
+            - '443:443'
+        volumes:
+            - ./nginx/conf.d:/etc/nginx/conf.d:ro
+            - ./nginx/snippets:/etc/nginx/snippets:ro
+            - /etc/letsencrypt:/etc/letsencrypt:ro
+        tmpfs:
+            - /var/cache/nginx:mode=0755,uid=101,gid=101
+            - /var/run:mode=0755,uid=101,gid=101
+        healthcheck:
+            test:
+                - CMD
+                - nginx
+                - -t
+            interval: 30s
+            timeout: 5s
+            retries: 3
+        networks:
+            - proxy
+        logging:
+            driver: json-file
+            options:
+                max-size: 10m
+                max-file: '3'
+
+networks:
+    proxy:
+        name: proxy
+        external: true

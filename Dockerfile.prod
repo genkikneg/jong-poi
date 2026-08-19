@@ -1,54 +1,107 @@
-FROM php:8.4-fpm-bookworm
+# syntax=docker/dockerfile:1.7
 
-ENV COMPOSER_ALLOW_SUPERUSER=1
+FROM php:8.4-fpm-bookworm@sha256:c5fb7a0c02f4efe280691910c8b734995fa83598cdcf3115ef5dcb2e4617681c AS php-base
 
-# OS packages + PHP extensions + Node.js
-RUN apt-get update && apt-get install -y \
-    git unzip curl ca-certificates \
-    libzip-dev libonig-dev libxml2-dev libcurl4-openssl-dev \
-    nodejs npm \
- && docker-php-ext-install mbstring xml curl pdo pdo_mysql zip \
- && rm -rf /var/lib/apt/lists/*
+ENV APP_ENV=production \
+    COMPOSER_ALLOW_SUPERUSER=1
 
-# Composer
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        ca-certificates \
+        git \
+        libfcgi-bin \
+        libonig-dev \
+        libzip-dev \
+        unzip \
+    && docker-php-ext-install -j"$(nproc)" mbstring pdo_mysql zip \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY docker/php/production.ini /usr/local/etc/php/conf.d/production.ini
+COPY docker/php/zz-production.conf /usr/local/etc/php-fpm.d/zz-production.conf
 
 WORKDIR /var/www
+
+FROM php-base AS composer-dependencies
+
+COPY --from=composer:2.8@sha256:5248900ab8b5f7f880c2d62180e40960cd87f60149ec9a1abfd62ac72a02577c /usr/bin/composer /usr/bin/composer
 COPY . /var/www
 
-# PHP deps (vendor を作る)
-RUN composer install --no-interaction --prefer-dist --no-dev --optimize-autoloader
+RUN composer install \
+    --classmap-authoritative \
+    --no-ansi \
+    --no-dev \
+    --no-interaction \
+    --no-progress \
+    --prefer-dist
 
-# フロント deps
-RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
+FROM php-base AS frontend-build
 
-# ビルド中だけ artisan を動かすための最低限の準備
-# （Wayfinder が artisan を呼ぶので必要）
-RUN rm -f .env \
- && printf "%s\n" \
-    "APP_NAME=Laravel" \
-    "APP_ENV=local" \
-    "APP_KEY=" \
-    "APP_DEBUG=false" \
-    "APP_URL=http://localhost" \
-    "LOG_CHANNEL=stderr" \
-    "CACHE_STORE=file" \
-    "SESSION_DRIVER=file" \
-    "QUEUE_CONNECTION=sync" \
-    "VIEW_COMPILED_PATH=/var/www/storage/framework/views" \
-    > .env \
- && mkdir -p storage/framework/views storage/framework/cache storage/framework/sessions bootstrap/cache \
- && chmod -R 777 storage bootstrap/cache \
- && php artisan key:generate --force \
- && php artisan wayfinder:generate --with-form \
- && npm run build \
- && rm -f .env
+COPY --from=node:22-bookworm-slim@sha256:d649c27dae7ba0137b3cef5dd75baa422c08dc3d9e3fc0c23dfb172dc3cc6436 /usr/local/bin/node /usr/local/bin/node
+COPY --from=node:22-bookworm-slim@sha256:d649c27dae7ba0137b3cef5dd75baa422c08dc3d9e3fc0c23dfb172dc3cc6436 /usr/local/lib/node_modules /usr/local/lib/node_modules
+RUN ln -s /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm \
+    && ln -s /usr/local/lib/node_modules/npm/bin/npx-cli.js /usr/local/bin/npx
 
-RUN printf "%s\n" \
- "upload_max_filesize=50M" \
- "post_max_size=8M" \
- > /usr/local/etc/php/conf.d/uploads.ini
+COPY . /var/www
+COPY --from=composer-dependencies /var/www/vendor /var/www/vendor
 
-# 実行は php-fpm
+RUN npm ci
+
+RUN printf '%s\n' \
+        'APP_NAME=jong-poi' \
+        'APP_ENV=production' \
+        'APP_KEY=' \
+        'APP_DEBUG=false' \
+        'APP_URL=http://localhost' \
+        'LOG_CHANNEL=stderr' \
+        'CACHE_STORE=array' \
+        'SESSION_DRIVER=array' \
+        'QUEUE_CONNECTION=sync' \
+        'DB_CONNECTION=sqlite' \
+        'DB_DATABASE=:memory:' \
+        'VIEW_COMPILED_PATH=/var/www/storage/framework/views' \
+        > .env \
+    && mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views bootstrap/cache \
+    && php artisan key:generate --force \
+    && npm run build \
+    && rm -f .env
+
+FROM php-base AS app
+
+ARG VCS_REF=unknown
+LABEL org.opencontainers.image.source="https://github.com/genkikneg/jong-poi" \
+      org.opencontainers.image.revision="$VCS_REF"
+
+COPY --chown=www-data:www-data . /var/www
+COPY --from=composer-dependencies --chown=www-data:www-data /var/www/vendor /var/www/vendor
+COPY --from=frontend-build --chown=www-data:www-data /var/www/public/build /var/www/public/build
+
+RUN mkdir -p \
+        bootstrap/cache \
+        storage/app/private \
+        storage/app/public \
+        storage/framework/cache \
+        storage/framework/sessions \
+        storage/framework/views \
+        storage/logs \
+    && chown -R www-data:www-data bootstrap/cache storage
+
 EXPOSE 9000
-CMD ["php-fpm"]
+
+HEALTHCHECK --interval=10s --timeout=3s --start-period=20s --retries=6 \
+    CMD SCRIPT_NAME=/ping SCRIPT_FILENAME=/ping REQUEST_METHOD=GET cgi-fcgi -bind -connect 127.0.0.1:9000 | grep -q pong || exit 1
+
+CMD ["php-fpm", "--nodaemonize"]
+
+FROM nginx:1.28-alpine@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236 AS web
+
+ARG VCS_REF=unknown
+LABEL org.opencontainers.image.source="https://github.com/genkikneg/jong-poi" \
+      org.opencontainers.image.revision="$VCS_REF"
+
+COPY docker/nginx/app.conf /etc/nginx/conf.d/default.conf
+COPY --from=frontend-build /var/www/public /var/www/public
+
+EXPOSE 8080
+
+HEALTHCHECK --interval=10s --timeout=3s --start-period=20s --retries=6 \
+    CMD wget -q --spider http://127.0.0.1:8080/up || exit 1
