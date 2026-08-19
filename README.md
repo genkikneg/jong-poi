@@ -1,4 +1,5 @@
 # jong-poi
+
 ジャンポイ
 
 ## ドキュメント
@@ -8,3 +9,5 @@
 - [Phase 2 CI正常化 実施記録](docs/phase-2-ci-report.md)
 - [Phase 3 コンテナ基盤 実施記録](docs/phase-3-container-platform.md)
 - [本番切替ランブック（Phase 4）](docs/production-cutover-runbook.md)
+- [Phase 5: 安定化と安全なCD](docs/phase-5-secure-cd.md)
+- [Phase 5 安定化・安全なCD 実施記録](docs/phase-5-stabilization-report.md)
