@@ -1,8 +1,12 @@
 import { useMemo, useState } from 'react';
 import type { FriendDetail } from '@/components/friend-detail-dialog';
 
-export function useFriendDetailDialog(initialFriend: FriendDetail | null = null) {
-    const [selectedFriend, setSelectedFriend] = useState<FriendDetail | null>(initialFriend);
+export function useFriendDetailDialog(
+    initialFriend: FriendDetail | null = null,
+) {
+    const [selectedFriend, setSelectedFriend] = useState<FriendDetail | null>(
+        initialFriend,
+    );
 
     const formatter = useMemo(
         () =>
@@ -13,7 +17,8 @@ export function useFriendDetailDialog(initialFriend: FriendDetail | null = null)
         [],
     );
 
-    const openFriendDetail = (friend: FriendDetail) => setSelectedFriend(friend);
+    const openFriendDetail = (friend: FriendDetail) =>
+        setSelectedFriend(friend);
     const closeFriendDetail = () => setSelectedFriend(null);
 
     return {

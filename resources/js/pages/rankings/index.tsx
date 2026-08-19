@@ -1,11 +1,14 @@
-import { useMemo, useState } from 'react';
 import { Head, usePage, router } from '@inertiajs/react';
-import AppLayout from '@/layouts/app-layout';
+import { useMemo, useState } from 'react';
+import {
+    FriendDetailDialog,
+    type FriendDetail,
+} from '@/components/friend-detail-dialog';
 import Heading from '@/components/heading';
-import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { FriendDetailDialog, type FriendDetail } from '@/components/friend-detail-dialog';
+import { Card, CardContent } from '@/components/ui/card';
 import { useFriendDetailDialog } from '@/hooks/use-friend-detail-dialog';
+import AppLayout from '@/layouts/app-layout';
 import { cn } from '@/lib/utils';
 
 type RankingPlayer = {
@@ -28,9 +31,21 @@ type Props = {
 };
 
 const tabs = [
-    { value: 'total', label: '累計ポイント', description: '全期間の素点合計順です。' },
-    { value: 'average', label: '平均ポイント', description: '1半荘あたりの平均ポイント順です。' },
-    { value: 'top_rate', label: 'トップ率', description: 'トップ獲得率順です。' },
+    {
+        value: 'total',
+        label: '累計ポイント',
+        description: '全期間の素点合計順です。',
+    },
+    {
+        value: 'average',
+        label: '平均ポイント',
+        description: '1半荘あたりの平均ポイント順です。',
+    },
+    {
+        value: 'top_rate',
+        label: 'トップ率',
+        description: 'トップ獲得率順です。',
+    },
 ] as const;
 
 const breadcrumbs = [
@@ -49,15 +64,26 @@ const getInitials = (name: string) =>
         .slice(0, 2)
         .toUpperCase();
 
-export default function RankingsPage({ players = [], period: initialPeriod = 'all' }: Props) {
+export default function RankingsPage({
+    players = [],
+    period: initialPeriod = 'all',
+}: Props) {
     const { auth } = usePage().props as { auth: { user: { id: number } } };
-    const [activeTab, setActiveTab] = useState<(typeof tabs)[number]['value']>('total');
-    const [period, setPeriod] = useState<'all' | 'year' | 'month' | 'week'>(initialPeriod);
-    const { friendDetailDialogProps, openFriendDetail } = useFriendDetailDialog();
+    const [activeTab, setActiveTab] =
+        useState<(typeof tabs)[number]['value']>('total');
+    const [period, setPeriod] = useState<'all' | 'year' | 'month' | 'week'>(
+        initialPeriod,
+    );
+    const { friendDetailDialogProps, openFriendDetail } =
+        useFriendDetailDialog();
 
     const sortedPlayers = useMemo(() => {
-        const byTotal = [...players].sort((a, b) => b.total_points - a.total_points);
-        const byAverage = [...players].sort((a, b) => b.average_points - a.average_points);
+        const byTotal = [...players].sort(
+            (a, b) => b.total_points - a.total_points,
+        );
+        const byAverage = [...players].sort(
+            (a, b) => b.average_points - a.average_points,
+        );
         const byTopRate = [...players].sort((a, b) => b.top_rate - a.top_rate);
 
         return {
@@ -80,7 +106,10 @@ export default function RankingsPage({ players = [], period: initialPeriod = 'al
                 />
 
                 <div className="flex flex-wrap items-center gap-3">
-                    <label className="text-sm text-muted-foreground" htmlFor="period">
+                    <label
+                        className="text-sm text-muted-foreground"
+                        htmlFor="period"
+                    >
                         期間
                     </label>
                     <select
@@ -89,7 +118,11 @@ export default function RankingsPage({ players = [], period: initialPeriod = 'al
                         value={period}
                         onChange={(event) => {
                             setPeriod(event.target.value as typeof period);
-                            router.get('/rankings', { period: event.target.value }, { preserveState: true, preserveScroll: true });
+                            router.get(
+                                '/rankings',
+                                { period: event.target.value },
+                                { preserveState: true, preserveScroll: true },
+                            );
                         }}
                     >
                         <option value="all">全期間</option>
@@ -115,7 +148,8 @@ export default function RankingsPage({ players = [], period: initialPeriod = 'al
                             <span
                                 className={cn(
                                     'absolute inset-0 translate-y-full scale-110 rounded-full bg-primary transition',
-                                    activeTab === tab.value && 'translate-y-0 scale-100',
+                                    activeTab === tab.value &&
+                                        'translate-y-0 scale-100',
                                 )}
                             />
                         </button>
@@ -151,33 +185,57 @@ export default function RankingsPage({ players = [], period: initialPeriod = 'al
                                                 friend_code: player.friend_code,
                                                 avatar: player.avatar,
                                                 stats: player.stats,
-                                                relation_status: player.id === auth.user.id ? 'self' : 'none',
+                                                relation_status:
+                                                    player.id === auth.user.id
+                                                        ? 'self'
+                                                        : 'none',
                                                 rankings: player.rankings,
                                             })
                                         }
-                                        className="rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+                                        className="rounded-full focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none"
                                     >
                                         <Avatar className="size-12">
-                                            {player.avatar && <AvatarImage src={player.avatar} alt={player.name} />}
-                                            <AvatarFallback>{getInitials(player.name)}</AvatarFallback>
+                                            {player.avatar && (
+                                                <AvatarImage
+                                                    src={player.avatar}
+                                                    alt={player.name}
+                                                />
+                                            )}
+                                            <AvatarFallback>
+                                                {getInitials(player.name)}
+                                            </AvatarFallback>
                                         </Avatar>
                                     </button>
                                     <div>
-                                        <p className="font-semibold">{player.name}</p>
+                                        <p className="font-semibold">
+                                            {player.name}
+                                        </p>
                                         <p className="text-xs text-muted-foreground">
-                                            参加 {player.games_played} 回 / トップ {player.top_finishes}
+                                            参加 {player.games_played} 回 /
+                                            トップ {player.top_finishes}
                                         </p>
                                     </div>
                                 </div>
                                 <div className="text-right text-base font-semibold">
                                     {activeTab === 'total' && (
-                                        <span>{Math.round(player.total_points).toLocaleString()} pt</span>
+                                        <span>
+                                            {Math.round(
+                                                player.total_points,
+                                            ).toLocaleString()}{' '}
+                                            pt
+                                        </span>
                                     )}
                                     {activeTab === 'average' && (
-                                        <span>{player.average_points.toFixed(1)} pt</span>
+                                        <span>
+                                            {player.average_points.toFixed(1)}{' '}
+                                            pt
+                                        </span>
                                     )}
                                     {activeTab === 'top_rate' && (
-                                        <span>{(player.top_rate * 100).toFixed(1)}%</span>
+                                        <span>
+                                            {(player.top_rate * 100).toFixed(1)}
+                                            %
+                                        </span>
                                     )}
                                 </div>
                             </div>

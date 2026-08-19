@@ -42,11 +42,17 @@ export function AppSidebar() {
     const dashboardIndicators: NavIndicator[] = [];
 
     if (notifications.sessionInvites > 0) {
-        dashboardIndicators.push({ color: 'red', label: 'セッションへの招待があります' });
+        dashboardIndicators.push({
+            color: 'red',
+            label: 'セッションへの招待があります',
+        });
     }
 
     if (notifications.hasActiveSession) {
-        dashboardIndicators.push({ color: 'green', label: '参加中のセッションがあります' });
+        dashboardIndicators.push({
+            color: 'green',
+            label: '参加中のセッションがあります',
+        });
     }
 
     const mainNavItems: NavItem[] = [
@@ -96,7 +102,9 @@ export function AppSidebar() {
             </SidebarContent>
 
             <SidebarFooter>
-                {footerNavItems.length > 0 && <NavFooter items={footerNavItems} className="mt-auto" />}
+                {footerNavItems.length > 0 && (
+                    <NavFooter items={footerNavItems} className="mt-auto" />
+                )}
                 <NavUser />
             </SidebarFooter>
         </Sidebar>

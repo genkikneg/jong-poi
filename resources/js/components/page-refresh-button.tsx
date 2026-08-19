@@ -14,7 +14,7 @@ export function PageRefreshButton({ href }: Props) {
         <Button
             asChild
             size="icon"
-            className="fixed bottom-[74px] right-4 z-40 h-10 w-10 rounded-full shadow-lg sm:bottom-[82px] sm:right-8"
+            className="fixed right-4 bottom-[74px] z-40 h-10 w-10 rounded-full shadow-lg sm:right-8 sm:bottom-[82px]"
         >
             <Link
                 href={refreshHref}

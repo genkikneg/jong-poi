@@ -52,7 +52,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('rankings', RankingController::class)
         ->name('rankings');
 
-
     Route::get('sessions/create', [SessionViewController::class, 'create'])
         ->name('sessions.create');
     Route::get('sessions/join', [SessionViewController::class, 'join'])

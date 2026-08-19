@@ -1,19 +1,31 @@
 import { Form, Head, router } from '@inertiajs/react';
-import { useMemo, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { useMemo, useState } from 'react';
+import {
+    FriendDetailDialog,
+    type FriendDetail as FriendDetailType,
+} from '@/components/friend-detail-dialog';
 import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { FriendDetailDialog, type FriendDetail as FriendDetailType } from '@/components/friend-detail-dialog';
-import AppLayout from '@/layouts/app-layout';
 import { useFriendDetailDialog } from '@/hooks/use-friend-detail-dialog';
+import AppLayout from '@/layouts/app-layout';
+import { cn } from '@/lib/utils';
 import { store as sendFriendRequest } from '@/routes/friend-requests';
-import { close as sessionsClose, show as sessionsShow } from '@/routes/sessions';
+import {
+    close as sessionsClose,
+    show as sessionsShow,
+} from '@/routes/sessions';
 import draftRoutes from '@/routes/sessions/draft';
 import type { BreadcrumbItem } from '@/types';
 
@@ -134,13 +146,22 @@ const breadcrumbs = (session: SessionData): BreadcrumbItem[] => [
     },
 ];
 
-export default function SessionShowPage({ session, totals, currentUserId, draft }: Props) {
+export default function SessionShowPage({
+    session,
+    totals,
+    currentUserId,
+    draft,
+}: Props) {
     const isClosed = session.status === 'closed';
-    const rankOptions = Array.from({ length: session.player_count }, (_, idx) => idx + 1);
+    const rankOptions = Array.from(
+        { length: session.player_count },
+        (_, idx) => idx + 1,
+    );
     const isOwner = session.owner_id === currentUserId;
     const [copied, setCopied] = useState(false);
     const [sendingFriendId, setSendingFriendId] = useState<number | null>(null);
-    const { friendDetailDialogProps, openFriendDetail, closeFriendDetail } = useFriendDetailDialog();
+    const { friendDetailDialogProps, openFriendDetail, closeFriendDetail } =
+        useFriendDetailDialog();
     const draftEntries: DraftEntry[] =
         draft?.entries ??
         session.members.map((member) => ({
@@ -151,10 +172,15 @@ export default function SessionShowPage({ session, totals, currentUserId, draft 
             rank: null,
             submitted_at: null,
         }));
-    const submittedCount = draftEntries.filter((entry) => entry.final_score !== null).length;
-    const currentEntry = draftEntries.find((entry) => entry.user_id === currentUserId);
+    const submittedCount = draftEntries.filter(
+        (entry) => entry.final_score !== null,
+    ).length;
+    const currentEntry = draftEntries.find(
+        (entry) => entry.user_id === currentUserId,
+    );
     const allSubmitted =
-        draftEntries.length === session.player_count && submittedCount === session.player_count;
+        draftEntries.length === session.player_count &&
+        submittedCount === session.player_count;
     const totalsRankMap = new Map<number, number>();
     const totalsSorted = [...totals]
         .map((entry) => ({ ...entry, numericPoints: Number(entry.points) }))
@@ -174,15 +200,21 @@ export default function SessionShowPage({ session, totals, currentUserId, draft 
 
     const expectedTotal = Number(session.rules.base) * session.player_count;
     const currentDraftTotal = draftEntries.reduce(
-        (sum, entry) => sum + (entry.final_score ? Number(entry.final_score) : 0),
+        (sum, entry) =>
+            sum + (entry.final_score ? Number(entry.final_score) : 0),
         0,
     );
     const draftTotalDiff = currentDraftTotal - expectedTotal;
-    const draftTotalMismatch = Boolean(draft && allSubmitted && Math.abs(draftTotalDiff) > 1);
+    const draftTotalMismatch = Boolean(
+        draft && allSubmitted && Math.abs(draftTotalDiff) > 1,
+    );
     const draftDiffText = Math.abs(draftTotalDiff).toLocaleString();
     const draftDiffDirection = draftTotalDiff > 0 ? '多い' : '少ない';
     const [confirmProcessing, setConfirmProcessing] = useState(false);
-    const membersMap = useMemo(() => new Map(session.members.map((member) => [member.id, member])), [session.members]);
+    const membersMap = useMemo(
+        () => new Map(session.members.map((member) => [member.id, member])),
+        [session.members],
+    );
 
     const handleConfirm = () => {
         if (!draft || !isOwner || draftTotalMismatch || !allSubmitted) {
@@ -201,14 +233,18 @@ export default function SessionShowPage({ session, totals, currentUserId, draft 
     };
 
     const confirmDisabled =
-        !draft || !isOwner || !allSubmitted || draftTotalMismatch || confirmProcessing;
+        !draft ||
+        !isOwner ||
+        !allSubmitted ||
+        draftTotalMismatch ||
+        confirmProcessing;
 
     const handleCopy = async () => {
         try {
             await navigator.clipboard?.writeText(session.join_code);
             setCopied(true);
             setTimeout(() => setCopied(false), 2000);
-        } catch (error) {
+        } catch {
             setCopied(false);
         }
     };
@@ -236,13 +272,12 @@ export default function SessionShowPage({ session, totals, currentUserId, draft 
     };
 
     const getInitials = useMemo(
-        () =>
-            (name: string) =>
-                name
-                    .split(' ')
-                    .map((part) => part.trim()[0])
-                    .join('')
-                    .toUpperCase(),
+        () => (name: string) =>
+            name
+                .split(' ')
+                .map((part) => part.trim()[0])
+                .join('')
+                .toUpperCase(),
         [],
     );
 
@@ -282,17 +317,22 @@ export default function SessionShowPage({ session, totals, currentUserId, draft 
             <button
                 type="button"
                 onClick={() => openPlayerDetails(userId)}
-                className="flex items-center gap-2 text-left text-current transition hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2"
+                className="flex items-center gap-2 text-left text-current transition hover:text-primary focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 focus-visible:outline-none"
             >
                 {content}
             </button>
         );
     };
 
-
     return (
         <AppLayout breadcrumbs={breadcrumbs(session)}>
-                <Head title={session.name ? `${session.name} | セッション` : 'セッション詳細'} />
+            <Head
+                title={
+                    session.name
+                        ? `${session.name} | セッション`
+                        : 'セッション詳細'
+                }
+            />
 
             <div className="space-y-6">
                 <Heading
@@ -310,7 +350,10 @@ export default function SessionShowPage({ session, totals, currentUserId, draft 
                                 variant="outline"
                                 size="sm"
                                 onClick={handleCopy}
-                                className={cn('border-dashed', copied && 'border-primary text-primary')}
+                                className={cn(
+                                    'border-dashed',
+                                    copied && 'border-primary text-primary',
+                                )}
                             >
                                 {copied ? 'コピー済み' : 'コピー'}
                             </Button>
@@ -326,120 +369,180 @@ export default function SessionShowPage({ session, totals, currentUserId, draft 
                                 各自が自分の最終持ち点を入力し、ホストが全員分を確認して確定します。
                                 {draftEntries.length > 0 && (
                                     <span className="ml-2 text-xs">
-                                        現在 {submittedCount}/{session.player_count} 人が入力済み
+                                        現在 {submittedCount}/
+                                        {session.player_count} 人が入力済み
                                     </span>
                                 )}
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-8">
                             <div className="space-y-3">
-                                <h3 className="text-sm font-semibold text-muted-foreground">自分のスコア</h3>
-                                <Form {...draftRoutes.store.form(session.id)} className="space-y-4">
+                                <h3 className="text-sm font-semibold text-muted-foreground">
+                                    自分のスコア
+                                </h3>
+                                <Form
+                                    {...draftRoutes.store.form(session.id)}
+                                    className="space-y-4"
+                                >
                                     {({ processing, errors }) => (
                                         <>
                                             <div className="flex flex-col gap-4 md:flex-row">
                                                 <div className="flex-1 space-y-2">
-                                                    <Label htmlFor="final_score">最終持ち点</Label>
+                                                    <Label htmlFor="final_score">
+                                                        最終持ち点
+                                                    </Label>
                                                     <Input
                                                         id="final_score"
                                                         name="final_score"
                                                         type="number"
                                                         step="100"
                                                         required
-                                                        defaultValue={currentEntry?.final_score
-                                                            ? Number(currentEntry.final_score).toString()
-                                                            : ''}
+                                                        defaultValue={
+                                                            currentEntry?.final_score
+                                                                ? Number(
+                                                                      currentEntry.final_score,
+                                                                  ).toString()
+                                                                : ''
+                                                        }
                                                     />
-                                                    <InputError message={errors.final_score} />
+                                                    <InputError
+                                                        message={
+                                                            errors.final_score
+                                                        }
+                                                    />
                                                 </div>
                                                 <div className="flex-1 space-y-2">
-                                                    <Label htmlFor="rank">最終順位（任意）</Label>
+                                                    <Label htmlFor="rank">
+                                                        最終順位（任意）
+                                                    </Label>
                                                     <select
                                                         id="rank"
                                                         name="rank"
-                                                        defaultValue={currentEntry?.rank?.toString() ?? ''}
+                                                        defaultValue={
+                                                            currentEntry?.rank?.toString() ??
+                                                            ''
+                                                        }
                                                         className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm"
                                                     >
-                                                        <option value="">自動判定</option>
-                                                        {rankOptions.map((rank) => (
-                                                            <option key={rank} value={rank}>
-                                                                {rank}位
-                                                            </option>
-                                                        ))}
+                                                        <option value="">
+                                                            自動判定
+                                                        </option>
+                                                        {rankOptions.map(
+                                                            (rank) => (
+                                                                <option
+                                                                    key={rank}
+                                                                    value={rank}
+                                                                >
+                                                                    {rank}位
+                                                                </option>
+                                                            ),
+                                                        )}
                                                     </select>
-                                                    <InputError message={errors.rank} />
+                                                    <InputError
+                                                        message={errors.rank}
+                                                    />
                                                 </div>
                                             </div>
 
                                             <div className="flex flex-wrap justify-end gap-2">
-                                                <Button type="submit" disabled={processing}>
-                                                    {currentEntry?.final_score ? '変更する' : '送信する'}
+                                                <Button
+                                                    type="submit"
+                                                    disabled={processing}
+                                                >
+                                                    {currentEntry?.final_score
+                                                        ? '変更する'
+                                                        : '送信する'}
                                                 </Button>
                                                 {isOwner && draft && (
                                                     <Button
                                                         type="button"
                                                         variant="outline"
-                                                        disabled={confirmDisabled}
+                                                        disabled={
+                                                            confirmDisabled
+                                                        }
                                                         onClick={handleConfirm}
                                                         className={cn(
                                                             'border-2',
                                                             confirmDisabled
                                                                 ? 'border-border'
-                                                                : 'border-primary text-primary shadow-[0_0_0_1px_rgba(59,130,246,0.4)] hover:bg-primary/5'
+                                                                : 'border-primary text-primary shadow-[0_0_0_1px_rgba(59,130,246,0.4)] hover:bg-primary/5',
                                                         )}
                                                     >
                                                         全員分を確定する
                                                     </Button>
                                                 )}
                                             </div>
-                                            {isOwner && draft && !allSubmitted && (
-                                                <p className="text-sm text-muted-foreground">
-                                                    全員の入力が揃うまで確定できません。
-                                                </p>
-                                            )}
+                                            {isOwner &&
+                                                draft &&
+                                                !allSubmitted && (
+                                                    <p className="text-sm text-muted-foreground">
+                                                        全員の入力が揃うまで確定できません。
+                                                    </p>
+                                                )}
                                         </>
                                     )}
                                 </Form>
                             </div>
 
                             <div className="space-y-3">
-                                <h3 className="text-sm font-semibold text-muted-foreground">入力状況</h3>
+                                <h3 className="text-sm font-semibold text-muted-foreground">
+                                    入力状況
+                                </h3>
                                 <div className="grid grid-cols-2 gap-3">
                                     {draftEntries.map((entry) => (
                                         <div
                                             key={entry.user_id}
                                             className={`flex items-center justify-between rounded-lg border px-3 py-2 ${
                                                 entry.final_score
-                                                    ? 'bg-emerald-50 border-emerald-200'
-                                                    : 'bg-card border-border'
+                                                    ? 'border-emerald-200 bg-emerald-50'
+                                                    : 'border-border bg-card'
                                             }`}
                                         >
                                             <div>
                                                 <div className="font-medium">
-                                                    {renderUserName(entry.user_id, entry.name, 'sm', entry.avatar)}
-                                                    {entry.user_id === currentUserId && (
-                                                        <span className="ml-2 text-xs text-primary">(自分)</span>
+                                                    {renderUserName(
+                                                        entry.user_id,
+                                                        entry.name,
+                                                        'sm',
+                                                        entry.avatar,
+                                                    )}
+                                                    {entry.user_id ===
+                                                        currentUserId && (
+                                                        <span className="ml-2 text-xs text-primary">
+                                                            (自分)
+                                                        </span>
                                                     )}
                                                 </div>
                                                 <p className="text-xs text-muted-foreground">
                                                     {entry.final_score
-                                                        ? `${Number(entry.final_score).toLocaleString(undefined, {
-                                                              maximumFractionDigits: 0,
-                                                              minimumFractionDigits: 0,
-                                                          })} 点`
+                                                        ? `${Number(
+                                                              entry.final_score,
+                                                          ).toLocaleString(
+                                                              undefined,
+                                                              {
+                                                                  maximumFractionDigits: 0,
+                                                                  minimumFractionDigits: 0,
+                                                              },
+                                                          )} 点`
                                                         : '未入力'}
                                                 </p>
                                             </div>
                                             <div className="text-sm font-semibold text-muted-foreground">
-                                                {entry.rank ? `${entry.rank}位` : ''}
+                                                {entry.rank
+                                                    ? `${entry.rank}位`
+                                                    : ''}
                                             </div>
                                         </div>
                                     ))}
                                 </div>
                                 {draftTotalMismatch && (
                                     <p className="text-sm text-amber-700">
-                                        現在 {draftDiffDirection === '多い' ? '+' : '-'}
-                                        {draftDiffText} 点。入力を修正してください。
+                                        現在{' '}
+                                        {draftDiffDirection === '多い'
+                                            ? '+'
+                                            : '-'}
+                                        {draftDiffText}{' '}
+                                        点。入力を修正してください。
                                     </p>
                                 )}
                             </div>
@@ -450,11 +553,14 @@ export default function SessionShowPage({ session, totals, currentUserId, draft 
                 <Card>
                     <CardHeader>
                         <CardTitle>合計ポイント</CardTitle>
-                        <CardDescription>半荘の合計。加算順序に関わらず同じ計算式です。</CardDescription>
+                        <CardDescription>
+                            半荘の合計。加算順序に関わらず同じ計算式です。
+                        </CardDescription>
                     </CardHeader>
                     <CardContent className="grid gap-4 md:grid-cols-2">
                         {totals.map((entry) => {
-                            const rank = totalsRankMap.get(entry.user_id) ?? null;
+                            const rank =
+                                totalsRankMap.get(entry.user_id) ?? null;
                             const rankStyle = getRankStyle(rank);
 
                             return (
@@ -464,7 +570,12 @@ export default function SessionShowPage({ session, totals, currentUserId, draft 
                                 >
                                     <div className="flex items-center justify-between text-sm">
                                         <div className="text-muted-foreground">
-                                            {renderUserName(entry.user_id, entry.name, 'sm', entry.avatar)}
+                                            {renderUserName(
+                                                entry.user_id,
+                                                entry.name,
+                                                'sm',
+                                                entry.avatar,
+                                            )}
                                         </div>
                                         {rank && (
                                             <span
@@ -474,11 +585,16 @@ export default function SessionShowPage({ session, totals, currentUserId, draft 
                                             </span>
                                         )}
                                     </div>
-                                    <p className={`text-2xl font-semibold ${rankStyle.text}`}>
-                                        {Number(entry.points).toLocaleString(undefined, {
-                                            maximumFractionDigits: 0,
-                                            minimumFractionDigits: 0,
-                                        })}
+                                    <p
+                                        className={`text-2xl font-semibold ${rankStyle.text}`}
+                                    >
+                                        {Number(entry.points).toLocaleString(
+                                            undefined,
+                                            {
+                                                maximumFractionDigits: 0,
+                                                minimumFractionDigits: 0,
+                                            },
+                                        )}
                                     </p>
                                 </div>
                             );
@@ -493,13 +609,20 @@ export default function SessionShowPage({ session, totals, currentUserId, draft 
                         </CardHeader>
                         <CardContent className="space-y-4">
                             {session.games.map((game) => (
-                                <div key={game.id} className="rounded-xl border p-4">
+                                <div
+                                    key={game.id}
+                                    className="rounded-xl border p-4"
+                                >
                                     <div className="hidden md:block">
                                         <div className="flex flex-col gap-1 text-sm text-muted-foreground md:flex-row md:items-center md:justify-between">
                                             <span>第{game.ordinal}回</span>
                                             <span>
                                                 {game.played_at
-                                                    ? formatter.format(new Date(game.played_at))
+                                                    ? formatter.format(
+                                                          new Date(
+                                                              game.played_at,
+                                                          ),
+                                                      )
                                                     : '日時未入力'}
                                             </span>
                                         </div>
@@ -511,26 +634,45 @@ export default function SessionShowPage({ session, totals, currentUserId, draft 
                                                 >
                                                     <div className="flex items-center justify-between">
                                                         <div className="text-sm font-medium">
-                                                            {renderUserName(result.user.id, result.user.name, 'sm', result.user.avatar)}
+                                                            {renderUserName(
+                                                                result.user.id,
+                                                                result.user
+                                                                    .name,
+                                                                'sm',
+                                                                result.user
+                                                                    .avatar,
+                                                            )}
                                                         </div>
                                                         <span
                                                             className={`rounded-full px-2 py-0.5 text-xs font-semibold ${getRankStyle(result.rank).badge}`}
                                                         >
-                                                            {result.rank ? `第${result.rank}位` : '順位未入力'}
+                                                            {result.rank
+                                                                ? `第${result.rank}位`
+                                                                : '順位未入力'}
                                                         </span>
                                                     </div>
                                                     <p className="text-xs text-muted-foreground">
-                                                        {Number(result.final_score).toLocaleString(undefined, {
-                                                            maximumFractionDigits: 0,
-                                                            minimumFractionDigits: 0,
-                                                        })}{' '}
+                                                        {Number(
+                                                            result.final_score,
+                                                        ).toLocaleString(
+                                                            undefined,
+                                                            {
+                                                                maximumFractionDigits: 0,
+                                                                minimumFractionDigits: 0,
+                                                            },
+                                                        )}{' '}
                                                         点
                                                     </p>
                                                     <p className="text-lg font-semibold text-black">
-                                                        {Number(result.points).toLocaleString(undefined, {
-                                                            maximumFractionDigits: 0,
-                                                            minimumFractionDigits: 0,
-                                                        })}
+                                                        {Number(
+                                                            result.points,
+                                                        ).toLocaleString(
+                                                            undefined,
+                                                            {
+                                                                maximumFractionDigits: 0,
+                                                                minimumFractionDigits: 0,
+                                                            },
+                                                        )}
                                                     </p>
                                                 </div>
                                             ))}
@@ -540,38 +682,65 @@ export default function SessionShowPage({ session, totals, currentUserId, draft 
                                         <details className="group">
                                             <summary className="flex cursor-pointer list-none flex-col gap-3 text-sm text-muted-foreground">
                                                 <div className="flex items-center justify-between">
-                                                    <span className="font-medium">第{game.ordinal}回</span>
+                                                    <span className="font-medium">
+                                                        第{game.ordinal}回
+                                                    </span>
                                                     <span className="flex items-center gap-2">
                                                         {game.played_at
-                                                            ? formatter.format(new Date(game.played_at))
+                                                            ? formatter.format(
+                                                                  new Date(
+                                                                      game.played_at,
+                                                                  ),
+                                                              )
                                                             : '日時未入力'}
                                                         <ChevronDown className="size-4 transition-transform group-open:rotate-180" />
                                                     </span>
                                                 </div>
                                                 <div className="flex flex-wrap gap-3">
-                                                    {game.results.map((result) => (
-                                                        <div
-                                                            key={`summary-${result.id}`}
-                                                            className="relative"
-                                                        >
-                                                            <span
-                                                                className={cn(
-                                                                    'flex h-[2.3rem] w-[2.3rem] items-center justify-center rounded-full border text-base font-semibold',
-                                                                    getRankStyle(result.rank).badge,
-                                                                )}
+                                                    {game.results.map(
+                                                        (result) => (
+                                                            <div
+                                                                key={`summary-${result.id}`}
+                                                                className="relative"
                                                             >
-                                                                {result.rank ?? '-'}
-                                                            </span>
-                                                            <Avatar className="absolute bottom-0 right-0 h-[1.9rem] w-[1.9rem] translate-x-[35%] translate-y-[35%] border-2 border-background shadow">
-                                                                {result.user.avatar && (
-                                                                    <AvatarImage src={result.user.avatar} alt={result.user.name} />
-                                                                )}
-                                                                <AvatarFallback>
-                                                                    {getInitials(result.user.name)}
-                                                                </AvatarFallback>
-                                                            </Avatar>
-                                                        </div>
-                                                    ))}
+                                                                <span
+                                                                    className={cn(
+                                                                        'flex h-[2.3rem] w-[2.3rem] items-center justify-center rounded-full border text-base font-semibold',
+                                                                        getRankStyle(
+                                                                            result.rank,
+                                                                        ).badge,
+                                                                    )}
+                                                                >
+                                                                    {result.rank ??
+                                                                        '-'}
+                                                                </span>
+                                                                <Avatar className="absolute right-0 bottom-0 h-[1.9rem] w-[1.9rem] translate-x-[35%] translate-y-[35%] border-2 border-background shadow">
+                                                                    {result.user
+                                                                        .avatar && (
+                                                                        <AvatarImage
+                                                                            src={
+                                                                                result
+                                                                                    .user
+                                                                                    .avatar
+                                                                            }
+                                                                            alt={
+                                                                                result
+                                                                                    .user
+                                                                                    .name
+                                                                            }
+                                                                        />
+                                                                    )}
+                                                                    <AvatarFallback>
+                                                                        {getInitials(
+                                                                            result
+                                                                                .user
+                                                                                .name,
+                                                                        )}
+                                                                    </AvatarFallback>
+                                                                </Avatar>
+                                                            </div>
+                                                        ),
+                                                    )}
                                                 </div>
                                             </summary>
                                             <div className="mt-3 space-y-2">
@@ -582,26 +751,46 @@ export default function SessionShowPage({ session, totals, currentUserId, draft 
                                                     >
                                                         <div className="flex items-center justify-between text-sm">
                                                             <div className="font-medium">
-                                                                {renderUserName(result.user.id, result.user.name, 'sm', result.user.avatar)}
+                                                                {renderUserName(
+                                                                    result.user
+                                                                        .id,
+                                                                    result.user
+                                                                        .name,
+                                                                    'sm',
+                                                                    result.user
+                                                                        .avatar,
+                                                                )}
                                                             </div>
                                                             <span
                                                                 className={`rounded-full px-2 py-0.5 text-xs font-semibold ${getRankStyle(result.rank).badge}`}
                                                             >
-                                                                {result.rank ? `第${result.rank}位` : '順位未入力'}
+                                                                {result.rank
+                                                                    ? `第${result.rank}位`
+                                                                    : '順位未入力'}
                                                             </span>
                                                         </div>
                                                         <p className="text-xs text-muted-foreground">
-                                                            {Number(result.final_score).toLocaleString(undefined, {
-                                                                maximumFractionDigits: 0,
-                                                                minimumFractionDigits: 0,
-                                                            })}{' '}
+                                                            {Number(
+                                                                result.final_score,
+                                                            ).toLocaleString(
+                                                                undefined,
+                                                                {
+                                                                    maximumFractionDigits: 0,
+                                                                    minimumFractionDigits: 0,
+                                                                },
+                                                            )}{' '}
                                                             点
                                                         </p>
                                                         <p className="text-base font-semibold text-black">
-                                                            {Number(result.points).toLocaleString(undefined, {
-                                                                maximumFractionDigits: 0,
-                                                                minimumFractionDigits: 0,
-                                                            })}
+                                                            {Number(
+                                                                result.points,
+                                                            ).toLocaleString(
+                                                                undefined,
+                                                                {
+                                                                    maximumFractionDigits: 0,
+                                                                    minimumFractionDigits: 0,
+                                                                },
+                                                            )}
                                                             pt
                                                         </p>
                                                     </div>
@@ -618,7 +807,11 @@ export default function SessionShowPage({ session, totals, currentUserId, draft 
                 {!isClosed && (
                     <Form {...sessionsClose.form(session.id)}>
                         {({ processing }) => (
-                            <Button type="submit" variant="destructive" disabled={processing}>
+                            <Button
+                                type="submit"
+                                variant="destructive"
+                                disabled={processing}
+                            >
                                 セッションを終了する
                             </Button>
                         )}
@@ -626,11 +819,22 @@ export default function SessionShowPage({ session, totals, currentUserId, draft 
                 )}
             </div>
 
-                <FriendDetailDialog
-                    {...friendDetailDialogProps}
-                    onSendRequest={friendDetailDialogProps.friend ? () => handleSendFriendRequest(friendDetailDialogProps.friend as SessionMember) : undefined}
-                    sending={friendDetailDialogProps.friend ? sendingFriendId === friendDetailDialogProps.friend.id : false}
-                />
+            <FriendDetailDialog
+                {...friendDetailDialogProps}
+                onSendRequest={
+                    friendDetailDialogProps.friend
+                        ? () =>
+                              handleSendFriendRequest(
+                                  friendDetailDialogProps.friend as SessionMember,
+                              )
+                        : undefined
+                }
+                sending={
+                    friendDetailDialogProps.friend
+                        ? sendingFriendId === friendDetailDialogProps.friend.id
+                        : false
+                }
+            />
         </AppLayout>
     );
 }

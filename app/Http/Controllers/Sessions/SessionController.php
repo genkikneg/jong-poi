@@ -17,9 +17,8 @@ use Inertia\Response;
 
 class SessionController extends Controller
 {
-    public function __construct(private readonly RankingService $rankingService)
-    {
-    }
+    public function __construct(private readonly RankingService $rankingService) {}
+
     public function store(StoreSessionRequest $request): RedirectResponse
     {
         $user = $request->user();

@@ -20,7 +20,12 @@ export type FriendDetailRecentGame = {
     } | null;
 };
 
-export type FriendRelationStatus = 'self' | 'friend' | 'pending_outgoing' | 'pending_incoming' | 'none';
+export type FriendRelationStatus =
+    | 'self'
+    | 'friend'
+    | 'pending_outgoing'
+    | 'pending_incoming'
+    | 'none';
 
 export type FriendDetail = {
     id: number;
@@ -62,7 +67,14 @@ const getInitials = (name: string) =>
         .slice(0, 2)
         .toUpperCase();
 
-export function FriendDetailDialog({ friend, open, onOpenChange, formatter, onSendRequest, sending = false }: FriendDetailDialogProps) {
+export function FriendDetailDialog({
+    friend,
+    open,
+    onOpenChange,
+    formatter,
+    onSendRequest,
+    sending = false,
+}: FriendDetailDialogProps) {
     const recentGames = friend?.stats?.recent_games ?? [];
     const relation = friend?.relation_status ?? 'friend';
 
@@ -88,52 +100,84 @@ export function FriendDetailDialog({ friend, open, onOpenChange, formatter, onSe
             <DialogContent className="sm:max-w-lg">
                 <DialogHeader>
                     <DialogTitle>フレンド詳細</DialogTitle>
-                    <DialogDescription>累計ポイントと直近10戦の記録を確認できます。</DialogDescription>
+                    <DialogDescription>
+                        累計ポイントと直近10戦の記録を確認できます。
+                    </DialogDescription>
                 </DialogHeader>
 
                 {friend && (
                     <div className="space-y-6">
                         <div className="flex items-center gap-4">
                             <Avatar className="size-16">
-                                {friend.avatar && <AvatarImage src={friend.avatar} alt={friend.name} />}
-                                <AvatarFallback>{getInitials(friend.name)}</AvatarFallback>
+                                {friend.avatar && (
+                                    <AvatarImage
+                                        src={friend.avatar}
+                                        alt={friend.name}
+                                    />
+                                )}
+                                <AvatarFallback>
+                                    {getInitials(friend.name)}
+                                </AvatarFallback>
                             </Avatar>
                             <div>
-                                <p className="text-lg font-semibold">{friend.name}</p>
-                                <p className="text-sm text-muted-foreground">コード：{friend.friend_code}</p>
-                                {friend.rankings && friend.rankings.length > 0 && (
-                                    <div className="mt-2 flex flex-wrap gap-1">
-                                        {friend.rankings.map((ranking, index) => {
-                                            const labelMap: Record<string, string> = {
-                                                '累計': '累',
-                                                '平均': '平',
-                                                'トップ率': 'ト',
-                                            };
+                                <p className="text-lg font-semibold">
+                                    {friend.name}
+                                </p>
+                                <p className="text-sm text-muted-foreground">
+                                    コード：{friend.friend_code}
+                                </p>
+                                {friend.rankings &&
+                                    friend.rankings.length > 0 && (
+                                        <div className="mt-2 flex flex-wrap gap-1">
+                                            {friend.rankings.map(
+                                                (ranking, index) => {
+                                                    const labelMap: Record<
+                                                        string,
+                                                        string
+                                                    > = {
+                                                        累計: '累',
+                                                        平均: '平',
+                                                        トップ率: 'ト',
+                                                    };
 
-                                            const rankNumber = parseInt(ranking.value.replace(/[^0-9]/g, ''), 10);
-                                            const backgroundClass = rankNumber === 1
-                                                ? 'bg-amber-400'
-                                                : rankNumber === 2
-                                                    ? 'bg-slate-300'
-                                                    : 'bg-amber-700';
+                                                    const rankNumber = parseInt(
+                                                        ranking.value.replace(
+                                                            /[^0-9]/g,
+                                                            '',
+                                                        ),
+                                                        10,
+                                                    );
+                                                    const backgroundClass =
+                                                        rankNumber === 1
+                                                            ? 'bg-amber-400'
+                                                            : rankNumber === 2
+                                                              ? 'bg-slate-300'
+                                                              : 'bg-amber-700';
 
-                                            return (
-                                                <span
-                                                    key={`${friend.id}-name-ranking-${index}`}
-                                                    className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold text-white ${backgroundClass}`}
-                                                >
-                                                    {labelMap[ranking.label] ?? ranking.label}
-                                                </span>
-                                            );
-                                        })}
-                                    </div>
-                                )}
+                                                    return (
+                                                        <span
+                                                            key={`${friend.id}-name-ranking-${index}`}
+                                                            className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold text-white ${backgroundClass}`}
+                                                        >
+                                                            {labelMap[
+                                                                ranking.label
+                                                            ] ?? ranking.label}
+                                                        </span>
+                                                    );
+                                                },
+                                            )}
+                                        </div>
+                                    )}
                             </div>
                         </div>
 
                         <div>
-                            <p className="text-sm text-muted-foreground">累計ポイント</p>
-                            <p className="text-3xl font-semibold">{formatPoints(friend.stats?.total_points)} pt</p>
+                            <p className="text-sm text-muted-foreground">
+                                累計ポイント
+                            </p>
+                            <p className="text-3xl font-semibold">
+                                {formatPoints(friend.stats?.total_points)} pt
+                            </p>
                         </div>
 
                         <div className="space-y-3">
@@ -141,24 +185,46 @@ export function FriendDetailDialog({ friend, open, onOpenChange, formatter, onSe
                             {recentGames.length ? (
                                 <div className="max-h-72 space-y-2 overflow-y-auto pr-1">
                                     {recentGames.map((entry) => {
-                                        const pointsValue = Number(entry.points ?? 0);
+                                        const pointsValue = Number(
+                                            entry.points ?? 0,
+                                        );
                                         const trendClass =
                                             pointsValue > 0
                                                 ? 'text-emerald-600'
                                                 : pointsValue < 0
-                                                    ? 'text-rose-600'
-                                                    : 'text-muted-foreground';
+                                                  ? 'text-rose-600'
+                                                  : 'text-muted-foreground';
 
                                         return (
-                                            <div key={entry.id} className="rounded-lg border p-3">
+                                            <div
+                                                key={entry.id}
+                                                className="rounded-lg border p-3"
+                                            >
                                                 <div className="flex items-center justify-between gap-2 text-sm font-medium">
-                                                    <span>{entry.session?.name ?? 'セッション'}</span>
-                                                    <span className={cn('font-semibold', trendClass)}>
-                                                        {formatPoints(entry.points)} pt
+                                                    <span>
+                                                        {entry.session?.name ??
+                                                            'セッション'}
+                                                    </span>
+                                                    <span
+                                                        className={cn(
+                                                            'font-semibold',
+                                                            trendClass,
+                                                        )}
+                                                    >
+                                                        {formatPoints(
+                                                            entry.points,
+                                                        )}{' '}
+                                                        pt
                                                     </span>
                                                 </div>
                                                 <p className="text-xs text-muted-foreground">
-                                                    {entry.played_at ? formatter.format(new Date(entry.played_at)) : '日時不明'}
+                                                    {entry.played_at
+                                                        ? formatter.format(
+                                                              new Date(
+                                                                  entry.played_at,
+                                                              ),
+                                                          )
+                                                        : '日時不明'}
                                                     {' ・ '}
                                                     {entry.rank}位
                                                 </p>
@@ -167,7 +233,9 @@ export function FriendDetailDialog({ friend, open, onOpenChange, formatter, onSe
                                     })}
                                 </div>
                             ) : (
-                                <p className="text-sm text-muted-foreground">まだ対局データがありません。</p>
+                                <p className="text-sm text-muted-foreground">
+                                    まだ対局データがありません。
+                                </p>
                             )}
                         </div>
 

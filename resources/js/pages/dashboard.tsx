@@ -1,9 +1,19 @@
 import { Head, Link } from '@inertiajs/react';
 import { ClipboardList, History, Play, PlusCircle } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
-import { create as sessionsCreate, history as sessionsHistory, show as sessionsShow } from '@/routes/sessions';
+import {
+    create as sessionsCreate,
+    history as sessionsHistory,
+    show as sessionsShow,
+} from '@/routes/sessions';
 import { view as sessionsJoinView } from '@/routes/sessions/join';
 import type { BreadcrumbItem } from '@/types';
 
@@ -46,21 +56,26 @@ const actions = [
     },
 ];
 
-export default function Dashboard({ activeSession = null }: { activeSession?: ActiveSessionCard | null }) {
+export default function Dashboard({
+    activeSession = null,
+}: {
+    activeSession?: ActiveSessionCard | null;
+}) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
             <div className="grid gap-6 md:grid-cols-3">
                 {activeSession && (
-                    <Card className="md:col-span-3 border-primary/40 shadow-lg">
+                    <Card className="border-primary/40 shadow-lg md:col-span-3">
                         <CardHeader>
                             <div className="flex flex-wrap items-center justify-between gap-3">
                                 <div>
-                                    <div className="text-sm uppercase tracking-wide text-muted-foreground">
+                                    <div className="text-sm tracking-wide text-muted-foreground uppercase">
                                         参加中のセッション
                                     </div>
                                     <CardTitle>
-                                        {activeSession.name || 'セッション'} / {activeSession.player_count}人
+                                        {activeSession.name || 'セッション'} /{' '}
+                                        {activeSession.player_count}人
                                     </CardTitle>
                                 </div>
                                 <div className="text-sm text-muted-foreground">
@@ -83,13 +98,18 @@ export default function Dashboard({ activeSession = null }: { activeSession?: Ac
                     </Card>
                 )}
                 {actions.map((action) => (
-                    <Card key={action.title} className="flex flex-col justify-between">
+                    <Card
+                        key={action.title}
+                        className="flex flex-col justify-between"
+                    >
                         <CardHeader>
                             <div className="flex items-center gap-3">
                                 <action.icon className="size-6 text-primary" />
                                 <CardTitle>{action.title}</CardTitle>
                             </div>
-                            <CardDescription>{action.description}</CardDescription>
+                            <CardDescription>
+                                {action.description}
+                            </CardDescription>
                         </CardHeader>
                         <CardContent>
                             <Link

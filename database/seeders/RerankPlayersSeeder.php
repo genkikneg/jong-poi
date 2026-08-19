@@ -8,9 +8,7 @@ use Illuminate\Database\Seeder;
 
 class RerankPlayersSeeder extends Seeder
 {
-    public function __construct(private readonly RankingService $rankingService)
-    {
-    }
+    public function __construct(private readonly RankingService $rankingService) {}
 
     public function run(): void
     {

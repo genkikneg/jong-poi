@@ -94,7 +94,7 @@ class SessionFlowTest extends TestCase
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
                 ->component('sessions/history')
-                ->where('results.0.session.name', '夜会')
+                ->where('sessions.0.name', '夜会')
             );
     }
 

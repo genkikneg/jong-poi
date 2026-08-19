@@ -11,9 +11,7 @@ use Inertia\Response;
 
 class RankingController extends Controller
 {
-    public function __construct(private readonly RankingService $rankingService)
-    {
-    }
+    public function __construct(private readonly RankingService $rankingService) {}
 
     public function __invoke(Request $request): Response
     {

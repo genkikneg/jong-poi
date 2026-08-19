@@ -11,9 +11,7 @@ use Inertia\Response;
 
 class FriendController extends Controller
 {
-    public function __construct(private readonly RankingService $rankingService)
-    {
-    }
+    public function __construct(private readonly RankingService $rankingService) {}
 
     public function index(Request $request): Response
     {

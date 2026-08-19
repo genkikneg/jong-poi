@@ -9,12 +9,10 @@ use Illuminate\Support\Collection;
 
 class PointsCalculator
 {
-    public function __construct(protected Session $session)
-    {
-    }
+    public function __construct(protected Session $session) {}
 
     /**
-     * @param array<int, array{user_id:int, final_score:string|int|float, rank?:int|null}> $rawResults
+     * @param  array<int, array{user_id:int, final_score:string|int|float, rank?:int|null}>  $rawResults
      * @return array<int, array{
      *     user_id:int,
      *     final_score:string,

@@ -56,25 +56,44 @@ export default function SessionHistoryPage({ sessions }: Props = {}) {
                                 <CardHeader>
                                     <CardTitle className="flex flex-col gap-1 text-base text-card-foreground md:flex-row md:items-center md:justify-between">
                                         <span>
-                                            {session.name || 'セッション'} / {session.player_count}人打ち
+                                            {session.name || 'セッション'} /{' '}
+                                            {session.player_count}人打ち
                                         </span>
                                         <span className="text-sm text-muted-foreground">
-                                            {session.closed_at ? formatter.format(new Date(session.closed_at)) : '日時不明'}
+                                            {session.closed_at
+                                                ? formatter.format(
+                                                      new Date(
+                                                          session.closed_at,
+                                                      ),
+                                                  )
+                                                : '日時不明'}
                                         </span>
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent className="flex flex-wrap items-center justify-between gap-4">
                                     <div>
-                                        <p className="text-sm text-muted-foreground">合計ポイント</p>
+                                        <p className="text-sm text-muted-foreground">
+                                            合計ポイント
+                                        </p>
                                         <p className="text-2xl font-semibold text-card-foreground">
-                                            {Number(session.total_points).toLocaleString()} pt
+                                            {Number(
+                                                session.total_points,
+                                            ).toLocaleString()}{' '}
+                                            pt
                                         </p>
                                     </div>
                                     <div>
-                                        <p className="text-sm text-muted-foreground">最終順位</p>
-                                        <p className="text-2xl font-semibold text-card-foreground">{session.rank}位</p>
+                                        <p className="text-sm text-muted-foreground">
+                                            最終順位
+                                        </p>
+                                        <p className="text-2xl font-semibold text-card-foreground">
+                                            {session.rank}位
+                                        </p>
                                     </div>
-                                    <Link href={`/sessions/${session.id}`} className="text-sm font-semibold text-primary">
+                                    <Link
+                                        href={`/sessions/${session.id}`}
+                                        className="text-sm font-semibold text-primary"
+                                    >
                                         詳細を見る →
                                     </Link>
                                 </CardContent>

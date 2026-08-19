@@ -2,7 +2,13 @@ import { Form, Head, Link } from '@inertiajs/react';
 import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/app-layout';
 import { join as sessionsJoin, show as sessionsShow } from '@/routes/sessions';
@@ -24,7 +30,11 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function SessionJoinPage({ pendingSessions = [] }: { pendingSessions?: PendingSession[] }) {
+export default function SessionJoinPage({
+    pendingSessions = [],
+}: {
+    pendingSessions?: PendingSession[];
+}) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="セッション参加" />
@@ -38,7 +48,9 @@ export default function SessionJoinPage({ pendingSessions = [] }: { pendingSessi
                 <Card>
                     <CardHeader>
                         <CardTitle>参加コード</CardTitle>
-                        <CardDescription>英数字6桁のコードを入力してください。</CardDescription>
+                        <CardDescription>
+                            英数字6桁のコードを入力してください。
+                        </CardDescription>
                     </CardHeader>
                     <CardContent>
                         <Form {...sessionsJoin.form()} className="space-y-6">
@@ -54,11 +66,16 @@ export default function SessionJoinPage({ pendingSessions = [] }: { pendingSessi
                                             autoComplete="off"
                                             required
                                         />
-                                        <InputError message={errors.join_code} />
+                                        <InputError
+                                            message={errors.join_code}
+                                        />
                                     </div>
 
                                     <div className="flex justify-end">
-                                        <Button type="submit" disabled={processing}>
+                                        <Button
+                                            type="submit"
+                                            disabled={processing}
+                                        >
                                             参加する
                                         </Button>
                                     </div>
@@ -72,7 +89,9 @@ export default function SessionJoinPage({ pendingSessions = [] }: { pendingSessi
                     <Card>
                         <CardHeader>
                             <CardTitle>自分宛の招待</CardTitle>
-                            <CardDescription>ホストがあなたを追加したセッションです。ワンタップで復帰できます。</CardDescription>
+                            <CardDescription>
+                                ホストがあなたを追加したセッションです。ワンタップで復帰できます。
+                            </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-3">
                             {pendingSessions.map((session) => (
@@ -81,12 +100,18 @@ export default function SessionJoinPage({ pendingSessions = [] }: { pendingSessi
                                     className="flex flex-wrap items-center justify-between gap-2 rounded-lg border p-3"
                                 >
                                     <div>
-                                        <p className="font-medium">{session.name || 'セッション'}</p>
+                                        <p className="font-medium">
+                                            {session.name || 'セッション'}
+                                        </p>
                                         <p className="text-xs text-muted-foreground">
-                                            ホスト: {session.owner ?? '不明'} / コード: {session.join_code}
+                                            ホスト: {session.owner ?? '不明'} /
+                                            コード: {session.join_code}
                                         </p>
                                     </div>
-                                    <Link href={sessionsShow(session.id).url} className="text-sm font-semibold text-primary">
+                                    <Link
+                                        href={sessionsShow(session.id).url}
+                                        className="text-sm font-semibold text-primary"
+                                    >
                                         開く →
                                     </Link>
                                 </div>

@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers\Sessions;
 
-use App\Http\Controllers\Controller;
 use App\Enums\SessionStatus;
+use App\Http\Controllers\Controller;
 use App\Models\GameResult;
 use App\Models\Session;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 

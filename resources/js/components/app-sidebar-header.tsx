@@ -27,7 +27,7 @@ export function AppSidebarHeader({
             </div>
 
             {pageTitle && (
-                <div className="pointer-events-none absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 text-sm font-semibold text-muted-foreground md:block">
+                <div className="pointer-events-none absolute top-1/2 left-1/2 hidden -translate-x-1/2 -translate-y-1/2 text-sm font-semibold text-muted-foreground md:block">
                     {pageTitle}
                 </div>
             )}

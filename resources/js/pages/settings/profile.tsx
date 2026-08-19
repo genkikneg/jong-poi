@@ -1,15 +1,13 @@
 import { Transition } from '@headlessui/react';
 import { Form, Head, Link, usePage } from '@inertiajs/react';
-import { Copy } from 'lucide-react';
-import { useEffect, useState } from 'react';
 import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
 import DeleteUser from '@/components/delete-user';
 import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
 import { edit } from '@/routes/profile';
@@ -31,31 +29,6 @@ export default function Profile({
     status?: string;
 }) {
     const { auth } = usePage().props;
-    const [copied, setCopied] = useState(false);
-
-    useEffect(() => {
-        if (!copied) {
-            return;
-        }
-
-        const timer = setTimeout(() => setCopied(false), 2000);
-
-        return () => clearTimeout(timer);
-    }, [copied]);
-
-    const handleCopyCode = async () => {
-        if (!auth.user.friend_code) {
-            return;
-        }
-
-        try {
-            await navigator.clipboard.writeText(auth.user.friend_code);
-            setCopied(true);
-        } catch (error) {
-            console.error('フレンドコードのコピーに失敗しました', error);
-        }
-    };
-
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Profile settings" />
@@ -89,7 +62,9 @@ export default function Profile({
                                                 alt={auth.user.name}
                                             />
                                             <AvatarFallback>
-                                                {auth.user.name?.slice(0, 2).toUpperCase()}
+                                                {auth.user.name
+                                                    ?.slice(0, 2)
+                                                    .toUpperCase()}
                                             </AvatarFallback>
                                         </Avatar>
                                         <div className="flex-1 space-y-2">
@@ -102,7 +77,9 @@ export default function Profile({
                                             <p className="text-xs text-muted-foreground">
                                                 JPG, PNG などの画像 (最大 2MB)
                                             </p>
-                                            <InputError message={errors.avatar} />
+                                            <InputError
+                                                message={errors.avatar}
+                                            />
                                         </div>
                                     </div>
                                 </div>
@@ -127,7 +104,9 @@ export default function Profile({
                                 </div>
 
                                 <div className="grid gap-2">
-                                    <Label htmlFor="email">メールアドレス</Label>
+                                    <Label htmlFor="email">
+                                        メールアドレス
+                                    </Label>
 
                                     <Input
                                         id="email"
