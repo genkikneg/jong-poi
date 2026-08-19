@@ -54,6 +54,7 @@ ghcr.io/genkikneg/jong-poi-web:<commit-sha>
 - `deploy/gateway`: VPS共通のTLS終端とリバースプロキシ
 - `deploy/jong-poi`: app、queue、web、DBをアプリ単位で管理
 - DBと永続storageは`/opt/apps/jong-poi`配下に分離
+- webは`storage/public`だけを読み取り専用でマウントし、`public/storage`リンク経由で配信
 - app、queue、webのルートファイルシステムを読み取り専用化
 - 書き込みが必要なLaravelキャッシュ等だけをtmpfs化
 - `no-new-privileges`、再起動ポリシー、ログローテーションを設定
