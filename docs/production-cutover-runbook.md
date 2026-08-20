@@ -74,7 +74,7 @@ cd /opt/apps/jong-poi
 docker compose --env-file .env --env-file db.env --env-file deploy.env up -d db
 ```
 
-直前ダンプを新DBへ復元する。MySQL rootパスワードはコマンド行へ展開せず、DBコンテナ内の環境変数を使う。直前バックアップの`storage/app`内容を`/opt/apps/jong-poi/storage`へ復元し、所有者をUID/GID 33へ合わせる。
+直前ダンプを新DBへ復元する。MySQL rootパスワードはコマンド行へ展開せず、DBコンテナ内の環境変数を使う。直前バックアップの`storage/app`内容を`/opt/apps/jong-poi/storage`へ復元し、所有者をUID/GID 33へ合わせる。`storage/public`はディレクトリ755・ファイル644とし、Webコンテナへ公開領域だけを読み取り専用で渡す。
 
 復元後に全テーブル数と行数を直前バックアップと照合する。不一致なら切替を中止する。
 

@@ -52,6 +52,8 @@ services:
         read_only: true
         security_opt:
             - no-new-privileges:true
+        volumes:
+            - ./storage/public:/var/www/storage/app/public:ro
         tmpfs:
             - /var/cache/nginx:mode=0755,uid=101,gid=101
             - /var/run:mode=0755,uid=101,gid=101
