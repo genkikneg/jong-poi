@@ -65,12 +65,12 @@ class SessionController extends Controller
         $user->loadMissing(['friends:id']);
 
         $session->load([
-            'owner:id,name,avatar_path',
-            'members.user:id,name,avatar_path,friend_code',
+            'owner:id,name,avatar_path,avatar_public_id',
+            'members.user:id,name,avatar_path,avatar_public_id,friend_code',
             'games' => fn ($query) => $query
                 ->orderBy('ordinal')
-                ->with(['results.user:id,name,avatar_path']),
-            'gameDraft.entries.user:id,name,avatar_path',
+                ->with(['results.user:id,name,avatar_path,avatar_public_id']),
+            'gameDraft.entries.user:id,name,avatar_path,avatar_public_id',
         ]);
 
         $totals = GameResult::query()
