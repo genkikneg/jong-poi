@@ -92,7 +92,7 @@ HEALTHCHECK --interval=10s --timeout=3s --start-period=20s --retries=6 \
 
 CMD ["php-fpm", "--nodaemonize"]
 
-FROM nginx:1.28-alpine@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236 AS web
+FROM nginx:1.30.4-alpine@sha256:97d490c12ba55b4946b01546d1c3ed324e8d41ab1c9fcb2a616aa470620e5b46 AS web
 
 ARG VCS_REF=unknown
 LABEL org.opencontainers.image.source="https://github.com/genkikneg/jong-poi" \
