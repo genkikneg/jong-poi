@@ -150,6 +150,7 @@ Web用イメージとPHP-FPM用イメージを分ける場合も、同じコミ�
 - インターネットへ公開するポートは、原則としてSSH、80、443だけとする。
 - アプリ、PHP-FPM、MySQL、Redisなどのポートは外部公開しない。
 - ドメインごとのTLS終端は共通gatewayで行う。
+- 共通gatewayのdefault serverは未知Hostと未知SNIを拒否する。HTTPからHTTPSへのリダイレクト先は各アプリの正式Hostへ固定し、`$host`を使用しない。
 - Nginxのセキュリティヘッダーとdotfile拒否設定を維持する。
 
 ### 4.2 コンテナ
@@ -310,7 +311,7 @@ docker compose \
 2. 固有のComposeプロジェクト名を決める。
 3. アプリ専用の内部ネットワーク、DB、ユーザー、ストレージ、バックアップ先を作る。
 4. アプリのHTTP入口だけを`proxy`ネットワークへ参加させる。
-5. gatewayへドメイン設定を追加して構文検査する。
+5. gatewayへdefault指定のないドメイン設定を追加し、HTTPSリダイレクト先を正式Hostへ固定して構文・Host処理を検査する。
 6. DNSを設定する。
 7. TLS証明書を取得する。
 8. CI、GHCR、CD、GitHub Environmentを設定する。

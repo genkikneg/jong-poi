@@ -60,6 +60,9 @@ jobs:
       - name: Validate operational scripts
         run: bash -n ops/*.sh
 
+      - name: Validate gateway host handling
+        run: ops/test-gateway-config.sh
+
       - name: Validate production environment defaults
         run: ops/validate-production-env.sh deploy/jong-poi/app.env.example
 
