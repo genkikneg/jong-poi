@@ -7,6 +7,7 @@ use App\Observers\GameResultObserver;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 
@@ -27,7 +28,6 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->configureDefaults();
         GameResult::observe(GameResultObserver::class);
-
     }
 
     /**
@@ -36,6 +36,8 @@ class AppServiceProvider extends ServiceProvider
     protected function configureDefaults(): void
     {
         Date::use(CarbonImmutable::class);
+
+        URL::forceScheme(config('app.force_https') ? 'https' : null);
 
         DB::prohibitDestructiveCommands(
             app()->isProduction(),
