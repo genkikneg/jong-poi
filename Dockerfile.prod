@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7
 
-FROM php:8.4-fpm-bookworm@sha256:c5fb7a0c02f4efe280691910c8b734995fa83598cdcf3115ef5dcb2e4617681c AS php-base
+FROM php:8.5-fpm-bookworm@sha256:7b1deadd1d73c72d2eb952ebb494cd3e902d7b6ae4e4b3cd1113a1041b530c2c AS php-base
 
 ENV APP_ENV=production \
     COMPOSER_ALLOW_SUPERUSER=1
