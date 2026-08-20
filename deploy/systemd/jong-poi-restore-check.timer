@@ -1,0 +1,12 @@
+[Unit]
+Description=Verify a jong-poi backup restore every week
+
+[Timer]
+OnCalendar=Sun *-*-* 04:47:00 Asia/Tokyo
+RandomizedDelaySec=15min
+AccuracySec=1min
+Persistent=true
+Unit=jong-poi-restore-check.service
+
+[Install]
+WantedBy=timers.target
