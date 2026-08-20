@@ -84,4 +84,16 @@ for _ in $(seq 1 60); do
 done
 test "$web_ready" = yes
 
+public_ready=no
+for _ in $(seq 1 30); do
+    if curl --fail --silent --show-error --max-time 10 \
+        "${HEALTHCHECK_URL:-https://jong-poi.misoon.net/up}" \
+        >/dev/null 2>&1; then
+        public_ready=yes
+        break
+    fi
+    sleep 2
+done
+test "$public_ready" = yes
+
 printf 'Deployment completed: %s\n' "$release_sha"

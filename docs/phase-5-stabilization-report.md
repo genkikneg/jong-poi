@@ -54,3 +54,13 @@
 - Dependabot更新はGitHub Actions関連から1件ずつ適用し、PHP 8.5とNginx 1.31は別々に検証する。
 - 旧コンテナ・旧データ・移行時バックアップは保持期限を決め、削除前に明示的な承認を得る。
 - VPS外への暗号化バックアップを追加する。
+
+## 初回自動CDで検出した問題
+
+初回のGitHub Actionsデプロイ自体は成功したが、webコンテナの再作成後に共有Nginxが再作成前のコンテナIPを保持し、一時的に`/up`がHTTP 504になった。Nginxの設定再読込で新IPへ切り替え、`/up`、`/login`、gatewayのhealthが正常へ戻った。
+
+恒久対策として次を追加する。
+
+- gatewayのupstreamでDocker内蔵DNS（`127.0.0.11`）を使用する。
+- `zone`と`resolve`を指定し、webコンテナのIP変更をgateway再起動なしで追従する。
+- 内部webヘルスチェックだけでなく、公開HTTPSの`/up`もデプロイ完了条件にする。
