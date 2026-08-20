@@ -9,6 +9,17 @@ TEST_DIR="$(mktemp -d "${TMPDIR:-/tmp}/jong-poi-gateway-test.XXXXXX")"
 CONTAINER_NAME="jong-poi-gateway-test-$$"
 OFFICIAL_HOST="jong-poi.misoon.net"
 
+assert_status() {
+    local label="$1"
+    local expected="$2"
+    local actual="$3"
+
+    if [[ "$actual" != "$expected" ]]; then
+        printf '%s: expected HTTP status %s, got %s\n' "$label" "$expected" "$actual" >&2
+        exit 1
+    fi
+}
+
 cleanup() {
     docker rm -f "$CONTAINER_NAME" >/dev/null 2>&1 || true
     rm -rf "$TEST_DIR"
@@ -55,6 +66,7 @@ test -n "$http_port"
 test -n "$https_port"
 
 headers="$TEST_DIR/official-http.headers"
+normalized_headers="$TEST_DIR/official-http.normalized.headers"
 curl \
     --silent \
     --show-error \
@@ -63,8 +75,15 @@ curl \
     --output /dev/null \
     --header "Host: $OFFICIAL_HOST" \
     "http://127.0.0.1:$http_port/test-path?check=1"
-grep -Eq '^HTTP/[0-9.]+ 301 ' "$headers"
-grep -Eq "^Location: https://$OFFICIAL_HOST/test-path\\?check=1\\r?$" "$headers"
+tr -d '\r' < "$headers" > "$normalized_headers"
+if ! grep -Eq '^HTTP/[0-9.]+ 301 ' "$normalized_headers"; then
+    echo 'official HTTP host did not return 301' >&2
+    exit 1
+fi
+if ! grep -Fqx "Location: https://$OFFICIAL_HOST/test-path?check=1" "$normalized_headers"; then
+    echo 'official HTTP redirect location was not fixed to the canonical host' >&2
+    exit 1
+fi
 
 other_app_status="$(
     curl \
@@ -76,7 +95,7 @@ other_app_status="$(
         --header 'Host: other-app.example' \
         "http://127.0.0.1:$http_port/"
 )"
-test "$other_app_status" = 204
+assert_status 'additional app host' 204 "$other_app_status"
 
 unknown_http_status="$(
     curl \
@@ -89,7 +108,7 @@ unknown_http_status="$(
         "http://127.0.0.1:$http_port/" \
         2>/dev/null || true
 )"
-test "$unknown_http_status" = 000
+assert_status 'unknown HTTP host' 000 "$unknown_http_status"
 
 direct_ip_status="$(
     curl \
@@ -101,7 +120,7 @@ direct_ip_status="$(
         "http://127.0.0.1:$http_port/" \
         2>/dev/null || true
 )"
-test "$direct_ip_status" = 000
+assert_status 'direct IP request' 000 "$direct_ip_status"
 
 unknown_https_host_status="$(
     curl \
@@ -116,7 +135,7 @@ unknown_https_host_status="$(
         "https://$OFFICIAL_HOST:$https_port/" \
         2>/dev/null || true
 )"
-test "$unknown_https_host_status" = 000
+assert_status 'unknown HTTPS host with known SNI' 000 "$unknown_https_host_status"
 
 unknown_tls_status="$(
     curl \
@@ -130,6 +149,6 @@ unknown_tls_status="$(
         "https://invalid.example:$https_port/" \
         2>/dev/null || true
 )"
-test "$unknown_tls_status" = 000
+assert_status 'unknown TLS SNI' 000 "$unknown_tls_status"
 
 echo 'Gateway host handling check passed.'
