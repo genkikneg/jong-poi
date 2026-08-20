@@ -1,17 +1,22 @@
-FROM php:8.4-cli
+FROM php:8.5.9-cli-bookworm@sha256:b3154b925899c55cca2885581c74cd9966484dc7469a36584353a6c8c26bbde0
 
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
-# 必要パッケージ + node追加
+# PHP拡張のビルドに必要なパッケージ
 RUN apt-get update && apt-get install -y \
     git unzip curl libzip-dev libonig-dev libxml2-dev libcurl4-openssl-dev \
-    nodejs npm \
  && docker-php-ext-install \
     mbstring xml curl pdo pdo_mysql zip \
  && rm -rf /var/lib/apt/lists/*
 
 # composer
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2.8@sha256:5248900ab8b5f7f880c2d62180e40960cd87f60149ec9a1abfd62ac72a02577c /usr/bin/composer /usr/bin/composer
+
+# Node.js
+COPY --from=node:22-bookworm-slim@sha256:d649c27dae7ba0137b3cef5dd75baa422c08dc3d9e3fc0c23dfb172dc3cc6436 /usr/local/bin/node /usr/local/bin/node
+COPY --from=node:22-bookworm-slim@sha256:d649c27dae7ba0137b3cef5dd75baa422c08dc3d9e3fc0c23dfb172dc3cc6436 /usr/local/lib/node_modules /usr/local/lib/node_modules
+RUN ln -s /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm \
+ && ln -s /usr/local/lib/node_modules/npm/bin/npx-cli.js /usr/local/bin/npx
 
 WORKDIR /var/www
 COPY . /var/www/
