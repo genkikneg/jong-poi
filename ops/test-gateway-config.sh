@@ -1,0 +1,135 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+REPO_DIR="$(cd -- "$SCRIPT_DIR/.." && pwd)"
+GATEWAY_DIR="$REPO_DIR/deploy/gateway"
+TEST_DIR="$(mktemp -d "${TMPDIR:-/tmp}/jong-poi-gateway-test.XXXXXX")"
+CONTAINER_NAME="jong-poi-gateway-test-$$"
+OFFICIAL_HOST="jong-poi.misoon.net"
+
+cleanup() {
+    docker rm -f "$CONTAINER_NAME" >/dev/null 2>&1 || true
+    rm -rf "$TEST_DIR"
+}
+trap cleanup EXIT INT TERM
+
+install -d \
+    "$TEST_DIR/letsencrypt/live/$OFFICIAL_HOST" \
+    "$TEST_DIR/nginx/conf.d"
+cp "$GATEWAY_DIR"/nginx/conf.d/*.conf "$TEST_DIR/nginx/conf.d/"
+cp "$REPO_DIR/tests/Fixtures/gateway/other-app.conf" "$TEST_DIR/nginx/conf.d/other-app.conf"
+openssl req \
+    -x509 \
+    -newkey rsa:2048 \
+    -nodes \
+    -days 1 \
+    -subj "/CN=$OFFICIAL_HOST" \
+    -keyout "$TEST_DIR/letsencrypt/live/$OFFICIAL_HOST/privkey.pem" \
+    -out "$TEST_DIR/letsencrypt/live/$OFFICIAL_HOST/fullchain.pem" \
+    >/dev/null 2>&1
+
+gateway_image="$(docker compose -f "$GATEWAY_DIR/compose.yaml" config --images | head -n 1)"
+test -n "$gateway_image"
+
+docker run \
+    --detach \
+    --name "$CONTAINER_NAME" \
+    --read-only \
+    --tmpfs /var/cache/nginx:mode=0755,uid=101,gid=101 \
+    --tmpfs /var/run:mode=0755,uid=101,gid=101 \
+    --publish 127.0.0.1::80 \
+    --publish 127.0.0.1::443 \
+    --volume "$TEST_DIR/nginx/conf.d:/etc/nginx/conf.d:ro" \
+    --volume "$GATEWAY_DIR/nginx/snippets:/etc/nginx/snippets:ro" \
+    --volume "$TEST_DIR/letsencrypt:/etc/letsencrypt:ro" \
+    "$gateway_image" \
+    >/dev/null
+
+docker exec "$CONTAINER_NAME" nginx -t >/dev/null
+
+http_port="$(docker port "$CONTAINER_NAME" 80/tcp | sed -n '1s/.*://p')"
+https_port="$(docker port "$CONTAINER_NAME" 443/tcp | sed -n '1s/.*://p')"
+test -n "$http_port"
+test -n "$https_port"
+
+headers="$TEST_DIR/official-http.headers"
+curl \
+    --silent \
+    --show-error \
+    --noproxy '*' \
+    --dump-header "$headers" \
+    --output /dev/null \
+    --header "Host: $OFFICIAL_HOST" \
+    "http://127.0.0.1:$http_port/test-path?check=1"
+grep -Eq '^HTTP/[0-9.]+ 301 ' "$headers"
+grep -Eq "^Location: https://$OFFICIAL_HOST/test-path\\?check=1\\r?$" "$headers"
+
+other_app_status="$(
+    curl \
+        --silent \
+        --show-error \
+        --noproxy '*' \
+        --output /dev/null \
+        --write-out '%{http_code}' \
+        --header 'Host: other-app.example' \
+        "http://127.0.0.1:$http_port/"
+)"
+test "$other_app_status" = 204
+
+unknown_http_status="$(
+    curl \
+        --silent \
+        --noproxy '*' \
+        --max-time 5 \
+        --output /dev/null \
+        --write-out '%{http_code}' \
+        --header 'Host: invalid.example' \
+        "http://127.0.0.1:$http_port/" \
+        2>/dev/null || true
+)"
+test "$unknown_http_status" = 000
+
+direct_ip_status="$(
+    curl \
+        --silent \
+        --noproxy '*' \
+        --max-time 5 \
+        --output /dev/null \
+        --write-out '%{http_code}' \
+        "http://127.0.0.1:$http_port/" \
+        2>/dev/null || true
+)"
+test "$direct_ip_status" = 000
+
+unknown_https_host_status="$(
+    curl \
+        --silent \
+        --insecure \
+        --noproxy '*' \
+        --max-time 5 \
+        --output /dev/null \
+        --write-out '%{http_code}' \
+        --resolve "$OFFICIAL_HOST:$https_port:127.0.0.1" \
+        --header 'Host: invalid.example' \
+        "https://$OFFICIAL_HOST:$https_port/" \
+        2>/dev/null || true
+)"
+test "$unknown_https_host_status" = 000
+
+unknown_tls_status="$(
+    curl \
+        --silent \
+        --insecure \
+        --noproxy '*' \
+        --max-time 5 \
+        --output /dev/null \
+        --write-out '%{http_code}' \
+        --resolve "invalid.example:$https_port:127.0.0.1" \
+        "https://invalid.example:$https_port/" \
+        2>/dev/null || true
+)"
+test "$unknown_tls_status" = 000
+
+echo 'Gateway host handling check passed.'
