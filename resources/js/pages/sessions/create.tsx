@@ -35,7 +35,7 @@ type Friend = {
     id: number;
     name: string;
     friend_code: string;
-    avatar: string;
+    avatar: string | null;
 };
 
 type Props = {
@@ -255,14 +255,16 @@ export default function SessionCreatePage({ friends }: Props) {
                                                                             }
                                                                         >
                                                                             <Avatar className="size-12">
-                                                                                <AvatarImage
-                                                                                    src={
-                                                                                        friend.avatar
-                                                                                    }
-                                                                                    alt={
-                                                                                        friend.name
-                                                                                    }
-                                                                                />
+                                                                                {friend.avatar && (
+                                                                                    <AvatarImage
+                                                                                        src={
+                                                                                            friend.avatar
+                                                                                        }
+                                                                                        alt={
+                                                                                            friend.name
+                                                                                        }
+                                                                                    />
+                                                                                )}
                                                                                 <AvatarFallback>
                                                                                     {getInitials(
                                                                                         friend.name,
@@ -336,14 +338,16 @@ export default function SessionCreatePage({ friends }: Props) {
                                                             className="flex items-center gap-3 rounded-lg border bg-muted/40 px-3 py-2"
                                                         >
                                                             <Avatar className="size-9">
-                                                                <AvatarImage
-                                                                    src={
-                                                                        friend.avatar
-                                                                    }
-                                                                    alt={
-                                                                        friend.name
-                                                                    }
-                                                                />
+                                                                {friend.avatar && (
+                                                                    <AvatarImage
+                                                                        src={
+                                                                            friend.avatar
+                                                                        }
+                                                                        alt={
+                                                                            friend.name
+                                                                        }
+                                                                    />
+                                                                )}
                                                                 <AvatarFallback>
                                                                     {getInitials(
                                                                         friend.name,

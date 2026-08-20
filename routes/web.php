@@ -10,7 +10,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('avatars/{user}', UserAvatarController::class)->name('avatars.show');
+Route::middleware('auth')
+    ->get('avatars/{avatarId}', UserAvatarController::class)
+    ->whereUuid('avatarId')
+    ->name('avatars.show');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     $dashboardHandler = function (Request $request) {

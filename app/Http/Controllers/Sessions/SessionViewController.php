@@ -15,7 +15,7 @@ class SessionViewController extends Controller
     public function create(Request $request): Response
     {
         $friends = $request->user()->friends()
-            ->select('users.id', 'users.name', 'users.friend_code', 'users.avatar_path', 'users.email')
+            ->select('users.id', 'users.name', 'users.friend_code', 'users.avatar_path', 'users.avatar_public_id')
             ->orderBy('users.name')
             ->get()
             ->map(fn ($friend) => [

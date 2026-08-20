@@ -26,6 +26,10 @@ class User extends Authenticatable
             if (! $user->friend_code) {
                 $user->friend_code = static::generateFriendCode();
             }
+
+            if (! $user->avatar_public_id) {
+                $user->avatar_public_id = (string) Str::uuid();
+            }
         });
     }
 
@@ -49,6 +53,7 @@ class User extends Authenticatable
      */
     protected $hidden = [
         'password',
+        'avatar_public_id',
         'two_factor_secret',
         'two_factor_recovery_codes',
         'remember_token',
@@ -125,14 +130,12 @@ class User extends Authenticatable
         return $code;
     }
 
-    public function getAvatarAttribute(): string
+    public function getAvatarAttribute(): ?string
     {
-        if ($this->avatar_path) {
-            return URL::route('avatars.show', $this);
+        if (! $this->avatar_path || ! $this->avatar_public_id) {
+            return null;
         }
 
-        $hash = md5(strtolower(trim($this->email ?? $this->name ?? 'user')));
-
-        return sprintf('https://www.gravatar.com/avatar/%s?s=180&d=identicon', $hash);
+        return URL::route('avatars.show', ['avatarId' => $this->avatar_public_id]);
     }
 }

@@ -57,10 +57,12 @@ export default function Profile({
                                     <Label>プロフィール画像</Label>
                                     <div className="flex flex-wrap items-center gap-4">
                                         <Avatar className="h-20 w-20">
-                                            <AvatarImage
-                                                src={auth.user.avatar}
-                                                alt={auth.user.name}
-                                            />
+                                            {auth.user.avatar && (
+                                                <AvatarImage
+                                                    src={auth.user.avatar}
+                                                    alt={auth.user.name}
+                                                />
+                                            )}
                                             <AvatarFallback>
                                                 {auth.user.name
                                                     ?.slice(0, 2)

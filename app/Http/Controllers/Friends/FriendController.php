@@ -16,7 +16,7 @@ class FriendController extends Controller
     public function index(Request $request): Response
     {
         $user = $request->user()->loadMissing([
-            'friends:id,name,friend_code,avatar_path,email',
+            'friends:id,name,friend_code,avatar_path,avatar_public_id',
             'sentFriendRequests' => fn ($query) => $query->pending()->with('recipient:id,name,friend_code')->latest(),
             'receivedFriendRequests' => fn ($query) => $query->pending()->with('sender:id,name,friend_code')->latest(),
         ]);
