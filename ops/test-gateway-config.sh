@@ -65,6 +65,30 @@ https_port="$(docker port "$CONTAINER_NAME" 443/tcp | sed -n '1s/.*://p')"
 test -n "$http_port"
 test -n "$https_port"
 
+ready=no
+for _ in $(seq 1 50); do
+    readiness_status="$(
+        curl \
+            --silent \
+            --noproxy '*' \
+            --max-time 1 \
+            --output /dev/null \
+            --write-out '%{http_code}' \
+            --header 'Host: other-app.example' \
+            "http://127.0.0.1:$http_port/" \
+            2>/dev/null || true
+    )"
+    if [[ "$readiness_status" = 204 ]]; then
+        ready=yes
+        break
+    fi
+    sleep 0.2
+done
+if [[ "$ready" != yes ]]; then
+    echo 'gateway did not become ready' >&2
+    exit 1
+fi
+
 headers="$TEST_DIR/official-http.headers"
 normalized_headers="$TEST_DIR/official-http.normalized.headers"
 curl \
