@@ -23,6 +23,8 @@ for file in "${required_files[@]}"; do
     fi
 done
 
+"$SCRIPT_DIR/validate-production-env.sh" "$DEPLOY_DIR/.env"
+
 compose=(
     docker compose
     --project-directory "$DEPLOY_DIR"
