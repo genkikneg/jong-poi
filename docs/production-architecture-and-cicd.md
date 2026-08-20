@@ -178,8 +178,11 @@ Web用イメージとPHP-FPM用イメージを分ける場合も、同じコミ�
 
 - ワークフローの`permissions`はジョブごとに必要最小限にする。
 - CIは原則`contents: read`だけを使用する。
-- GHCRへの公開時だけ`packages: write`を許可する。
+- Pull RequestのCIは`contents: read`だけで実行し、`packages: write`はmain push時のイメージ公開jobだけに付与する。
+- GitHub設定でも完全なコミットSHAを必須化し、GitHub公式と利用中の検証済みActionだけを許可する。
+- forkからのWorkflow実行は外部コントリビューターごとに手動承認する。
 - Pull Request由来の任意コードへ本番Secretを渡さない。
+- Dependabot Alerts、Dependabot Security Updates、Secret scanning、Push protection、CodeQLの週次解析を有効にする。
 - 本番デプロイにはGitHub Environmentの`production`を使用する。
 - 導入初期は`production`に手動承認を設定する。
 
@@ -197,9 +200,7 @@ Pull Requestと`main`へのpushで、少なくとも次を検証する。
 8. Vite本番ビルド
 9. 本番Dockerイメージのビルド
 
-CIはコードを自動修正しない。フォーマット違反やLintエラーがある場合は失敗させ、開発環境で修正してコミットする。
-
-現在はPHPUnit 1件、TypeScript、Pint、Prettier等のエラーが残っているため、CDを有効にする前にCIを正常化する。
+CIはコードを自動修正しない。フォーマット違反やLintエラーがある場合は失敗させ、開発環境で修正してコミットする。mainのrulesetではアプリ検査とapp/web両Docker buildを必須にする。
 
 ## 6. CD方針
 
