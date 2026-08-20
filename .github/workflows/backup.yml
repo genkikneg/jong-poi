@@ -18,6 +18,7 @@ jobs:
     name: Export encrypted backup
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    environment: backup
     env:
       VPS_HOST: ${{ vars.BACKUP_VPS_HOST }}
       VPS_PORT: ${{ vars.BACKUP_VPS_PORT }}
