@@ -85,6 +85,13 @@ RUN mkdir -p \
         storage/logs \
     && chown -R www-data:www-data bootstrap/cache storage
 
+USER www-data
+
+RUN test "$(id -u)" -eq 33 \
+    && test "$(id -g)" -eq 33 \
+    && test -w bootstrap/cache \
+    && test -w storage
+
 EXPOSE 9000
 
 HEALTHCHECK --interval=10s --timeout=3s --start-period=20s --retries=6 \

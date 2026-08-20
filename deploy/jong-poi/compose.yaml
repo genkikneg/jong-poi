@@ -2,6 +2,7 @@ name: jong-poi
 
 x-app: &app
     image: ${APP_IMAGE:?APP_IMAGE is required}
+    user: '33:33'
     env_file:
         - .env
     restart: unless-stopped
