@@ -66,6 +66,9 @@ jobs:
       - name: Validate production environment defaults
         run: ops/validate-production-env.sh deploy/jong-poi/app.env.example
 
+      - name: Test production environment validation
+        run: ops/test-production-env-validation.sh
+
       - name: Check frontend formatting
         run: npm run format:check
 

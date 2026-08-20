@@ -30,6 +30,8 @@ require_setting() {
 
 require_setting APP_ENV production
 require_setting APP_DEBUG false
+require_setting APP_FORCE_HTTPS true
+require_setting LOG_LEVEL warning
 require_setting SESSION_SECURE_COOKIE true
 
 printf 'Production environment security settings are valid.\n'

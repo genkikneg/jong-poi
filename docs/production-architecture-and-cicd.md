@@ -151,6 +151,7 @@ Web用イメージとPHP-FPM用イメージを分ける場合も、同じコミ�
 - アプリ、PHP-FPM、MySQL、Redisなどのポートは外部公開しない。
 - ドメインごとのTLS終端は共通gatewayで行う。
 - 共通gatewayのdefault serverは未知Hostと未知SNIを拒否する。HTTPからHTTPSへのリダイレクト先は各アプリの正式Hostへ固定し、`$host`を使用しない。
+- 本番アプリは`APP_FORCE_HTTPS=true`でURL生成をHTTPSへ固定し、`LOG_LEVEL=warning`で機密情報を含み得るdebugログを抑止する。
 - Nginxのセキュリティヘッダーとdotfile拒否設定を維持する。
 
 ### 4.2 コンテナ
