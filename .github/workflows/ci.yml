@@ -60,9 +60,6 @@ jobs:
       - name: Validate operational scripts
         run: bash -n ops/*.sh
 
-      - name: Validate GitHub Actions security
-        run: ops/test-github-actions-security.sh
-
       - name: Validate gateway host handling
         run: ops/test-gateway-config.sh
 
@@ -71,6 +68,9 @@ jobs:
 
       - name: Test production environment validation
         run: ops/test-production-env-validation.sh
+
+      - name: Validate GitHub Actions security
+        run: ops/test-github-actions-security.sh
 
       - name: Check frontend formatting
         run: npm run format:check
