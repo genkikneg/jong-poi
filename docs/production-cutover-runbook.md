@@ -26,6 +26,7 @@
 - `DB_HOST=db`
 - DB名・アプリ用ユーザー・パスワードがComposeと一致
 - `LOG_CHANNEL=stderr`
+- `SESSION_SECURE_COOKIE=true`
 
 `db.env`には新しい長いMySQL rootパスワードだけを置く。`deploy.env`のapp/webには同一の40文字コミットSHAを指定する。
 
