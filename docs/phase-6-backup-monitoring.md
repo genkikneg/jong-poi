@@ -38,19 +38,22 @@ systemdタイマーは同時起動を避けるため、最大15分のランダ�
 
 ## 4. GitHub設定
 
-リポジトリに次のActions variablesを設定する。
+`backup` Environmentを作成し、deployment branchをprotected branchだけに制限する。
+定期実行に人手の承認は設定しない。
+
+`backup` Environmentに次のActions variablesを設定する。
 
 - `BACKUP_VPS_HOST`
 - `BACKUP_VPS_PORT`
 - `BACKUP_VPS_USER=backup-export`
 
-次のActions secretsを設定する。
+同じEnvironmentに次のActions secretsを設定する。Repository Secretsには置かない。
 
 - `BACKUP_SSH_KEY`
 - `BACKUP_KNOWN_HOSTS`
 - `BACKUP_PASSPHRASE`
 
-`BACKUP_PASSPHRASE`はバックアップ復号に必要である。GitHub以外のパスワードマネージャーにも保存する。
+`BACKUP_PASSPHRASE`はバックアップ復号に必要である。GitHub以外のパスワードマネージャーにも保存する。Secretの移行やローテーション後は、暗号化artifactの復号と分離環境での復元を確認してから旧Secretを削除する。
 
 ## 5. タイマーの確認
 
