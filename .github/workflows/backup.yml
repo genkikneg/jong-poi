@@ -1,0 +1,97 @@
+name: Encrypted production backup
+
+on:
+  schedule:
+    - cron: '17 4 * * *'
+      timezone: Asia/Tokyo
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-backup
+  cancel-in-progress: false
+
+jobs:
+  backup:
+    name: Export encrypted backup
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      VPS_HOST: ${{ vars.BACKUP_VPS_HOST }}
+      VPS_PORT: ${{ vars.BACKUP_VPS_PORT }}
+      VPS_USER: ${{ vars.BACKUP_VPS_USER }}
+      VPS_SSH_KEY: ${{ secrets.BACKUP_SSH_KEY }}
+      VPS_KNOWN_HOSTS: ${{ secrets.BACKUP_KNOWN_HOSTS }}
+      BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+
+    steps:
+      - name: Validate backup inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$VPS_HOST"
+          test -n "$VPS_PORT"
+          test -n "$VPS_USER"
+          test -n "$VPS_SSH_KEY"
+          test -n "$VPS_KNOWN_HOSTS"
+          test -n "$BACKUP_PASSPHRASE"
+          [[ "$VPS_PORT" =~ ^[0-9]+$ ]]
+
+      - name: Configure restricted SSH access
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          install -d "$HOME/.ssh"
+          printf '%s\n' "$VPS_SSH_KEY" > "$HOME/.ssh/backup_key"
+          printf '%s\n' "$VPS_KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+
+      - name: Export latest verified backup
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          ssh \
+            -i "$HOME/.ssh/backup_key" \
+            -p "$VPS_PORT" \
+            -o BatchMode=yes \
+            -o ConnectTimeout=10 \
+            -o IdentitiesOnly=yes \
+            -o StrictHostKeyChecking=yes \
+            "$VPS_USER@$VPS_HOST" \
+            backup-export \
+            > jong-poi-backup.tar.gz
+          tar -tzf jong-poi-backup.tar.gz >/dev/null
+
+      - name: Encrypt backup before upload
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          printf '%s' "$BACKUP_PASSPHRASE" \
+            | gpg \
+                --batch \
+                --yes \
+                --pinentry-mode loopback \
+                --passphrase-fd 0 \
+                --symmetric \
+                --cipher-algo AES256 \
+                --digest-algo SHA512 \
+                --s2k-digest-algo SHA512 \
+                --output jong-poi-backup.tar.gz.gpg \
+                jong-poi-backup.tar.gz
+          rm -f jong-poi-backup.tar.gz
+          sha256sum jong-poi-backup.tar.gz.gpg > jong-poi-backup.tar.gz.gpg.sha256
+
+      - name: Upload encrypted backup
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: jong-poi-backup-${{ github.run_id }}
+          path: |
+            jong-poi-backup.tar.gz.gpg
+            jong-poi-backup.tar.gz.gpg.sha256
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0

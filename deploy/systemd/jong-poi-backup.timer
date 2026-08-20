@@ -1,0 +1,12 @@
+[Unit]
+Description=Run the jong-poi production backup every day
+
+[Timer]
+OnCalendar=*-*-* 03:17:00 Asia/Tokyo
+RandomizedDelaySec=15min
+AccuracySec=1min
+Persistent=true
+Unit=jong-poi-backup.service
+
+[Install]
+WantedBy=timers.target
