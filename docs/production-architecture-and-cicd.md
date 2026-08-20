@@ -156,11 +156,11 @@ Web用イメージとPHP-FPM用イメージを分ける場合も、同じコミ�
 
 ### 4.2 コンテナ
 
-- 可能な限り非rootユーザーでプロセスを実行する。
+- PHP-FPMとqueueはイメージとComposeの両方でUID:GID `33:33`（`www-data`）を指定し、rootでの起動を防ぐ。
 - `privileged: true`を使用しない。
 - Dockerソケットをアプリコンテナへマウントしない。
 - Linux capabilityは必要最小限にする。
-- 書き込みが必要なディレクトリ以外は読み取り専用化を検討する。
+- appとqueueのroot filesystemは読み取り専用にし、書き込み先はUID:GID `33:33`の`storage/app`とtmpfsへ限定する。
 - イメージ内へ`.env`、SSH鍵、APIキーなどをコピーしない。
 - イメージのベースバージョンを固定し、Dependabot等で定期更新する。
 - 本番Nginxは原則としてstable系を使用し、タグとmulti-arch digestの両方を固定する。mainline系は必要な機能がある場合に個別検証する。
