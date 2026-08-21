@@ -13,4 +13,4 @@ yarn-debug.log*
 yarn-error.log*
 .pnp.*
 dist/
-docs/security-remediation.local.md
+docs/
