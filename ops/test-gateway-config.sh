@@ -15,6 +15,9 @@ grep -Fq 'add_header Content-Security-Policy "' "$GATEWAY_DIR/nginx/snippets/sec
 grep -Fq 'max-age=31536000; includeSubDomains' "$GATEWAY_DIR/nginx/snippets/security.conf"
 grep -Fq "img-src 'self' data: blob:;" "$GATEWAY_DIR/nginx/snippets/security.conf"
 grep -Fq "connect-src 'self';" "$GATEWAY_DIR/nginx/snippets/security.conf"
+grep -Fq "script-src 'self';" "$GATEWAY_DIR/nginx/snippets/security.conf"
+grep -Fq "style-src 'self' https://fonts.bunny.net;" "$GATEWAY_DIR/nginx/snippets/security.conf"
+grep -Fq "style-src-attr 'unsafe-inline';" "$GATEWAY_DIR/nginx/snippets/security.conf"
 
 assert_status() {
     local label="$1"

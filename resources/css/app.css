@@ -7,6 +7,14 @@
 
 @custom-variant dark (&:is(.dark *));
 
+html {
+    background-color: oklch(1 0 0);
+}
+
+html.dark {
+    background-color: oklch(0.145 0 0);
+}
+
 @theme {
     --font-sans:
         'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
