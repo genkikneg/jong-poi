@@ -298,6 +298,16 @@ docker compose \
 
 バックアップは「存在すること」ではなく「復元試験に成功していること」を完了条件とする。
 
+### 8.3 OS・Docker更新
+
+- 更新前にVPS内バックアップ、隔離復元検査、暗号化外部バックアップを完了する。
+- SSH、Firewall、コンテナ、公開HTTPSと、OS設定・パッケージ状態を記録する。
+- `apt-get full-upgrade`後にパッケージ整合性を確認し、計画再起動する。
+- 再起動後はkernel、更新残件、SSH、UFW、Fail2ban、AppArmor、Docker、全コンテナ、DB接続、公開HTTPS、backup timer、復元検査を確認する。
+- `docker compose down`、volume削除、未確認の`autoremove`をOS更新手順へ含めない。
+
+実施記録は[2026-08-21 VPSセキュリティ更新](security-maintenance-2026-08-21.md)を参照する。
+
 ## 9. 監視とログ
 
 - Laravelログは可能な範囲で標準出力・標準エラーへ送る。
