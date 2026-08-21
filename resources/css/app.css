@@ -15,6 +15,23 @@ html.dark {
     background-color: oklch(0.145 0 0);
 }
 
+.sidebar-wrapper {
+    --sidebar-width: 16rem;
+    --sidebar-width-icon: 3rem;
+}
+
+.sidebar-mobile {
+    --sidebar-width: 18rem;
+}
+
+.sidebar-skeleton-text {
+    max-width: 75%;
+}
+
+.mix-blend-hard-light {
+    mix-blend-mode: hard-light;
+}
+
 @theme {
     --font-sans:
         'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
