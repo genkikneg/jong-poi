@@ -8,6 +8,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
+import { cn } from '@/lib/utils';
 import { status as statusRoute } from '@/routes';
 import type { BreadcrumbItem } from '@/types';
 
@@ -74,6 +75,12 @@ const formatPoints = (value?: string | number | null) =>
 
 const rankLabels = [1, 2, 3, 4];
 const donutColors = ['#fbbf24', '#38bdf8', '#34d399', '#c084fc'];
+const rankColorClasses = [
+    'bg-amber-400',
+    'bg-sky-400',
+    'bg-emerald-400',
+    'bg-purple-400',
+];
 const donutRadius = 64;
 const donutStrokeWidth = 16;
 const donutSize = donutRadius * 2 + donutStrokeWidth;
@@ -141,6 +148,7 @@ export default function StatusPage({
         rate: detailedStats.rank_rates[rank]?.rate ?? 0,
         count: detailedStats.rank_rates[rank]?.count ?? 0,
         color: donutColors[index % donutColors.length],
+        colorClass: rankColorClasses[index % rankColorClasses.length],
     }));
 
     const totalRate = rankRateMetrics.reduce(
@@ -298,11 +306,10 @@ export default function StatusPage({
                                             >
                                                 <div className="flex items-center gap-2">
                                                     <span
-                                                        className="size-2.5 rounded-full"
-                                                        style={{
-                                                            backgroundColor:
-                                                                metric.color,
-                                                        }}
+                                                        className={cn(
+                                                            'size-2.5 rounded-full',
+                                                            metric.colorClass,
+                                                        )}
                                                     />
                                                     <span className="text-muted-foreground">
                                                         {metric.title}
