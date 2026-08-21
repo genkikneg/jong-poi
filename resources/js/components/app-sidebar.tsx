@@ -2,7 +2,6 @@ import { Link, usePage } from '@inertiajs/react';
 import { BarChart3, LayoutGrid, Settings, Trophy, Users } from 'lucide-react';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
-import { NavUser } from '@/components/nav-user';
 import {
     Sidebar,
     SidebarContent,
@@ -108,7 +107,6 @@ export function AppSidebar() {
                     {footerNavItems.length > 0 && (
                         <NavFooter items={footerNavItems} className="mt-auto" />
                     )}
-                    <NavUser />
                 </SidebarFooter>
             </Sidebar>
             <MobileBottomNav items={[...mainNavItems, ...footerNavItems]} />
