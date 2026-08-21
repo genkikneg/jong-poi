@@ -135,23 +135,19 @@ function MobileBottomNav({ items }: { items: NavItem[] }) {
                             prefetch
                             aria-current={active ? 'page' : undefined}
                             className={cn(
-                                'relative mx-1 my-1 flex min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-md px-1 text-[10px] font-medium transition-colors',
+                                'relative flex min-w-0 flex-1 flex-col items-center justify-center gap-1 px-1 text-[10px] font-medium transition-colors',
                                 active
-                                    ? 'bg-primary/15 font-semibold text-primary shadow-sm'
+                                    ? 'text-primary'
                                     : 'text-muted-foreground hover:text-foreground',
                             )}
                         >
-                            {active && (
-                                <span
-                                    aria-hidden="true"
-                                    className="absolute inset-x-3 top-0 h-1 rounded-b-full bg-primary"
-                                />
-                            )}
                             {item.icon && (
                                 <item.icon
                                     className={cn(
-                                        'size-5',
-                                        active && 'stroke-[2.5]',
+                                        'transition-[width,height,stroke-width] duration-200',
+                                        active
+                                            ? 'size-7 stroke-[2.5]'
+                                            : 'size-5',
                                     )}
                                 />
                             )}
