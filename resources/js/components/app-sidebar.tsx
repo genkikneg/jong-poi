@@ -135,13 +135,26 @@ function MobileBottomNav({ items }: { items: NavItem[] }) {
                             prefetch
                             aria-current={active ? 'page' : undefined}
                             className={cn(
-                                'relative flex min-w-0 flex-1 flex-col items-center justify-center gap-1 px-1 text-[10px] font-medium transition-colors',
+                                'relative mx-1 my-1 flex min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-md px-1 text-[10px] font-medium transition-colors',
                                 active
-                                    ? 'text-primary'
+                                    ? 'bg-primary/15 font-semibold text-primary shadow-sm'
                                     : 'text-muted-foreground hover:text-foreground',
                             )}
                         >
-                            {item.icon && <item.icon className="size-5" />}
+                            {active && (
+                                <span
+                                    aria-hidden="true"
+                                    className="absolute inset-x-3 top-0 h-1 rounded-b-full bg-primary"
+                                />
+                            )}
+                            {item.icon && (
+                                <item.icon
+                                    className={cn(
+                                        'size-5',
+                                        active && 'stroke-[2.5]',
+                                    )}
+                                />
+                            )}
                             <span className="truncate">{item.title}</span>
                             {item.indicators && item.indicators.length > 0 && (
                                 <span
