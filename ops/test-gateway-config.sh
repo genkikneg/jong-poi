@@ -10,6 +10,7 @@ CONTAINER_NAME="jong-poi-gateway-test-$$"
 OFFICIAL_HOST="jong-poi.misoon.net"
 
 grep -Fqx 'server_tokens off;' "$GATEWAY_DIR/nginx/snippets/security.conf"
+grep -Fqx '        proxy_hide_header Server;' "$GATEWAY_DIR/nginx/conf.d/jong-poi.conf"
 
 assert_status() {
     local label="$1"
