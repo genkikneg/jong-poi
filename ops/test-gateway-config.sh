@@ -9,6 +9,8 @@ TEST_DIR="$(mktemp -d "${TMPDIR:-/tmp}/jong-poi-gateway-test.XXXXXX")"
 CONTAINER_NAME="jong-poi-gateway-test-$$"
 OFFICIAL_HOST="jong-poi.misoon.net"
 
+grep -Fqx 'server_tokens off;' "$GATEWAY_DIR/nginx/snippets/security.conf"
+
 assert_status() {
     local label="$1"
     local expected="$2"
