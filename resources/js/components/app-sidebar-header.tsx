@@ -1,6 +1,7 @@
 import { Link } from '@inertiajs/react';
 import AppLogoIcon from '@/components/app-logo-icon';
 import { Breadcrumbs } from '@/components/breadcrumbs';
+import { HeaderUserMenu } from '@/components/nav-user';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
 import type { BreadcrumbItem as BreadcrumbItemType } from '@/types';
@@ -32,8 +33,9 @@ export function AppSidebarHeader({
                 </div>
             )}
 
-            <div className="ml-auto">
+            <div className="ml-auto flex items-center gap-3">
                 <Breadcrumbs breadcrumbs={breadcrumbs} />
+                <HeaderUserMenu />
             </div>
         </header>
     );
