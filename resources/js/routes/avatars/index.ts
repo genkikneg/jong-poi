@@ -1,98 +1,92 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../wayfinder'
 /**
 * @see \App\Http\Controllers\UserAvatarController::__invoke
-* @see app/Http/Controllers/UserAvatarController.php:12
-* @route '/avatars/{user}'
+* @see app/Http/Controllers/UserAvatarController.php:11
+* @route '/avatars/{avatarId}'
 */
-export const show = (args: { user: number | { id: number } } | [user: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+export const show = (args: { avatarId: string | number } | [avatarId: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: show.url(args, options),
     method: 'get',
 })
 
 show.definition = {
     methods: ["get","head"],
-    url: '/avatars/{user}',
+    url: '/avatars/{avatarId}',
 } satisfies RouteDefinition<["get","head"]>
 
 /**
 * @see \App\Http\Controllers\UserAvatarController::__invoke
-* @see app/Http/Controllers/UserAvatarController.php:12
-* @route '/avatars/{user}'
+* @see app/Http/Controllers/UserAvatarController.php:11
+* @route '/avatars/{avatarId}'
 */
-show.url = (args: { user: number | { id: number } } | [user: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
+show.url = (args: { avatarId: string | number } | [avatarId: string | number ] | string | number, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
-        args = { user: args }
-    }
-
-    if (typeof args === 'object' && !Array.isArray(args) && 'id' in args) {
-        args = { user: args.id }
+        args = { avatarId: args }
     }
 
     if (Array.isArray(args)) {
         args = {
-            user: args[0],
+            avatarId: args[0],
         }
     }
 
     args = applyUrlDefaults(args)
 
     const parsedArgs = {
-        user: typeof args.user === 'object'
-        ? args.user.id
-        : args.user,
+        avatarId: args.avatarId,
     }
 
     return show.definition.url
-            .replace('{user}', parsedArgs.user.toString())
+            .replace('{avatarId}', parsedArgs.avatarId.toString())
             .replace(/\/+$/, '') + queryParams(options)
 }
 
 /**
 * @see \App\Http\Controllers\UserAvatarController::__invoke
-* @see app/Http/Controllers/UserAvatarController.php:12
-* @route '/avatars/{user}'
+* @see app/Http/Controllers/UserAvatarController.php:11
+* @route '/avatars/{avatarId}'
 */
-show.get = (args: { user: number | { id: number } } | [user: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+show.get = (args: { avatarId: string | number } | [avatarId: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: show.url(args, options),
     method: 'get',
 })
 
 /**
 * @see \App\Http\Controllers\UserAvatarController::__invoke
-* @see app/Http/Controllers/UserAvatarController.php:12
-* @route '/avatars/{user}'
+* @see app/Http/Controllers/UserAvatarController.php:11
+* @route '/avatars/{avatarId}'
 */
-show.head = (args: { user: number | { id: number } } | [user: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+show.head = (args: { avatarId: string | number } | [avatarId: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: show.url(args, options),
     method: 'head',
 })
 
 /**
 * @see \App\Http\Controllers\UserAvatarController::__invoke
-* @see app/Http/Controllers/UserAvatarController.php:12
-* @route '/avatars/{user}'
+* @see app/Http/Controllers/UserAvatarController.php:11
+* @route '/avatars/{avatarId}'
 */
-const showForm = (args: { user: number | { id: number } } | [user: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+const showForm = (args: { avatarId: string | number } | [avatarId: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: show.url(args, options),
     method: 'get',
 })
 
 /**
 * @see \App\Http\Controllers\UserAvatarController::__invoke
-* @see app/Http/Controllers/UserAvatarController.php:12
-* @route '/avatars/{user}'
+* @see app/Http/Controllers/UserAvatarController.php:11
+* @route '/avatars/{avatarId}'
 */
-showForm.get = (args: { user: number | { id: number } } | [user: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+showForm.get = (args: { avatarId: string | number } | [avatarId: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: show.url(args, options),
     method: 'get',
 })
 
 /**
 * @see \App\Http\Controllers\UserAvatarController::__invoke
-* @see app/Http/Controllers/UserAvatarController.php:12
-* @route '/avatars/{user}'
+* @see app/Http/Controllers/UserAvatarController.php:11
+* @route '/avatars/{avatarId}'
 */
-showForm.head = (args: { user: number | { id: number } } | [user: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+showForm.head = (args: { avatarId: string | number } | [avatarId: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: show.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'HEAD',

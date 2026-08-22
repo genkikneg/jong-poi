@@ -1,7 +1,7 @@
 import { Link } from '@inertiajs/react';
 import AppLogoIcon from '@/components/app-logo-icon';
 import { Breadcrumbs } from '@/components/breadcrumbs';
-import { SidebarTrigger } from '@/components/ui/sidebar';
+import { HeaderUserMenu } from '@/components/nav-user';
 import { dashboard } from '@/routes';
 import type { BreadcrumbItem as BreadcrumbItemType } from '@/types';
 
@@ -15,7 +15,6 @@ export function AppSidebarHeader({
     return (
         <header className="relative flex h-16 shrink-0 items-center gap-4 border-b border-sidebar-border/50 px-6 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 md:px-4">
             <div className="flex items-center gap-3">
-                <SidebarTrigger className="-ml-1" />
                 <Link
                     href={dashboard()}
                     prefetch
@@ -32,8 +31,11 @@ export function AppSidebarHeader({
                 </div>
             )}
 
-            <div className="ml-auto">
-                <Breadcrumbs breadcrumbs={breadcrumbs} />
+            <div className="ml-auto flex items-center gap-3">
+                <div className="hidden md:block">
+                    <Breadcrumbs breadcrumbs={breadcrumbs} />
+                </div>
+                <HeaderUserMenu />
             </div>
         </header>
     );

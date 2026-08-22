@@ -16,7 +16,7 @@ export default function AppSidebarLayout({
             <AppSidebar />
             <AppContent variant="sidebar" className="overflow-x-hidden">
                 <AppSidebarHeader breadcrumbs={breadcrumbs} />
-                <div className="w-full px-4 py-6 sm:px-6 lg:px-8">
+                <div className="w-full px-4 py-6 pb-24 sm:px-6 sm:pb-6 lg:px-8">
                     {children}
                 </div>
                 <PageRefreshButton href={currentPageHref} />

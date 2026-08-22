@@ -1,4 +1,5 @@
 import { Form, Head, router } from '@inertiajs/react';
+import { useEcho } from '@laravel/echo-react';
 import { ChevronDown } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import {
@@ -152,6 +153,17 @@ export default function SessionShowPage({
     currentUserId,
     draft,
 }: Props) {
+    useEcho<{ session_id: number; action: string }>(
+        `sessions.${session.id}`,
+        '.session.state-updated',
+        () => {
+            router.reload({
+                only: ['session', 'draft', 'totals', 'table'],
+            });
+        },
+        [session.id],
+    );
+
     const isClosed = session.status === 'closed';
     const rankOptions = Array.from(
         { length: session.player_count },

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Sessions;
 
+use App\Events\SessionStateUpdated;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Sessions\StoreSessionRequest;
 use App\Models\FriendRequest;
@@ -290,6 +291,7 @@ class SessionController extends Controller
             $session->markClosed();
             $session->members()->update(['joined_at' => null]);
             $session->refresh();
+            broadcast(new SessionStateUpdated($session, 'session.closed'));
         }
 
         return redirect()->route('sessions.show', $session);
