@@ -1,7 +1,6 @@
 # jong-poi
 
 ジャンポイ
-
 ## ローカル開発（Docker）
 
 Docker Desktopを起動した状態で、プロジェクトルートから実行します。
