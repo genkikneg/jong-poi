@@ -1,5 +1,4 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../wayfinder'
-import localA91488 from './local'
 /**
 * @see vendor/laravel/framework/src/Illuminate/Filesystem/FilesystemServiceProvider.php:98
 * @route '/storage/{path}'
@@ -93,7 +92,7 @@ localForm.head = (args: { path: string | number } | [path: string | number ] | s
 local.form = localForm
 
 const storage = {
-    local: Object.assign(local, localA91488),
+    local: Object.assign(local, local),
 }
 
 export default storage

@@ -6,7 +6,6 @@ storage/*.key
 public/storage
 /public/hot
 .vite
-/resources/js/routes/storage/local/
 /.docker-data/
 /.idea
 /.vscode
