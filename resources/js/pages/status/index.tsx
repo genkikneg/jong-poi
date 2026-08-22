@@ -1,5 +1,4 @@
 import { Head } from '@inertiajs/react';
-import Heading from '@/components/heading';
 import {
     Card,
     CardContent,
@@ -14,7 +13,7 @@ import type { BreadcrumbItem } from '@/types';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Status',
+        title: '戦績',
         href: statusRoute().url,
     },
 ];
@@ -224,14 +223,9 @@ export default function StatusPage({
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Status" />
+            <Head title="戦績" />
 
             <div className="space-y-8">
-                <Heading
-                    title="Status"
-                    description="Review recent performance before your next session"
-                />
-
                 <Card>
                     <CardHeader>
                         <CardTitle>累計スタッツ</CardTitle>

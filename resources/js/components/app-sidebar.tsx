@@ -78,7 +78,7 @@ export function AppSidebar() {
             icon: Trophy,
         },
         {
-            title: 'Status',
+            title: '戦績',
             href: statusRoute(),
             icon: BarChart3,
         },

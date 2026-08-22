@@ -10,15 +10,14 @@ import { send } from '@/routes/verification';
 export default function VerifyEmail({ status }: { status?: string }) {
     return (
         <AuthLayout
-            title="Verify email"
-            description="Please verify your email address by clicking on the link we just emailed to you."
+            title="メールアドレスを確認"
+            description="先ほど送信したメールのリンクをクリックして、メールアドレスを確認してください。"
         >
-            <Head title="Email verification" />
+            <Head title="メールアドレスの確認" />
 
             {status === 'verification-link-sent' && (
                 <div className="mb-4 text-center text-sm font-medium text-green-600">
-                    A new verification link has been sent to the email address
-                    you provided during registration.
+                    新しい確認メールを登録時のメールアドレスへ送信しました。
                 </div>
             )}
 
@@ -27,14 +26,14 @@ export default function VerifyEmail({ status }: { status?: string }) {
                     <>
                         <Button disabled={processing} variant="secondary">
                             {processing && <Spinner />}
-                            Resend verification email
+                            確認メールを再送信
                         </Button>
 
                         <TextLink
                             href={logout()}
                             className="mx-auto block text-sm"
                         >
-                            Log out
+                            ログアウト
                         </TextLink>
                     </>
                 )}
