@@ -6,6 +6,7 @@ storage/*.key
 public/storage
 /public/hot
 .vite
+/.docker-data/
 /.idea
 /.vscode
 npm-debug.log*

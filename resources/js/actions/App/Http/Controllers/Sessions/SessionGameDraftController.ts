@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Sessions\SessionGameDraftController::store
-* @see app/Http/Controllers/Sessions/SessionGameDraftController.php:18
+* @see app/Http/Controllers/Sessions/SessionGameDraftController.php:19
 * @route '/sessions/{session}/draft'
 */
 export const store = (args: { session: number | { id: number } } | [session: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -16,7 +16,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\Sessions\SessionGameDraftController::store
-* @see app/Http/Controllers/Sessions/SessionGameDraftController.php:18
+* @see app/Http/Controllers/Sessions/SessionGameDraftController.php:19
 * @route '/sessions/{session}/draft'
 */
 store.url = (args: { session: number | { id: number } } | [session: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -49,7 +49,7 @@ store.url = (args: { session: number | { id: number } } | [session: number | { i
 
 /**
 * @see \App\Http\Controllers\Sessions\SessionGameDraftController::store
-* @see app/Http/Controllers/Sessions/SessionGameDraftController.php:18
+* @see app/Http/Controllers/Sessions/SessionGameDraftController.php:19
 * @route '/sessions/{session}/draft'
 */
 store.post = (args: { session: number | { id: number } } | [session: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -59,7 +59,7 @@ store.post = (args: { session: number | { id: number } } | [session: number | { 
 
 /**
 * @see \App\Http\Controllers\Sessions\SessionGameDraftController::store
-* @see app/Http/Controllers/Sessions/SessionGameDraftController.php:18
+* @see app/Http/Controllers/Sessions/SessionGameDraftController.php:19
 * @route '/sessions/{session}/draft'
 */
 const storeForm = (args: { session: number | { id: number } } | [session: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -69,7 +69,7 @@ const storeForm = (args: { session: number | { id: number } } | [session: number
 
 /**
 * @see \App\Http\Controllers\Sessions\SessionGameDraftController::store
-* @see app/Http/Controllers/Sessions/SessionGameDraftController.php:18
+* @see app/Http/Controllers/Sessions/SessionGameDraftController.php:19
 * @route '/sessions/{session}/draft'
 */
 storeForm.post = (args: { session: number | { id: number } } | [session: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -81,7 +81,7 @@ store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\Sessions\SessionGameDraftController::confirm
-* @see app/Http/Controllers/Sessions/SessionGameDraftController.php:65
+* @see app/Http/Controllers/Sessions/SessionGameDraftController.php:68
 * @route '/sessions/{session}/draft/confirm'
 */
 export const confirm = (args: { session: number | { id: number } } | [session: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -96,7 +96,7 @@ confirm.definition = {
 
 /**
 * @see \App\Http\Controllers\Sessions\SessionGameDraftController::confirm
-* @see app/Http/Controllers/Sessions/SessionGameDraftController.php:65
+* @see app/Http/Controllers/Sessions/SessionGameDraftController.php:68
 * @route '/sessions/{session}/draft/confirm'
 */
 confirm.url = (args: { session: number | { id: number } } | [session: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -129,7 +129,7 @@ confirm.url = (args: { session: number | { id: number } } | [session: number | {
 
 /**
 * @see \App\Http\Controllers\Sessions\SessionGameDraftController::confirm
-* @see app/Http/Controllers/Sessions/SessionGameDraftController.php:65
+* @see app/Http/Controllers/Sessions/SessionGameDraftController.php:68
 * @route '/sessions/{session}/draft/confirm'
 */
 confirm.post = (args: { session: number | { id: number } } | [session: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -139,7 +139,7 @@ confirm.post = (args: { session: number | { id: number } } | [session: number | 
 
 /**
 * @see \App\Http\Controllers\Sessions\SessionGameDraftController::confirm
-* @see app/Http/Controllers/Sessions/SessionGameDraftController.php:65
+* @see app/Http/Controllers/Sessions/SessionGameDraftController.php:68
 * @route '/sessions/{session}/draft/confirm'
 */
 const confirmForm = (args: { session: number | { id: number } } | [session: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -149,7 +149,7 @@ const confirmForm = (args: { session: number | { id: number } } | [session: numb
 
 /**
 * @see \App\Http\Controllers\Sessions\SessionGameDraftController::confirm
-* @see app/Http/Controllers/Sessions/SessionGameDraftController.php:65
+* @see app/Http/Controllers/Sessions/SessionGameDraftController.php:68
 * @route '/sessions/{session}/draft/confirm'
 */
 confirmForm.post = (args: { session: number | { id: number } } | [session: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

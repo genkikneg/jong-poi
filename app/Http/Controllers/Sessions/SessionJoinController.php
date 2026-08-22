@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Sessions;
 
+use App\Events\SessionStateUpdated;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Sessions\JoinSessionRequest;
 use App\Models\Session;
@@ -22,6 +23,7 @@ class SessionJoinController extends Controller
 
         if (! $member->joined_at) {
             $member->forceFill(['joined_at' => now()])->save();
+            broadcast(new SessionStateUpdated($session, 'member.joined'));
         }
 
         return redirect()->route('sessions.show', $session);

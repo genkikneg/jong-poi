@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Sessions;
 
+use App\Events\SessionStateUpdated;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Sessions\ConfirmDraftRequest;
 use App\Http\Requests\Sessions\StoreDraftEntryRequest;
@@ -58,6 +59,8 @@ class SessionGameDraftController extends Controller
                 ]);
             }
         }
+
+        broadcast(new SessionStateUpdated($session, 'draft.updated'));
 
         return redirect()->route('sessions.show', $session);
     }
@@ -123,6 +126,8 @@ class SessionGameDraftController extends Controller
             $draft->entries()->delete();
             $draft->delete();
         });
+
+        broadcast(new SessionStateUpdated($session, 'game.confirmed'));
 
         return redirect()->route('sessions.show', $session);
     }

@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Sessions\SessionJoinController::store
-* @see app/Http/Controllers/Sessions/SessionJoinController.php:12
+* @see app/Http/Controllers/Sessions/SessionJoinController.php:13
 * @route '/sessions/join'
 */
 export const store = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -16,7 +16,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\Sessions\SessionJoinController::store
-* @see app/Http/Controllers/Sessions/SessionJoinController.php:12
+* @see app/Http/Controllers/Sessions/SessionJoinController.php:13
 * @route '/sessions/join'
 */
 store.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ store.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Sessions\SessionJoinController::store
-* @see app/Http/Controllers/Sessions/SessionJoinController.php:12
+* @see app/Http/Controllers/Sessions/SessionJoinController.php:13
 * @route '/sessions/join'
 */
 store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -35,7 +35,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
 * @see \App\Http\Controllers\Sessions\SessionJoinController::store
-* @see app/Http/Controllers/Sessions/SessionJoinController.php:12
+* @see app/Http/Controllers/Sessions/SessionJoinController.php:13
 * @route '/sessions/join'
 */
 const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -45,7 +45,7 @@ const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => 
 
 /**
 * @see \App\Http\Controllers\Sessions\SessionJoinController::store
-* @see app/Http/Controllers/Sessions/SessionJoinController.php:12
+* @see app/Http/Controllers/Sessions/SessionJoinController.php:13
 * @route '/sessions/join'
 */
 storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

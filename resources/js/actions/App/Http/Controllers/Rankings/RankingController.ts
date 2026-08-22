@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Rankings\RankingController::__invoke
-* @see app/Http/Controllers/Rankings/RankingController.php:18
+* @see app/Http/Controllers/Rankings/RankingController.php:16
 * @route '/rankings'
 */
 const RankingController = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ RankingController.definition = {
 
 /**
 * @see \App\Http\Controllers\Rankings\RankingController::__invoke
-* @see app/Http/Controllers/Rankings/RankingController.php:18
+* @see app/Http/Controllers/Rankings/RankingController.php:16
 * @route '/rankings'
 */
 RankingController.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ RankingController.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Rankings\RankingController::__invoke
-* @see app/Http/Controllers/Rankings/RankingController.php:18
+* @see app/Http/Controllers/Rankings/RankingController.php:16
 * @route '/rankings'
 */
 RankingController.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -35,7 +35,7 @@ RankingController.get = (options?: RouteQueryOptions): RouteDefinition<'get'> =>
 
 /**
 * @see \App\Http\Controllers\Rankings\RankingController::__invoke
-* @see app/Http/Controllers/Rankings/RankingController.php:18
+* @see app/Http/Controllers/Rankings/RankingController.php:16
 * @route '/rankings'
 */
 RankingController.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -45,7 +45,7 @@ RankingController.head = (options?: RouteQueryOptions): RouteDefinition<'head'> 
 
 /**
 * @see \App\Http\Controllers\Rankings\RankingController::__invoke
-* @see app/Http/Controllers/Rankings/RankingController.php:18
+* @see app/Http/Controllers/Rankings/RankingController.php:16
 * @route '/rankings'
 */
 const RankingControllerForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -55,7 +55,7 @@ const RankingControllerForm = (options?: RouteQueryOptions): RouteFormDefinition
 
 /**
 * @see \App\Http\Controllers\Rankings\RankingController::__invoke
-* @see app/Http/Controllers/Rankings/RankingController.php:18
+* @see app/Http/Controllers/Rankings/RankingController.php:16
 * @route '/rankings'
 */
 RankingControllerForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -65,7 +65,7 @@ RankingControllerForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'
 
 /**
 * @see \App\Http\Controllers\Rankings\RankingController::__invoke
-* @see app/Http/Controllers/Rankings/RankingController.php:18
+* @see app/Http/Controllers/Rankings/RankingController.php:16
 * @route '/rankings'
 */
 RankingControllerForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

@@ -3,7 +3,7 @@ import draft from './draft'
 import games from './games'
 /**
 * @see \App\Http\Controllers\Sessions\SessionViewController::create
-* @see app/Http/Controllers/Sessions/SessionViewController.php:16
+* @see app/Http/Controllers/Sessions/SessionViewController.php:15
 * @route '/sessions/create'
 */
 export const create = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -18,7 +18,7 @@ create.definition = {
 
 /**
 * @see \App\Http\Controllers\Sessions\SessionViewController::create
-* @see app/Http/Controllers/Sessions/SessionViewController.php:16
+* @see app/Http/Controllers/Sessions/SessionViewController.php:15
 * @route '/sessions/create'
 */
 create.url = (options?: RouteQueryOptions) => {
@@ -27,7 +27,7 @@ create.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Sessions\SessionViewController::create
-* @see app/Http/Controllers/Sessions/SessionViewController.php:16
+* @see app/Http/Controllers/Sessions/SessionViewController.php:15
 * @route '/sessions/create'
 */
 create.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -37,7 +37,7 @@ create.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\Sessions\SessionViewController::create
-* @see app/Http/Controllers/Sessions/SessionViewController.php:16
+* @see app/Http/Controllers/Sessions/SessionViewController.php:15
 * @route '/sessions/create'
 */
 create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -47,7 +47,7 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\Sessions\SessionViewController::create
-* @see app/Http/Controllers/Sessions/SessionViewController.php:16
+* @see app/Http/Controllers/Sessions/SessionViewController.php:15
 * @route '/sessions/create'
 */
 const createForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -57,7 +57,7 @@ const createForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => 
 
 /**
 * @see \App\Http\Controllers\Sessions\SessionViewController::create
-* @see app/Http/Controllers/Sessions/SessionViewController.php:16
+* @see app/Http/Controllers/Sessions/SessionViewController.php:15
 * @route '/sessions/create'
 */
 createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -67,7 +67,7 @@ createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\Sessions\SessionViewController::create
-* @see app/Http/Controllers/Sessions/SessionViewController.php:16
+* @see app/Http/Controllers/Sessions/SessionViewController.php:15
 * @route '/sessions/create'
 */
 createForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -84,7 +84,7 @@ create.form = createForm
 
 /**
 * @see \App\Http\Controllers\Sessions\SessionViewController::history
-* @see app/Http/Controllers/Sessions/SessionViewController.php:59
+* @see app/Http/Controllers/Sessions/SessionViewController.php:58
 * @route '/sessions/history'
 */
 export const history = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -99,7 +99,7 @@ history.definition = {
 
 /**
 * @see \App\Http\Controllers\Sessions\SessionViewController::history
-* @see app/Http/Controllers/Sessions/SessionViewController.php:59
+* @see app/Http/Controllers/Sessions/SessionViewController.php:58
 * @route '/sessions/history'
 */
 history.url = (options?: RouteQueryOptions) => {
@@ -108,7 +108,7 @@ history.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Sessions\SessionViewController::history
-* @see app/Http/Controllers/Sessions/SessionViewController.php:59
+* @see app/Http/Controllers/Sessions/SessionViewController.php:58
 * @route '/sessions/history'
 */
 history.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -118,7 +118,7 @@ history.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\Sessions\SessionViewController::history
-* @see app/Http/Controllers/Sessions/SessionViewController.php:59
+* @see app/Http/Controllers/Sessions/SessionViewController.php:58
 * @route '/sessions/history'
 */
 history.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -128,7 +128,7 @@ history.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\Sessions\SessionViewController::history
-* @see app/Http/Controllers/Sessions/SessionViewController.php:59
+* @see app/Http/Controllers/Sessions/SessionViewController.php:58
 * @route '/sessions/history'
 */
 const historyForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -138,7 +138,7 @@ const historyForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> =>
 
 /**
 * @see \App\Http\Controllers\Sessions\SessionViewController::history
-* @see app/Http/Controllers/Sessions/SessionViewController.php:59
+* @see app/Http/Controllers/Sessions/SessionViewController.php:58
 * @route '/sessions/history'
 */
 historyForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -148,7 +148,7 @@ historyForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => (
 
 /**
 * @see \App\Http\Controllers\Sessions\SessionViewController::history
-* @see app/Http/Controllers/Sessions/SessionViewController.php:59
+* @see app/Http/Controllers/Sessions/SessionViewController.php:58
 * @route '/sessions/history'
 */
 historyForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -416,7 +416,7 @@ close.form = closeForm
 
 /**
 * @see \App\Http\Controllers\Sessions\SessionJoinController::join
-* @see app/Http/Controllers/Sessions/SessionJoinController.php:12
+* @see app/Http/Controllers/Sessions/SessionJoinController.php:13
 * @route '/sessions/join'
 */
 export const join = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -431,7 +431,7 @@ join.definition = {
 
 /**
 * @see \App\Http\Controllers\Sessions\SessionJoinController::join
-* @see app/Http/Controllers/Sessions/SessionJoinController.php:12
+* @see app/Http/Controllers/Sessions/SessionJoinController.php:13
 * @route '/sessions/join'
 */
 join.url = (options?: RouteQueryOptions) => {
@@ -440,7 +440,7 @@ join.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Sessions\SessionJoinController::join
-* @see app/Http/Controllers/Sessions/SessionJoinController.php:12
+* @see app/Http/Controllers/Sessions/SessionJoinController.php:13
 * @route '/sessions/join'
 */
 join.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -450,7 +450,7 @@ join.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
 * @see \App\Http\Controllers\Sessions\SessionJoinController::join
-* @see app/Http/Controllers/Sessions/SessionJoinController.php:12
+* @see app/Http/Controllers/Sessions/SessionJoinController.php:13
 * @route '/sessions/join'
 */
 const joinForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -460,7 +460,7 @@ const joinForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => (
 
 /**
 * @see \App\Http\Controllers\Sessions\SessionJoinController::join
-* @see app/Http/Controllers/Sessions/SessionJoinController.php:12
+* @see app/Http/Controllers/Sessions/SessionJoinController.php:13
 * @route '/sessions/join'
 */
 joinForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
