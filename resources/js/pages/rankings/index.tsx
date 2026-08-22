@@ -4,7 +4,6 @@ import {
     FriendDetailDialog,
     type FriendDetail,
 } from '@/components/friend-detail-dialog';
-import Heading from '@/components/heading';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
 import { useFriendDetailDialog } from '@/hooks/use-friend-detail-dialog';
@@ -100,11 +99,6 @@ export default function RankingsPage({
             <Head title="Rankings" />
 
             <div className="space-y-6">
-                <Heading
-                    title="ランキング"
-                    description="5局以上プレイしたプレイヤーの成績を一覧できます。"
-                />
-
                 <div className="flex flex-wrap items-center gap-3">
                     <label
                         className="text-sm text-muted-foreground"

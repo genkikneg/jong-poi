@@ -2,7 +2,6 @@ import { Transition } from '@headlessui/react';
 import { Form, Head, Link, usePage } from '@inertiajs/react';
 import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
 import DeleteUser from '@/components/delete-user';
-import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -37,12 +36,6 @@ export default function Profile({
 
             <SettingsLayout>
                 <div className="space-y-6">
-                    <Heading
-                        variant="small"
-                        title="プロフィール情報"
-                        description="表示名やメールアドレスを最新の内容に更新しましょう"
-                    />
-
                     <Form
                         {...ProfileController.update.form()}
                         options={{

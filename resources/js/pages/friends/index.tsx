@@ -5,7 +5,6 @@ import {
     FriendDetailDialog,
     type FriendDetail,
 } from '@/components/friend-detail-dialog';
-import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -101,11 +100,6 @@ export default function FriendsPage({
             <Head title="Frends" />
 
             <div className="space-y-8">
-                <Heading
-                    title="Frends & invites"
-                    description="コードを共有してフレンドを追加し、セッション開始前に招待状況を整えましょう"
-                />
-
                 <Card>
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2 text-lg">

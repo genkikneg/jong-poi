@@ -1,4 +1,6 @@
 import { Form, Head } from '@inertiajs/react';
+import { Eye, EyeOff } from 'lucide-react';
+import { useState } from 'react';
 import InputError from '@/components/input-error';
 import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
@@ -22,12 +24,14 @@ export default function Login({
     canResetPassword,
     canRegister,
 }: Props) {
+    const [showPassword, setShowPassword] = useState(false);
+
     return (
         <AuthLayout
-            title="Log in to your account"
-            description="Enter your email and password below to log in"
+            title="ログイン"
+            description="メールアドレスとパスワードを入力してください"
         >
-            <Head title="Log in" />
+            <Head title="ログイン" />
 
             <Form
                 {...store.form()}
@@ -38,7 +42,7 @@ export default function Login({
                     <>
                         <div className="grid gap-6">
                             <div className="grid gap-2">
-                                <Label htmlFor="email">Email address</Label>
+                                <Label htmlFor="email">メールアドレス</Label>
                                 <Input
                                     id="email"
                                     type="email"
@@ -54,26 +58,63 @@ export default function Login({
 
                             <div className="grid gap-2">
                                 <div className="flex items-center">
-                                    <Label htmlFor="password">Password</Label>
+                                    <Label htmlFor="password">パスワード</Label>
                                     {canResetPassword && (
                                         <TextLink
                                             href={request()}
                                             className="ml-auto text-sm"
-                                            tabIndex={5}
+                                            tabIndex={6}
                                         >
-                                            Forgot password?
+                                            パスワードをお忘れですか？
                                         </TextLink>
                                     )}
                                 </div>
-                                <Input
-                                    id="password"
-                                    type="password"
-                                    name="password"
-                                    required
-                                    tabIndex={2}
-                                    autoComplete="current-password"
-                                    placeholder="Password"
-                                />
+                                <div className="relative">
+                                    <Input
+                                        id="password"
+                                        type={
+                                            showPassword ? 'text' : 'password'
+                                        }
+                                        name="password"
+                                        required
+                                        tabIndex={2}
+                                        autoComplete="current-password"
+                                        placeholder="パスワード"
+                                        className="pr-10"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            setShowPassword(
+                                                (visible) => !visible,
+                                            )
+                                        }
+                                        tabIndex={3}
+                                        className="absolute top-1/2 right-2 -translate-y-1/2 rounded-sm p-1 text-muted-foreground outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+                                        aria-label={
+                                            showPassword
+                                                ? 'パスワードを隠す'
+                                                : 'パスワードを表示する'
+                                        }
+                                        title={
+                                            showPassword
+                                                ? 'パスワードを隠す'
+                                                : 'パスワードを表示する'
+                                        }
+                                    >
+                                        {showPassword ? (
+                                            <EyeOff
+                                                className="size-4"
+                                                aria-hidden="true"
+                                            />
+                                        ) : (
+                                            <Eye
+                                                className="size-4"
+                                                aria-hidden="true"
+                                            />
+                                        )}
+                                    </button>
+                                </div>
                                 <InputError message={errors.password} />
                             </div>
 
@@ -81,28 +122,30 @@ export default function Login({
                                 <Checkbox
                                     id="remember"
                                     name="remember"
-                                    tabIndex={3}
+                                    tabIndex={4}
                                 />
-                                <Label htmlFor="remember">Remember me</Label>
+                                <Label htmlFor="remember">
+                                    ログイン状態を保持する
+                                </Label>
                             </div>
 
                             <Button
                                 type="submit"
                                 className="mt-4 w-full"
-                                tabIndex={4}
+                                tabIndex={5}
                                 disabled={processing}
                                 data-test="login-button"
                             >
                                 {processing && <Spinner />}
-                                Log in
+                                ログイン
                             </Button>
                         </div>
 
                         {canRegister && (
                             <div className="text-center text-sm text-muted-foreground">
-                                Don't have an account?{' '}
-                                <TextLink href={register()} tabIndex={5}>
-                                    Sign up
+                                アカウントをお持ちでないですか？{' '}
+                                <TextLink href={register()} tabIndex={6}>
+                                    新規登録
                                 </TextLink>
                             </div>
                         )}

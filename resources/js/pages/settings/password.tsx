@@ -2,7 +2,6 @@ import { Transition } from '@headlessui/react';
 import { Form, Head } from '@inertiajs/react';
 import { useRef } from 'react';
 import PasswordController from '@/actions/App/Http/Controllers/Settings/PasswordController';
-import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -31,12 +30,6 @@ export default function Password() {
 
             <SettingsLayout>
                 <div className="space-y-6">
-                    <Heading
-                        variant="small"
-                        title="パスワードの更新"
-                        description="安全のため、十分に長く推測されにくいパスワードへ更新しましょう"
-                    />
-
                     <Form
                         {...PasswordController.update.form()}
                         options={{

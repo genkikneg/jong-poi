@@ -1,6 +1,5 @@
 import { Head } from '@inertiajs/react';
 import AppearanceTabs from '@/components/appearance-tabs';
-import Heading from '@/components/heading';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
 import { edit as editAppearance } from '@/routes/appearance';
@@ -22,11 +21,6 @@ export default function Appearance() {
 
             <SettingsLayout>
                 <div className="space-y-6">
-                    <Heading
-                        variant="small"
-                        title="外観の設定"
-                        description="テーマカラーやモードを選んで見た目を調整しましょう"
-                    />
                     <AppearanceTabs />
                 </div>
             </SettingsLayout>
