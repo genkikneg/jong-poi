@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Sessions;
 
 use App\Models\Session;
+use App\Services\GameResultsValidator;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -27,12 +28,14 @@ class StoreGameRequest extends FormRequest
      */
     public function rules(): array
     {
+        $maxRank = $this->session()?->player_count ?? 4;
+
         return [
             'played_at' => ['nullable', 'date'],
             'results' => ['required', 'array', 'min:1'],
-            'results.*.user_id' => ['required', 'integer'],
-            'results.*.final_score' => ['required', 'numeric'],
-            'results.*.rank' => ['nullable', 'integer', 'min:1', 'max:4'],
+            'results.*.user_id' => ['required', 'integer', 'distinct'],
+            'results.*.final_score' => ['required', 'numeric', 'between:-9999999,9999999'],
+            'results.*.rank' => ['nullable', 'integer', 'min:1', 'max:'.$maxRank],
         ];
     }
 
@@ -41,21 +44,17 @@ class StoreGameRequest extends FormRequest
         return [function (Validator $validator) {
             $session = $this->session();
 
-            if (! $session) {
+            if (! $session || $validator->errors()->isNotEmpty()) {
                 return;
             }
 
-            $results = collect($this->input('results', []));
+            $errors = app(GameResultsValidator::class)->validate(
+                $session,
+                $this->input('results', []),
+            );
 
-            if ($results->count() !== $session->player_count) {
-                $validator->errors()->add('results', __('参加人数分のスコアを入力してください。'));
-            }
-
-            $memberIds = $session->members()->pluck('user_id');
-            $diff = $results->pluck('user_id')->map(fn ($id) => (int) $id)->diff($memberIds);
-
-            if ($diff->isNotEmpty()) {
-                $validator->errors()->add('results', __('セッションメンバー以外のスコアが含まれています。'));
+            foreach ($errors as $field => $message) {
+                $validator->errors()->add($field, $message);
             }
         }];
     }

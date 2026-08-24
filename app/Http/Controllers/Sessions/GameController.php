@@ -17,14 +17,20 @@ class GameController extends Controller
     {
         abort_if($session->isClosed(), 422, __('このセッションはクローズされています。'));
 
-        $calculator = new PointsCalculator($session);
-        $computedResults = $calculator->calculate($request->resultPayload());
+        DB::transaction(function () use ($session, $request) {
+            $lockedSession = Session::query()
+                ->whereKey($session->id)
+                ->lockForUpdate()
+                ->firstOrFail();
 
-        DB::transaction(function () use ($session, $request, $computedResults) {
-            $nextOrdinal = ($session->games()->max('ordinal') ?? 0) + 1;
+            abort_if($lockedSession->isClosed(), 422, __('このセッションはクローズされています。'));
+
+            $calculator = new PointsCalculator($lockedSession);
+            $computedResults = $calculator->calculate($request->resultPayload());
+            $nextOrdinal = ($lockedSession->games()->max('ordinal') ?? 0) + 1;
 
             $game = Game::create([
-                'session_id' => $session->id,
+                'session_id' => $lockedSession->id,
                 'created_by' => $request->user()->id,
                 'ordinal' => $nextOrdinal,
                 'played_at' => $request->input('played_at'),
@@ -33,7 +39,7 @@ class GameController extends Controller
             foreach ($computedResults as $result) {
                 GameResult::create([
                     'game_id' => $game->id,
-                    'session_id' => $session->id,
+                    'session_id' => $lockedSession->id,
                     'user_id' => $result['user_id'],
                     'final_score' => $result['final_score'],
                     'rank' => $result['rank'],

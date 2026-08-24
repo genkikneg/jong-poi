@@ -10,6 +10,7 @@ use App\Models\Game;
 use App\Models\GameResult;
 use App\Models\Session;
 use App\Models\SessionGameDraft;
+use App\Services\GameResultsValidator;
 use App\Services\PointsCalculator;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
@@ -65,45 +66,58 @@ class SessionGameDraftController extends Controller
         return redirect()->route('sessions.show', $session);
     }
 
-    public function confirm(ConfirmDraftRequest $request, Session $session): RedirectResponse
-    {
-        abort_if($session->isClosed(), 422, __('このセッションはクローズされています。'));
+    public function confirm(
+        ConfirmDraftRequest $request,
+        Session $session,
+        GameResultsValidator $resultsValidator,
+    ): RedirectResponse {
+        $validationErrors = [];
 
-        $draft = $session->gameDraft()->with(['entries.user:id,name'])->first();
+        DB::transaction(function () use ($session, $request, $resultsValidator, &$validationErrors) {
+            $lockedSession = Session::query()
+                ->whereKey($session->id)
+                ->lockForUpdate()
+                ->firstOrFail();
 
-        abort_unless($draft, 422, __('入力中の半荘がありません。'));
+            abort_if($lockedSession->isClosed(), 422, __('このセッションはクローズされています。'));
 
-        $entries = $draft->entries;
+            $draft = SessionGameDraft::query()
+                ->where('session_id', $lockedSession->id)
+                ->lockForUpdate()
+                ->with('entries')
+                ->first();
 
-        if ($entries->count() !== $session->player_count) {
-            return redirect()->back()->withErrors([
-                'draft' => __('全員分のスコアが揃っていません。'),
-            ]);
-        }
+            if (! $draft) {
+                $validationErrors = [
+                    'draft' => __('この半荘はすでに確定されたか、入力中のデータがありません。'),
+                ];
 
-        $memberIds = $session->members()->pluck('user_id');
-        $missing = $memberIds->diff($entries->pluck('user_id'));
+                return;
+            }
 
-        if ($missing->isNotEmpty()) {
-            return redirect()->back()->withErrors([
-                'draft' => __('全員分のスコアが揃っていません。'),
-            ]);
-        }
+            $entries = $draft->entries;
+            $resultErrors = $resultsValidator->validate($lockedSession, $entries);
 
-        $calculator = new PointsCalculator($session);
-        $computedResults = $calculator->calculate(
-            $entries->map(fn ($entry) => [
-                'user_id' => $entry->user_id,
-                'final_score' => $entry->final_score,
-                'rank' => $entry->rank,
-            ])->all()
-        );
+            if ($resultErrors !== []) {
+                $validationErrors = [
+                    'draft' => implode(' ', array_values($resultErrors)),
+                ];
 
-        DB::transaction(function () use ($session, $request, $computedResults, $draft) {
-            $nextOrdinal = ($session->games()->max('ordinal') ?? 0) + 1;
+                return;
+            }
+
+            $calculator = new PointsCalculator($lockedSession);
+            $computedResults = $calculator->calculate(
+                $entries->map(fn ($entry) => [
+                    'user_id' => $entry->user_id,
+                    'final_score' => $entry->final_score,
+                    'rank' => $entry->rank,
+                ])->all()
+            );
+            $nextOrdinal = ($lockedSession->games()->max('ordinal') ?? 0) + 1;
 
             $game = Game::create([
-                'session_id' => $session->id,
+                'session_id' => $lockedSession->id,
                 'created_by' => $request->user()->id,
                 'ordinal' => $nextOrdinal,
                 'played_at' => now(),
@@ -112,7 +126,7 @@ class SessionGameDraftController extends Controller
             foreach ($computedResults as $result) {
                 GameResult::create([
                     'game_id' => $game->id,
-                    'session_id' => $session->id,
+                    'session_id' => $lockedSession->id,
                     'user_id' => $result['user_id'],
                     'final_score' => $result['final_score'],
                     'rank' => $result['rank'],
@@ -126,6 +140,10 @@ class SessionGameDraftController extends Controller
             $draft->entries()->delete();
             $draft->delete();
         });
+
+        if ($validationErrors !== []) {
+            return redirect()->back()->withErrors($validationErrors);
+        }
 
         broadcast(new SessionStateUpdated($session, 'game.confirmed'));
 

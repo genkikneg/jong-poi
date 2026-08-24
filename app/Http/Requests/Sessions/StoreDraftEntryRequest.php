@@ -30,7 +30,7 @@ class StoreDraftEntryRequest extends FormRequest
         $maxRank = $session?->player_count ?? 4;
 
         return [
-            'final_score' => ['required', 'integer'],
+            'final_score' => ['required', 'integer', 'between:-9999999,9999999'],
             'rank' => ['nullable', 'integer', 'min:1', 'max:'.$maxRank],
         ];
     }
