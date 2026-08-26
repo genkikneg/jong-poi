@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Operations\OperationsController::store
-* @see app/Http/Controllers/Operations/OperationsController.php:208
+* @see app/Http/Controllers/Operations/OperationsController.php:209
 * @route '/settings/operations/users/{user}/recovery-code'
 */
 export const store = (args: { user: number | { id: number } } | [user: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -16,7 +16,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\Operations\OperationsController::store
-* @see app/Http/Controllers/Operations/OperationsController.php:208
+* @see app/Http/Controllers/Operations/OperationsController.php:209
 * @route '/settings/operations/users/{user}/recovery-code'
 */
 store.url = (args: { user: number | { id: number } } | [user: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -49,7 +49,7 @@ store.url = (args: { user: number | { id: number } } | [user: number | { id: num
 
 /**
 * @see \App\Http\Controllers\Operations\OperationsController::store
-* @see app/Http/Controllers/Operations/OperationsController.php:208
+* @see app/Http/Controllers/Operations/OperationsController.php:209
 * @route '/settings/operations/users/{user}/recovery-code'
 */
 store.post = (args: { user: number | { id: number } } | [user: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -59,7 +59,7 @@ store.post = (args: { user: number | { id: number } } | [user: number | { id: nu
 
 /**
 * @see \App\Http\Controllers\Operations\OperationsController::store
-* @see app/Http/Controllers/Operations/OperationsController.php:208
+* @see app/Http/Controllers/Operations/OperationsController.php:209
 * @route '/settings/operations/users/{user}/recovery-code'
 */
 const storeForm = (args: { user: number | { id: number } } | [user: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -69,7 +69,7 @@ const storeForm = (args: { user: number | { id: number } } | [user: number | { i
 
 /**
 * @see \App\Http\Controllers\Operations\OperationsController::store
-* @see app/Http/Controllers/Operations/OperationsController.php:208
+* @see app/Http/Controllers/Operations/OperationsController.php:209
 * @route '/settings/operations/users/{user}/recovery-code'
 */
 storeForm.post = (args: { user: number | { id: number } } | [user: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

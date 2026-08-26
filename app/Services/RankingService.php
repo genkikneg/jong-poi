@@ -2,10 +2,12 @@
 
 namespace App\Services;
 
+use App\Enums\SessionStatus;
 use App\Models\GameResult;
 use App\Models\PlayerRanking;
 use App\Models\User;
 use Carbon\CarbonInterface;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Cache;
 
 class RankingService
@@ -14,12 +16,14 @@ class RankingService
         'all',
         'year',
         'month',
-        'week',
     ];
 
-    public function updateForUser(User $user): void
+    /**
+     * @param  array<int, string>|null  $periods
+     */
+    public function updateForUser(User $user, ?array $periods = null): void
     {
-        foreach (self::PERIODS as $period) {
+        foreach ($periods ?? self::PERIODS as $period) {
             $stats = $this->calculateStats($user->id, $period);
 
             if ($stats['games_played'] < 5) {
@@ -49,6 +53,8 @@ class RankingService
                 ]
             );
         }
+
+        $this->forgetPositionCache();
     }
 
     public function rankingBadges(int $userId): array
@@ -77,7 +83,7 @@ class RankingService
 
     protected function positionFor(int $userId, string $column): ?int
     {
-        $order = Cache::remember("ranking_order_all_{$column}", 300, function () use ($column) {
+        $order = Cache::remember("ranking_order:all:{$column}", 300, function () use ($column) {
             return PlayerRanking::query()
                 ->where('period', 'all')
                 ->orderByDesc($column)
@@ -92,36 +98,36 @@ class RankingService
 
     protected function calculateStats(int $userId, string $period): array
     {
-        $query = GameResult::query()->where('user_id', $userId);
+        $query = $this->resultsQuery($userId);
 
         if ($period !== 'all') {
-            $query->where('created_at', '>=', $this->periodStart($period));
+            $query->whereRaw(
+                'COALESCE(games.played_at, game_results.created_at) >= ?',
+                [$this->periodStart($period)],
+            );
         }
 
-        $results = $query->get();
+        $summary = $query
+            ->selectRaw('COUNT(*) as games_played')
+            ->selectRaw('COALESCE(SUM(game_results.points), 0) as total_points')
+            ->selectRaw('COALESCE(AVG(game_results.points), 0) as average_points')
+            ->selectRaw('SUM(CASE WHEN game_results.rank = 1 THEN 1 ELSE 0 END) as top_finishes')
+            ->first();
 
-        if ($results->isEmpty()) {
-            return [
-                'games_played' => 0,
-                'total_points' => 0,
-                'average_points' => 0,
-                'top_finishes' => 0,
-                'top_rate' => 0,
-                'recent_games' => [],
-            ];
-        }
-
-        $gamesPlayed = $results->count();
-        $totalPoints = (float) $results->sum('points');
-        $averagePoints = $gamesPlayed > 0 ? $totalPoints / $gamesPlayed : 0;
-        $topFinishes = $results->where('rank', 1)->count();
+        $gamesPlayed = (int) ($summary?->games_played ?? 0);
+        $totalPoints = (float) ($summary?->total_points ?? 0);
+        $averagePoints = (float) ($summary?->average_points ?? 0);
+        $topFinishes = (int) ($summary?->top_finishes ?? 0);
         $topRate = $gamesPlayed > 0 ? $topFinishes / $gamesPlayed : 0;
 
-        $recentGames = GameResult::query()
-            ->where('user_id', $userId)
-            ->when($period !== 'all', fn ($q) => $q->where('created_at', '>=', $this->periodStart($period)))
+        $recentGames = $this->resultsQuery($userId)
+            ->when($period !== 'all', fn (Builder $query) => $query->whereRaw(
+                'COALESCE(games.played_at, game_results.created_at) >= ?',
+                [$this->periodStart($period)],
+            ))
+            ->select('game_results.*')
             ->with(['session:id,name', 'game:id,session_id,ordinal,played_at'])
-            ->latest('created_at')
+            ->orderByRaw('COALESCE(games.played_at, game_results.created_at) DESC')
             ->limit(10)
             ->get()
             ->map(fn ($result) => [
@@ -153,8 +159,23 @@ class RankingService
         return match ($period) {
             'year' => $now->copy()->startOfYear(),
             'month' => $now->copy()->startOfMonth(),
-            'week' => $now->copy()->startOfWeek(),
             default => $now->copy()->startOfCentury(),
         };
+    }
+
+    public function forgetPositionCache(): void
+    {
+        foreach (['total_points', 'average_points', 'top_rate'] as $column) {
+            Cache::forget("ranking_order:all:{$column}");
+        }
+    }
+
+    private function resultsQuery(int $userId): Builder
+    {
+        return GameResult::query()
+            ->where('game_results.user_id', $userId)
+            ->join('games', 'games.id', '=', 'game_results.game_id')
+            ->join('mahjong_sessions', 'mahjong_sessions.id', '=', 'game_results.session_id')
+            ->where('mahjong_sessions.status', SessionStatus::Closed->value);
     }
 }

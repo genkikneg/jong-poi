@@ -6,7 +6,7 @@ import audits from './audits'
 import recoveryCode from './recovery-code'
 /**
 * @see \App\Http\Controllers\Operations\OperationsController::index
-* @see app/Http/Controllers/Operations/OperationsController.php:28
+* @see app/Http/Controllers/Operations/OperationsController.php:29
 * @route '/settings/operations'
 */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -21,7 +21,7 @@ index.definition = {
 
 /**
 * @see \App\Http\Controllers\Operations\OperationsController::index
-* @see app/Http/Controllers/Operations/OperationsController.php:28
+* @see app/Http/Controllers/Operations/OperationsController.php:29
 * @route '/settings/operations'
 */
 index.url = (options?: RouteQueryOptions) => {
@@ -30,7 +30,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Operations\OperationsController::index
-* @see app/Http/Controllers/Operations/OperationsController.php:28
+* @see app/Http/Controllers/Operations/OperationsController.php:29
 * @route '/settings/operations'
 */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -40,7 +40,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\Operations\OperationsController::index
-* @see app/Http/Controllers/Operations/OperationsController.php:28
+* @see app/Http/Controllers/Operations/OperationsController.php:29
 * @route '/settings/operations'
 */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -50,7 +50,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\Operations\OperationsController::index
-* @see app/Http/Controllers/Operations/OperationsController.php:28
+* @see app/Http/Controllers/Operations/OperationsController.php:29
 * @route '/settings/operations'
 */
 const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -60,7 +60,7 @@ const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => (
 
 /**
 * @see \App\Http\Controllers\Operations\OperationsController::index
-* @see app/Http/Controllers/Operations/OperationsController.php:28
+* @see app/Http/Controllers/Operations/OperationsController.php:29
 * @route '/settings/operations'
 */
 indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -70,7 +70,7 @@ indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\Operations\OperationsController::index
-* @see app/Http/Controllers/Operations/OperationsController.php:28
+* @see app/Http/Controllers/Operations/OperationsController.php:29
 * @route '/settings/operations'
 */
 indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -87,7 +87,7 @@ index.form = indexForm
 
 /**
 * @see \App\Http\Controllers\Operations\OperationsController::verify
-* @see app/Http/Controllers/Operations/OperationsController.php:199
+* @see app/Http/Controllers/Operations/OperationsController.php:200
 * @route '/settings/operations/verify'
 */
 export const verify = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -102,7 +102,7 @@ verify.definition = {
 
 /**
 * @see \App\Http\Controllers\Operations\OperationsController::verify
-* @see app/Http/Controllers/Operations/OperationsController.php:199
+* @see app/Http/Controllers/Operations/OperationsController.php:200
 * @route '/settings/operations/verify'
 */
 verify.url = (options?: RouteQueryOptions) => {
@@ -111,7 +111,7 @@ verify.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Operations\OperationsController::verify
-* @see app/Http/Controllers/Operations/OperationsController.php:199
+* @see app/Http/Controllers/Operations/OperationsController.php:200
 * @route '/settings/operations/verify'
 */
 verify.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -121,7 +121,7 @@ verify.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
 * @see \App\Http\Controllers\Operations\OperationsController::verify
-* @see app/Http/Controllers/Operations/OperationsController.php:199
+* @see app/Http/Controllers/Operations/OperationsController.php:200
 * @route '/settings/operations/verify'
 */
 const verifyForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -131,7 +131,7 @@ const verifyForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> =>
 
 /**
 * @see \App\Http\Controllers\Operations\OperationsController::verify
-* @see app/Http/Controllers/Operations/OperationsController.php:199
+* @see app/Http/Controllers/Operations/OperationsController.php:200
 * @route '/settings/operations/verify'
 */
 verifyForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

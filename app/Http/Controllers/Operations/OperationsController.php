@@ -7,6 +7,7 @@ use App\Http\Requests\Operations\CorrectGameRequest;
 use App\Http\Requests\Operations\IssueRecoveryCodeRequest;
 use App\Http\Requests\Operations\VerifyOperationsPasswordRequest;
 use App\Http\Requests\Operations\VerifySessionCorrectionRequest;
+use App\Jobs\RefreshPlayerRanking;
 use App\Models\Game;
 use App\Models\OperationAudit;
 use App\Models\Session;
@@ -231,7 +232,9 @@ class OperationsController extends Controller
 
     public function correctGame(CorrectGameRequest $request, Game $game): RedirectResponse
     {
-        DB::transaction(function () use ($request, $game) {
+        $rankingUserIds = [];
+
+        DB::transaction(function () use ($request, $game, &$rankingUserIds) {
             $lockedGame = Game::query()
                 ->with(['session', 'results'])
                 ->lockForUpdate()
@@ -256,6 +259,13 @@ class OperationsController extends Controller
                     ->update($result);
             }
 
+            if ($lockedGame->session->isClosed()) {
+                $rankingUserIds = collect($computedResults)
+                    ->pluck('user_id')
+                    ->map(fn (mixed $userId) => (int) $userId)
+                    ->all();
+            }
+
             $this->audit(
                 $request,
                 'game_corrected',
@@ -266,6 +276,10 @@ class OperationsController extends Controller
                 $computedResults,
             );
         });
+
+        foreach ($rankingUserIds as $userId) {
+            RefreshPlayerRanking::dispatch($userId)->afterCommit();
+        }
 
         return redirect()->route('operations.sessions.show', $game->session_id);
     }

@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Operations\OperationsController::update
-* @see app/Http/Controllers/Operations/OperationsController.php:232
+* @see app/Http/Controllers/Operations/OperationsController.php:233
 * @route '/settings/operations/games/{game}'
 */
 export const update = (args: { game: number | { id: number } } | [game: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
@@ -16,7 +16,7 @@ update.definition = {
 
 /**
 * @see \App\Http\Controllers\Operations\OperationsController::update
-* @see app/Http/Controllers/Operations/OperationsController.php:232
+* @see app/Http/Controllers/Operations/OperationsController.php:233
 * @route '/settings/operations/games/{game}'
 */
 update.url = (args: { game: number | { id: number } } | [game: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -49,7 +49,7 @@ update.url = (args: { game: number | { id: number } } | [game: number | { id: nu
 
 /**
 * @see \App\Http\Controllers\Operations\OperationsController::update
-* @see app/Http/Controllers/Operations/OperationsController.php:232
+* @see app/Http/Controllers/Operations/OperationsController.php:233
 * @route '/settings/operations/games/{game}'
 */
 update.patch = (args: { game: number | { id: number } } | [game: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
@@ -59,7 +59,7 @@ update.patch = (args: { game: number | { id: number } } | [game: number | { id: 
 
 /**
 * @see \App\Http\Controllers\Operations\OperationsController::update
-* @see app/Http/Controllers/Operations/OperationsController.php:232
+* @see app/Http/Controllers/Operations/OperationsController.php:233
 * @route '/settings/operations/games/{game}'
 */
 const updateForm = (args: { game: number | { id: number } } | [game: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -74,7 +74,7 @@ const updateForm = (args: { game: number | { id: number } } | [game: number | { 
 
 /**
 * @see \App\Http\Controllers\Operations\OperationsController::update
-* @see app/Http/Controllers/Operations/OperationsController.php:232
+* @see app/Http/Controllers/Operations/OperationsController.php:233
 * @route '/settings/operations/games/{game}'
 */
 updateForm.patch = (args: { game: number | { id: number } } | [game: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

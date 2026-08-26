@@ -28,7 +28,7 @@ docker compose \
 php -r '
 $config = json_decode(file_get_contents($argv[1]), true, flags: JSON_THROW_ON_ERROR);
 
-foreach (["app", "queue"] as $serviceName) {
+foreach (["app", "queue", "scheduler"] as $serviceName) {
     $service = $config["services"][$serviceName] ?? [];
 
     if (($service["user"] ?? null) !== "33:33") {

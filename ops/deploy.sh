@@ -101,7 +101,7 @@ test "$public_ready" = yes
 # A queue worker can need its full stop grace period to finish a job. Update it
 # only after the public web path has recovered so that this wait does not extend
 # application downtime.
-"${compose[@]}" up -d queue
+"${compose[@]}" up -d queue scheduler
 "${compose[@]}" up -d --remove-orphans
 
 printf 'Deployment completed: %s\n' "$release_sha"
