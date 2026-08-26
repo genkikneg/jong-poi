@@ -78,7 +78,7 @@ export function AppSidebar() {
             icon: Trophy,
         },
         {
-            title: '戦績',
+            title: 'Stats',
             href: statusRoute(),
             icon: BarChart3,
         },
@@ -122,7 +122,7 @@ function MobileBottomNav({ items }: { items: NavItem[] }) {
             aria-label="モバイルナビゲーション"
             className="fixed inset-x-0 bottom-0 z-50 border-t border-border/80 bg-background/95 pb-[env(safe-area-inset-bottom)] shadow-lg backdrop-blur md:hidden"
         >
-            <div className="flex h-16 items-stretch justify-around">
+            <div className="flex h-18 items-stretch justify-around">
                 {items.map((item) => {
                     const active = isCurrentUrl(item.href);
 
