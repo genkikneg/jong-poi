@@ -185,6 +185,29 @@ class SessionFlowTest extends TestCase
         $this->assertDatabaseHas('session_game_drafts', ['id' => $draft->id]);
     }
 
+    public function test_multiple_members_submit_to_the_same_draft(): void
+    {
+        [$session, $players] = $this->createSessionWithPlayers();
+
+        $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class)
+            ->actingAs($players[0])
+            ->post(route('sessions.draft.store', $session), [
+                'final_score' => 32000,
+                'rank' => 1,
+            ])
+            ->assertRedirect(route('sessions.show', $session));
+
+        $this->actingAs($players[1])
+            ->post(route('sessions.draft.store', $session), [
+                'final_score' => 28000,
+                'rank' => 2,
+            ])
+            ->assertRedirect(route('sessions.show', $session));
+
+        $this->assertDatabaseCount('session_game_drafts', 1);
+        $this->assertDatabaseCount('session_game_draft_entries', 2);
+    }
+
     public function test_confirming_the_same_draft_twice_creates_one_game(): void
     {
         [$session, $players] = $this->createSessionWithPlayers();

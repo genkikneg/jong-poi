@@ -38,6 +38,25 @@ class RankingRefreshTest extends TestCase
         Queue::assertPushed(RefreshPlayerRanking::class, fn (RefreshPlayerRanking $job) => $job->userId === $member->id);
     }
 
+    public function test_closing_an_already_closed_session_does_not_queue_another_refresh(): void
+    {
+        Queue::fake();
+
+        $host = User::factory()->create();
+        $session = $this->createSession($host, SessionStatus::Open);
+
+        $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class)
+            ->actingAs($host)
+            ->patch(route('sessions.close', $session))
+            ->assertRedirect(route('sessions.show', $session));
+
+        $this->actingAs($host)
+            ->patch(route('sessions.close', $session))
+            ->assertRedirect(route('sessions.show', $session));
+
+        Queue::assertPushed(RefreshPlayerRanking::class, 1);
+    }
+
     public function test_rankings_include_only_closed_sessions_and_use_played_at_for_periods(): void
     {
         $player = User::factory()->create();

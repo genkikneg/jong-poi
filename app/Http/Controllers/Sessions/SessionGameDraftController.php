@@ -19,46 +19,60 @@ class SessionGameDraftController extends Controller
 {
     public function store(StoreDraftEntryRequest $request, Session $session): RedirectResponse
     {
-        abort_if($session->isClosed(), 422, __('このセッションはクローズされています。'));
-
-        $draft = $session->gameDraft;
-
-        if (! $draft) {
-            $draft = SessionGameDraft::create([
-                'session_id' => $session->id,
-                'created_by' => $request->user()->id,
-            ]);
-        }
-
         $payload = $request->entryPayload();
 
-        $draft->entries()->updateOrCreate(
-            [
-                'session_id' => $session->id,
-                'user_id' => $request->user()->id,
-            ],
-            [
-                'final_score' => (int) $payload['final_score'],
-                'rank' => $payload['rank'],
-            ],
-        );
+        $validationError = DB::transaction(function () use ($session, $request, $payload): ?string {
+            $lockedSession = Session::query()
+                ->whereKey($session->id)
+                ->lockForUpdate()
+                ->firstOrFail();
 
-        $memberIds = $session->members()->pluck('user_id');
-        $entries = $draft->entries()->pluck('final_score', 'user_id');
-        $isComplete = $entries->count() === $memberIds->count() && $memberIds->diffKeys($entries)->isEmpty();
+            abort_if($lockedSession->isClosed(), 422, __('このセッションはクローズされています。'));
 
-        if ($isComplete) {
-            $expectedTotal = (float) $session->rule_base * $session->player_count;
+            $draft = SessionGameDraft::query()
+                ->where('session_id', $lockedSession->id)
+                ->lockForUpdate()
+                ->first();
+
+            if (! $draft) {
+                $draft = SessionGameDraft::create([
+                    'session_id' => $lockedSession->id,
+                    'created_by' => $request->user()->id,
+                ]);
+            }
+
+            $draft->entries()->updateOrCreate(
+                [
+                    'session_id' => $lockedSession->id,
+                    'user_id' => $request->user()->id,
+                ],
+                [
+                    'final_score' => (int) $payload['final_score'],
+                    'rank' => $payload['rank'],
+                ],
+            );
+
+            $memberIds = $lockedSession->members()->pluck('user_id');
+            $entries = $draft->entries()->pluck('final_score', 'user_id');
+            $isComplete = $entries->count() === $memberIds->count() && $memberIds->diffKeys($entries)->isEmpty();
+
+            if (! $isComplete) {
+                return null;
+            }
+
+            $expectedTotal = (float) $lockedSession->rule_base * $lockedSession->player_count;
             $actualTotal = $entries->reduce(fn ($carry, $score) => $carry + (float) $score, 0.0);
             $diff = $actualTotal - $expectedTotal;
 
-            if (abs($diff) > 1) {
-                $diffText = number_format($diff, 1);
+            return abs($diff) > 1
+                ? number_format($diff, 1)
+                : null;
+        });
 
-                return redirect()->back()->withErrors([
-                    'final_score' => __('点数の合計が想定より :value 点異なります。入力内容を再確認してください。', ['value' => $diffText]),
-                ]);
-            }
+        if ($validationError !== null) {
+            return redirect()->back()->withErrors([
+                'final_score' => __('点数の合計が想定より :value 点異なります。入力内容を再確認してください。', ['value' => $validationError]),
+            ]);
         }
 
         broadcast(new SessionStateUpdated($session, 'draft.updated'));
