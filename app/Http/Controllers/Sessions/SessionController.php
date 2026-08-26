@@ -288,15 +288,24 @@ class SessionController extends Controller
     {
         $this->authorizeMember($request->user()?->id, $session);
 
-        if (! $session->isClosed()) {
-            $session->markClosed();
-            $session->members()->update(['joined_at' => null]);
-            $session->refresh();
+        $memberIds = DB::transaction(function () use ($session) {
+            $lockedSession = Session::query()
+                ->whereKey($session->id)
+                ->lockForUpdate()
+                ->firstOrFail();
 
-            $session->members()
-                ->pluck('user_id')
-                ->each(fn (int $userId) => RefreshPlayerRanking::dispatch($userId)->afterCommit());
+            if ($lockedSession->isClosed()) {
+                return collect();
+            }
 
+            $lockedSession->markClosed();
+            $lockedSession->members()->update(['joined_at' => null]);
+
+            return $lockedSession->members()->pluck('user_id');
+        });
+
+        if ($memberIds->isNotEmpty()) {
+            $memberIds->each(fn (int $userId) => RefreshPlayerRanking::dispatch($userId));
             broadcast(new SessionStateUpdated($session, 'session.closed'));
         }
 
