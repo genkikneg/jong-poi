@@ -15,7 +15,10 @@ class RankingController extends Controller
 
     public function __invoke(Request $request): Response
     {
-        $period = $request->string('period')->toString() ?: 'all';
+        $requestedPeriod = $request->string('period')->toString();
+        $period = in_array($requestedPeriod, RankingService::PERIODS, true)
+            ? $requestedPeriod
+            : 'all';
 
         $players = PlayerRanking::query()
             ->where('period', $period)

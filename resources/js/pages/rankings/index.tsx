@@ -27,7 +27,7 @@ type RankingPlayer = {
 
 type Props = {
     players: RankingPlayer[];
-    period: 'all' | 'year' | 'month' | 'week';
+    period: 'all' | 'year' | 'month';
 };
 
 const tabs = [
@@ -71,7 +71,7 @@ export default function RankingsPage({
     const { auth } = usePage().props as { auth: { user: { id: number } } };
     const [activeTab, setActiveTab] =
         useState<(typeof tabs)[number]['value']>('total');
-    const [period, setPeriod] = useState<'all' | 'year' | 'month' | 'week'>(
+    const [period, setPeriod] = useState<'all' | 'year' | 'month'>(
         initialPeriod,
     );
     const { friendDetailDialogProps, openFriendDetail } =
@@ -123,7 +123,6 @@ export default function RankingsPage({
                         <option value="all">全期間</option>
                         <option value="year">今年</option>
                         <option value="month">今月</option>
-                        <option value="week">今週</option>
                     </select>
                 </div>
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Sessions;
 use App\Events\SessionStateUpdated;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Sessions\StoreSessionRequest;
+use App\Jobs\RefreshPlayerRanking;
 use App\Models\FriendRequest;
 use App\Models\GameResult;
 use App\Models\Session;
@@ -291,6 +292,11 @@ class SessionController extends Controller
             $session->markClosed();
             $session->members()->update(['joined_at' => null]);
             $session->refresh();
+
+            $session->members()
+                ->pluck('user_id')
+                ->each(fn (int $userId) => RefreshPlayerRanking::dispatch($userId)->afterCommit());
+
             broadcast(new SessionStateUpdated($session, 'session.closed'));
         }
 

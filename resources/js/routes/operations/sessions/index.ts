@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Operations\OperationsController::index
-* @see app/Http/Controllers/Operations/OperationsController.php:70
+* @see app/Http/Controllers/Operations/OperationsController.php:71
 * @route '/settings/operations/sessions'
 */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ index.definition = {
 
 /**
 * @see \App\Http\Controllers\Operations\OperationsController::index
-* @see app/Http/Controllers/Operations/OperationsController.php:70
+* @see app/Http/Controllers/Operations/OperationsController.php:71
 * @route '/settings/operations/sessions'
 */
 index.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Operations\OperationsController::index
-* @see app/Http/Controllers/Operations/OperationsController.php:70
+* @see app/Http/Controllers/Operations/OperationsController.php:71
 * @route '/settings/operations/sessions'
 */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -35,7 +35,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\Operations\OperationsController::index
-* @see app/Http/Controllers/Operations/OperationsController.php:70
+* @see app/Http/Controllers/Operations/OperationsController.php:71
 * @route '/settings/operations/sessions'
 */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -45,7 +45,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\Operations\OperationsController::index
-* @see app/Http/Controllers/Operations/OperationsController.php:70
+* @see app/Http/Controllers/Operations/OperationsController.php:71
 * @route '/settings/operations/sessions'
 */
 const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -55,7 +55,7 @@ const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => (
 
 /**
 * @see \App\Http\Controllers\Operations\OperationsController::index
-* @see app/Http/Controllers/Operations/OperationsController.php:70
+* @see app/Http/Controllers/Operations/OperationsController.php:71
 * @route '/settings/operations/sessions'
 */
 indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -65,7 +65,7 @@ indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\Operations\OperationsController::index
-* @see app/Http/Controllers/Operations/OperationsController.php:70
+* @see app/Http/Controllers/Operations/OperationsController.php:71
 * @route '/settings/operations/sessions'
 */
 indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -82,7 +82,7 @@ index.form = indexForm
 
 /**
 * @see \App\Http\Controllers\Operations\OperationsController::open
-* @see app/Http/Controllers/Operations/OperationsController.php:168
+* @see app/Http/Controllers/Operations/OperationsController.php:169
 * @route '/settings/operations/sessions/{session}/open'
 */
 export const open = (args: { session: number | { id: number } } | [session: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -97,7 +97,7 @@ open.definition = {
 
 /**
 * @see \App\Http\Controllers\Operations\OperationsController::open
-* @see app/Http/Controllers/Operations/OperationsController.php:168
+* @see app/Http/Controllers/Operations/OperationsController.php:169
 * @route '/settings/operations/sessions/{session}/open'
 */
 open.url = (args: { session: number | { id: number } } | [session: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -130,7 +130,7 @@ open.url = (args: { session: number | { id: number } } | [session: number | { id
 
 /**
 * @see \App\Http\Controllers\Operations\OperationsController::open
-* @see app/Http/Controllers/Operations/OperationsController.php:168
+* @see app/Http/Controllers/Operations/OperationsController.php:169
 * @route '/settings/operations/sessions/{session}/open'
 */
 open.post = (args: { session: number | { id: number } } | [session: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -140,7 +140,7 @@ open.post = (args: { session: number | { id: number } } | [session: number | { i
 
 /**
 * @see \App\Http\Controllers\Operations\OperationsController::open
-* @see app/Http/Controllers/Operations/OperationsController.php:168
+* @see app/Http/Controllers/Operations/OperationsController.php:169
 * @route '/settings/operations/sessions/{session}/open'
 */
 const openForm = (args: { session: number | { id: number } } | [session: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -150,7 +150,7 @@ const openForm = (args: { session: number | { id: number } } | [session: number 
 
 /**
 * @see \App\Http\Controllers\Operations\OperationsController::open
-* @see app/Http/Controllers/Operations/OperationsController.php:168
+* @see app/Http/Controllers/Operations/OperationsController.php:169
 * @route '/settings/operations/sessions/{session}/open'
 */
 openForm.post = (args: { session: number | { id: number } } | [session: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -162,7 +162,7 @@ open.form = openForm
 
 /**
 * @see \App\Http\Controllers\Operations\OperationsController::show
-* @see app/Http/Controllers/Operations/OperationsController.php:145
+* @see app/Http/Controllers/Operations/OperationsController.php:146
 * @route '/settings/operations/sessions/{session}'
 */
 export const show = (args: { session: number | { id: number } } | [session: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -177,7 +177,7 @@ show.definition = {
 
 /**
 * @see \App\Http\Controllers\Operations\OperationsController::show
-* @see app/Http/Controllers/Operations/OperationsController.php:145
+* @see app/Http/Controllers/Operations/OperationsController.php:146
 * @route '/settings/operations/sessions/{session}'
 */
 show.url = (args: { session: number | { id: number } } | [session: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -210,7 +210,7 @@ show.url = (args: { session: number | { id: number } } | [session: number | { id
 
 /**
 * @see \App\Http\Controllers\Operations\OperationsController::show
-* @see app/Http/Controllers/Operations/OperationsController.php:145
+* @see app/Http/Controllers/Operations/OperationsController.php:146
 * @route '/settings/operations/sessions/{session}'
 */
 show.get = (args: { session: number | { id: number } } | [session: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -220,7 +220,7 @@ show.get = (args: { session: number | { id: number } } | [session: number | { id
 
 /**
 * @see \App\Http\Controllers\Operations\OperationsController::show
-* @see app/Http/Controllers/Operations/OperationsController.php:145
+* @see app/Http/Controllers/Operations/OperationsController.php:146
 * @route '/settings/operations/sessions/{session}'
 */
 show.head = (args: { session: number | { id: number } } | [session: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -230,7 +230,7 @@ show.head = (args: { session: number | { id: number } } | [session: number | { i
 
 /**
 * @see \App\Http\Controllers\Operations\OperationsController::show
-* @see app/Http/Controllers/Operations/OperationsController.php:145
+* @see app/Http/Controllers/Operations/OperationsController.php:146
 * @route '/settings/operations/sessions/{session}'
 */
 const showForm = (args: { session: number | { id: number } } | [session: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -240,7 +240,7 @@ const showForm = (args: { session: number | { id: number } } | [session: number 
 
 /**
 * @see \App\Http\Controllers\Operations\OperationsController::show
-* @see app/Http/Controllers/Operations/OperationsController.php:145
+* @see app/Http/Controllers/Operations/OperationsController.php:146
 * @route '/settings/operations/sessions/{session}'
 */
 showForm.get = (args: { session: number | { id: number } } | [session: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -250,7 +250,7 @@ showForm.get = (args: { session: number | { id: number } } | [session: number | 
 
 /**
 * @see \App\Http\Controllers\Operations\OperationsController::show
-* @see app/Http/Controllers/Operations/OperationsController.php:145
+* @see app/Http/Controllers/Operations/OperationsController.php:146
 * @route '/settings/operations/sessions/{session}'
 */
 showForm.head = (args: { session: number | { id: number } } | [session: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
