@@ -92,12 +92,14 @@ class SessionFlowTest extends TestCase
 
         $this->assertDatabaseCount('game_results', 4);
 
+        $session->markClosed();
+
         $this->actingAs($friendA)
             ->get(route('sessions.history'))
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
                 ->component('sessions/history')
-                ->where('sessions.0.name', '夜会')
+                ->where('sessions.data.0.name', '夜会')
             );
     }
 
