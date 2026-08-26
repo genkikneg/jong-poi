@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\SessionStatus;
 use App\Models\Friendship;
 use App\Models\Game;
 use App\Models\GameResult;
@@ -54,75 +55,115 @@ class DatabaseSeeder extends Seeder
                 });
         });
 
-        $session = Session::create([
-            'owner_id' => $players->first()->id,
-            'name' => '初期対局',
-            'player_count' => 4,
-            'rules_snapshot' => [
-                'base' => 25000,
-                'k' => 0.1,
-                'rank_bonus' => [1 => 2000, 2 => 1000, 3 => 0, 4 => -3000],
+        $sessionDefinitions = [
+            [
+                'name' => '初期対局',
+                'scores' => [
+                    [40000, 30000, 20000, 10000],
+                    [35000, 25000, 22000, 18000],
+                    [30000, 28000, 24000, 18000],
+                    [20000, 26000, 30000, 24000],
+                    [18000, 22000, 28000, 42000],
+                    [32000, 21000, 27000, 20000],
+                ],
+                'days_ago' => 0,
+                'status' => SessionStatus::Open,
             ],
-            'rule_base' => 25000,
-            'rule_k' => 0.1,
-            'rule_rank_bonus' => [1 => 2000, 2 => 1000, 3 => 0, 4 => -3000],
-        ]);
-
-        $players->values()->each(function (User $player, int $seat) use ($session): void {
-            SessionMember::create([
-                'session_id' => $session->id,
-                'user_id' => $player->id,
-                'is_host' => $seat === 0,
-                'seat_index' => $seat,
-                'joined_at' => now(),
-            ]);
-        });
-
-        $scoresByGame = [
-            [40000, 30000, 20000, 10000],
-            [35000, 25000, 22000, 18000],
-            [30000, 28000, 24000, 18000],
-            [20000, 26000, 30000, 24000],
-            [18000, 22000, 28000, 42000],
-            [32000, 21000, 27000, 20000],
+            [
+                'name' => '週末麻雀会',
+                'scores' => [
+                    [28000, 41000, 19000, 12000],
+                    [22000, 18000, 36000, 24000],
+                    [45000, 21000, 17000, 17000],
+                    [26000, 33000, 25000, 16000],
+                ],
+                'days_ago' => 14,
+                'status' => SessionStatus::Closed,
+            ],
+            [
+                'name' => '月例リーグ',
+                'scores' => [
+                    [16000, 24000, 38000, 22000],
+                    [31000, 29000, 23000, 17000],
+                    [19000, 20000, 26000, 35000],
+                    [27000, 18000, 21000, 34000],
+                    [24000, 32000, 28000, 16000],
+                ],
+                'days_ago' => 30,
+                'status' => SessionStatus::Closed,
+            ],
         ];
 
-        DB::transaction(function () use ($session, $players, $scoresByGame): void {
-            $calculator = new PointsCalculator($session);
+        foreach ($sessionDefinitions as $definition) {
+            $session = Session::create([
+                'owner_id' => $players->first()->id,
+                'name' => $definition['name'],
+                'player_count' => 4,
+                'status' => $definition['status'],
+                'rules_snapshot' => [
+                    'base' => 25000,
+                    'k' => 0.1,
+                    'rank_bonus' => [1 => 2000, 2 => 1000, 3 => 0, 4 => -3000],
+                ],
+                'rule_base' => 25000,
+                'rule_k' => 0.1,
+                'rule_rank_bonus' => [1 => 2000, 2 => 1000, 3 => 0, 4 => -3000],
+                'closed_at' => $definition['status'] === SessionStatus::Closed
+                    ? now()->subDays($definition['days_ago'])
+                    : null,
+            ]);
 
-            foreach ($scoresByGame as $gameIndex => $scores) {
-                $game = Game::create([
+            $players->values()->each(function (User $player, int $seat) use ($session): void {
+                SessionMember::create([
                     'session_id' => $session->id,
-                    'created_by' => $players->first()->id,
-                    'ordinal' => $gameIndex + 1,
-                    'played_at' => now()->subDays(count($scoresByGame) - $gameIndex),
+                    'user_id' => $player->id,
+                    'is_host' => $seat === 0,
+                    'seat_index' => $seat,
+                    'joined_at' => now(),
                 ]);
+            });
 
-                $results = $calculator->calculate(
-                    $players->values()->map(fn (User $player, int $seat) => [
-                        'user_id' => $player->id,
-                        'final_score' => $scores[$seat],
-                        'rank' => null,
-                    ])->all()
-                );
+            $scoresByGame = $definition['scores'];
 
-                GameResult::withoutEvents(function () use ($game, $session, $results): void {
-                    foreach ($results as $result) {
-                        GameResult::create([
-                            'game_id' => $game->id,
-                            'session_id' => $session->id,
-                            'user_id' => $result['user_id'],
-                            'final_score' => $result['final_score'],
-                            'rank' => $result['rank'],
-                            'points' => $result['points'],
-                            'score_diff' => $result['score_diff'],
-                            'score_diff_scaled' => $result['score_diff_scaled'],
-                            'rank_bonus' => $result['rank_bonus'],
-                        ]);
-                    }
-                });
-            }
-        });
+            DB::transaction(function () use ($session, $players, $scoresByGame, $definition): void {
+                $calculator = new PointsCalculator($session);
+
+                foreach ($scoresByGame as $gameIndex => $scores) {
+                    $game = Game::create([
+                        'session_id' => $session->id,
+                        'created_by' => $players->first()->id,
+                        'ordinal' => $gameIndex + 1,
+                        'played_at' => now()->subDays(
+                            $definition['days_ago'] + count($scoresByGame) - $gameIndex
+                        ),
+                    ]);
+
+                    $results = $calculator->calculate(
+                        $players->values()->map(fn (User $player, int $seat) => [
+                            'user_id' => $player->id,
+                            'final_score' => $scores[$seat],
+                            'rank' => null,
+                        ])->all()
+                    );
+
+                    GameResult::withoutEvents(function () use ($game, $session, $results): void {
+                        foreach ($results as $result) {
+                            GameResult::create([
+                                'game_id' => $game->id,
+                                'session_id' => $session->id,
+                                'user_id' => $result['user_id'],
+                                'final_score' => $result['final_score'],
+                                'rank' => $result['rank'],
+                                'points' => $result['points'],
+                                'score_diff' => $result['score_diff'],
+                                'score_diff_scaled' => $result['score_diff_scaled'],
+                                'rank_bonus' => $result['rank_bonus'],
+                            ]);
+                        }
+                    });
+                }
+            });
+        }
 
         $this->call(RerankPlayersSeeder::class);
     }
