@@ -31,6 +31,20 @@ class AuthenticationTest extends TestCase
         $response->assertRedirect(route('dashboard', absolute: false));
     }
 
+    public function test_successful_login_always_redirects_to_the_dashboard(): void
+    {
+        $user = User::factory()->create();
+
+        $this->withSession(['url.intended' => route('status')]);
+
+        $response = $this->post(route('login.store'), [
+            'email' => $user->email,
+            'password' => 'password',
+        ]);
+
+        $response->assertRedirect(route('dashboard', absolute: false));
+    }
+
     public function test_users_can_not_authenticate_with_invalid_password()
     {
         $user = User::factory()->create();
@@ -41,6 +55,20 @@ class AuthenticationTest extends TestCase
         ]);
 
         $this->assertGuest();
+    }
+
+    public function test_invalid_login_credentials_are_shown_in_japanese(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->post(route('login.store'), [
+            'email' => $user->email,
+            'password' => 'wrong-password',
+        ]);
+
+        $response->assertSessionHasErrors([
+            'email' => 'メールアドレスまたはパスワードが正しくありません。',
+        ]);
     }
 
     public function test_users_can_logout()
