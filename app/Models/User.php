@@ -96,6 +96,11 @@ class User extends Authenticatable
         return $this->hasMany(FriendRequest::class, 'recipient_id');
     }
 
+    public function sessionMemberships(): HasMany
+    {
+        return $this->hasMany(SessionMember::class);
+    }
+
     public function isFriendsWith(self $user): bool
     {
         return $this->friends()->where('friend_id', $user->id)->exists();

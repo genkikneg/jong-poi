@@ -367,7 +367,7 @@ dashboard.form = dashboardForm
 
 /**
 * @see \App\Http\Controllers\Status\StatusController::status
-* @see app/Http/Controllers/Status/StatusController.php:13
+* @see app/Http/Controllers/Status/StatusController.php:15
 * @route '/status'
 */
 export const status = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -382,7 +382,7 @@ status.definition = {
 
 /**
 * @see \App\Http\Controllers\Status\StatusController::status
-* @see app/Http/Controllers/Status/StatusController.php:13
+* @see app/Http/Controllers/Status/StatusController.php:15
 * @route '/status'
 */
 status.url = (options?: RouteQueryOptions) => {
@@ -391,7 +391,7 @@ status.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Status\StatusController::status
-* @see app/Http/Controllers/Status/StatusController.php:13
+* @see app/Http/Controllers/Status/StatusController.php:15
 * @route '/status'
 */
 status.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -401,7 +401,7 @@ status.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\Status\StatusController::status
-* @see app/Http/Controllers/Status/StatusController.php:13
+* @see app/Http/Controllers/Status/StatusController.php:15
 * @route '/status'
 */
 status.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -411,7 +411,7 @@ status.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\Status\StatusController::status
-* @see app/Http/Controllers/Status/StatusController.php:13
+* @see app/Http/Controllers/Status/StatusController.php:15
 * @route '/status'
 */
 const statusForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -421,7 +421,7 @@ const statusForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => 
 
 /**
 * @see \App\Http\Controllers\Status\StatusController::status
-* @see app/Http/Controllers/Status/StatusController.php:13
+* @see app/Http/Controllers/Status/StatusController.php:15
 * @route '/status'
 */
 statusForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -431,7 +431,7 @@ statusForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\Status\StatusController::status
-* @see app/Http/Controllers/Status/StatusController.php:13
+* @see app/Http/Controllers/Status/StatusController.php:15
 * @route '/status'
 */
 statusForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

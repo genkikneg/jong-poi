@@ -92,6 +92,8 @@ class SessionFlowTest extends TestCase
 
         $this->assertDatabaseCount('game_results', 4);
 
+        $session->markClosed();
+
         $this->actingAs($friendA)
             ->get(route('sessions.history'))
             ->assertOk()

@@ -1,556 +1,124 @@
-import { Head } from '@inertiajs/react';
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card';
+import { Head, router } from '@inertiajs/react';
+import { SlidersHorizontal } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useIsMobile } from '@/hooks/use-mobile';
 import AppLayout from '@/layouts/app-layout';
-import { cn } from '@/lib/utils';
 import { status as statusRoute } from '@/routes';
-import type { BreadcrumbItem } from '@/types';
 
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: '戦績',
-        href: statusRoute().url,
-    },
-];
-
-type RecentGame = {
-    id: number;
-    points: string;
-    rank: number;
-    final_score: string;
-    played_at: string | null;
-    session?: {
-        id: number;
-        name: string | null;
-    } | null;
-};
-
-type RankTrendPoint = {
-    label: string | null;
-    rank: number;
-    order: number;
-};
-
-type DetailedStats = {
-    rank_rates: Record<number, { count: number; rate: number }>;
-    best_game_points: string;
-    worst_game_points: string;
-    best_session_points: string;
-    worst_session_points: string;
-    average_session_points: string;
-    flying_rate: number;
-};
-
-type Summary = {
-    total_points: string;
-    total_games: number;
-    total_sessions: number;
-};
-
+type Game = { id: number; points: string; rank: number; final_score: string; played_at: string | null; cumulative_points?: number; session?: { id: number; name: string | null; player_count: number } | null };
+type Summary = { total_points: string; total_games: number; total_sessions: number; average_points: number | null; average_rank: number | null; top_rate: number | null; top_two_rate: number | null; last_rate: number | null };
+type Filters = { period: string; from: string | null; to: string | null; player_count: number | null; opponent_id: number | null };
 type Props = {
     summary: Summary;
-    recentGames: RecentGame[];
-    rankTrend: RankTrendPoint[];
-    detailedStats: DetailedStats;
+    recentGames: Game[];
+    trend: Game[];
+    detailedStats: { rank_rates: Record<number, { count: number; rate: number }>; best_game_points: string; worst_game_points: string; best_session_points: string; worst_session_points: string; average_session_points: string; flying_rate: number };
+    filters: Filters;
+    opponents: { id: number; name: string }[];
 };
 
-const numberFormatter = new Intl.NumberFormat(undefined, {
-    maximumFractionDigits: 1,
-    minimumFractionDigits: 0,
-});
+const nf = new Intl.NumberFormat(undefined, { maximumFractionDigits: 1 });
+const df = new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+const percent = (value: number | null) => value === null ? '—' : `${nf.format(value * 100)}%`;
+const periodLabels: Record<string, string> = { all: '全期間', year: '今年', month: '今月', week: '今週', custom: '期間指定' };
+const rankColors = ['bg-amber-400', 'bg-sky-400', 'bg-emerald-400', 'bg-purple-400'];
+const rankTextColors = ['text-amber-700 dark:text-amber-300', 'text-sky-700 dark:text-sky-300', 'text-emerald-700 dark:text-emerald-300', 'text-purple-700 dark:text-purple-300'];
 
-const dateFormatter = new Intl.DateTimeFormat(undefined, {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-});
+export default function StatusPage({ summary, recentGames, trend, detailedStats, filters, opponents }: Props) {
+    const [chartMode, setChartMode] = useState<'rank' | 'points' | 'cumulative'>('rank');
+    const [desktopGameCount, setDesktopGameCount] = useState<10 | 30 | 50>(30);
+    const isMobile = useIsMobile();
+    const gameCount = isMobile ? 10 : desktopGameCount;
+    const visibleTrend = useMemo(() => trend.slice(-gameCount).reduce<Game[]>((games, game) => [
+        ...games,
+        { ...game, cumulative_points: Number(games.at(-1)?.cumulative_points ?? 0) + Number(game.points) },
+    ], []), [trend, gameCount]);
+    const apply = (next: Partial<Filters>) => router.get(statusRoute().url, { ...filters, ...next }, { preserveState: true, preserveScroll: true, replace: true });
+    const conditionLabel = [periodLabels[filters.period], filters.player_count ? `${filters.player_count}人打ち` : '全ルール', opponents.find((item) => item.id === filters.opponent_id)?.name].filter(Boolean).join('・');
+    const chart = useMemo(() => {
+        const values = visibleTrend.map((game) => chartMode === 'rank' ? game.rank : chartMode === 'points' ? Number(game.points) : Number(game.cumulative_points ?? 0));
+        if (!values.length) return { points: '', dots: [] as { x: number; y: number }[], yTicks: [] as { value: number; y: number }[], xTicks: [] as { label: string; x: number }[] };
+        const width = 720, height = 270, left = 92, right = 18, top = 18, bottom = 46;
+        const min = chartMode === 'rank' ? 1 : Math.min(0, ...values);
+        const max = chartMode === 'rank' ? 4 : Math.max(0, ...values);
+        const range = Math.max(max - min, 1);
+        const dots = values.map((value, index) => ({
+            x: left + (values.length === 1 ? (width - left - right) / 2 : index / (values.length - 1) * (width - left - right)),
+            y: top + ((chartMode === 'rank' ? value - min : max - value) / range) * (height - top - bottom),
+        }));
+        const tickValues = chartMode === 'rank' ? [1, 2, 3, 4] : Array.from({ length: 5 }, (_, index) => min + ((max - min) * index) / 4).reverse();
+        const yTicks = tickValues.map((value) => ({ value, y: top + ((chartMode === 'rank' ? value - min : max - value) / range) * (height - top - bottom) }));
+        const tickIndexes = Array.from(new Set([0, Math.floor((values.length - 1) / 4), Math.floor((values.length - 1) / 2), Math.floor(((values.length - 1) * 3) / 4), values.length - 1]));
+        const xTicks = tickIndexes.map((index) => ({ label: `${index + 1}戦`, x: dots[index].x }));
+        return { dots, yTicks, xTicks, points: dots.map((point) => `${point.x},${point.y}`).join(' ') };
+    }, [visibleTrend, chartMode]);
 
-const formatPoints = (value?: string | number | null) =>
-    numberFormatter.format(Number(value ?? 0));
-
-const rankLabels = [1, 2, 3, 4];
-const donutColors = ['#fbbf24', '#38bdf8', '#34d399', '#c084fc'];
-const rankColorClasses = [
-    'bg-amber-400',
-    'bg-sky-400',
-    'bg-emerald-400',
-    'bg-purple-400',
-];
-const donutRadius = 64;
-const donutStrokeWidth = 16;
-const donutSize = donutRadius * 2 + donutStrokeWidth;
-const donutCenter = donutSize / 2;
-const chartHeight = 260;
-const chartWidth = 640;
-const chartPadding = 32;
-const chartBandColors = ['#fef3c7', '#e0f2fe', '#d1fae5', '#f3e8ff'];
-
-const normalizeRank = (rank: number) => {
-    if (Number.isNaN(rank)) {
-        return 4;
-    }
-
-    return Math.min(Math.max(rank, 1), 4);
-};
-
-const buildLinePoints = (points: RankTrendPoint[]) => {
-    if (points.length === 0) {
-        return [];
-    }
-
-    if (points.length === 1) {
-        const x = chartPadding + (chartWidth - chartPadding * 2) / 2;
-        const y =
-            chartPadding +
-            ((normalizeRank(points[0].rank) - 1) / 3) *
-                (chartHeight - chartPadding * 2);
-
-        return [{ ...points[0], x, y }];
-    }
-
-    return points.map((point, index) => {
-        const x =
-            chartPadding +
-            (index / (points.length - 1)) * (chartWidth - chartPadding * 2);
-        const y =
-            chartPadding +
-            ((normalizeRank(point.rank) - 1) / 3) *
-                (chartHeight - chartPadding * 2);
-
-        return { ...point, x, y };
-    });
-};
-
-export default function StatusPage({
-    summary,
-    recentGames,
-    rankTrend,
-    detailedStats,
-}: Props) {
-    const chartPoints = buildLinePoints(rankTrend);
-    const polylinePoints = chartPoints
-        .map((point) => `${point.x},${point.y}`)
-        .join(' ');
-
-    const chartTicks = rankLabels.map((rank) => ({
-        label: `${rank}位`,
-        position:
-            chartPadding + ((rank - 1) / 3) * (chartHeight - chartPadding * 2),
-    }));
-
-    const rankRateMetrics = rankLabels.map((rank, index) => ({
-        title: `${rank}位率`,
-        rate: detailedStats.rank_rates[rank]?.rate ?? 0,
-        count: detailedStats.rank_rates[rank]?.count ?? 0,
-        color: donutColors[index % donutColors.length],
-        colorClass: rankColorClasses[index % rankColorClasses.length],
-    }));
-
-    const totalRate = rankRateMetrics.reduce(
-        (sum, metric) => sum + metric.rate,
-        0,
-    );
-    const donutSegments = (() => {
-        let currentAngle = -Math.PI / 2;
-
-        return rankRateMetrics.map((metric) => {
-            const angleSpan = metric.rate * Math.PI * 2;
-            const startAngle = currentAngle;
-            const endAngle = currentAngle + angleSpan;
-            currentAngle = endAngle;
-
-            return {
-                ...metric,
-                startAngle,
-                endAngle,
-            };
-        });
-    })();
-
-    const describeSector = (startAngle: number, endAngle: number) => {
-        const start = {
-            x: donutCenter + donutRadius * Math.cos(startAngle),
-            y: donutCenter + donutRadius * Math.sin(startAngle),
-        };
-        const end = {
-            x: donutCenter + donutRadius * Math.cos(endAngle),
-            y: donutCenter + donutRadius * Math.sin(endAngle),
-        };
-        const largeArcFlag = endAngle - startAngle <= Math.PI ? 0 : 1;
-
-        return `M ${donutCenter} ${donutCenter} L ${start.x} ${start.y} A ${donutRadius} ${donutRadius} 0 ${largeArcFlag} 1 ${end.x} ${end.y} Z`;
-    };
-
-    const summaryMetrics = [
-        {
-            label: '累計ポイント',
-            value: `${formatPoints(summary.total_points)} pt`,
-        },
-        { label: '総対局数', value: `${summary.total_games} 戦` },
-        { label: '参加セッション', value: `${summary.total_sessions} 件` },
+    const primaryMetrics = [
+        ['平均順位', summary.average_rank === null ? '—' : `${nf.format(summary.average_rank)}位`],
+        ['平均ポイント', summary.average_points === null ? '—' : `${nf.format(summary.average_points)} pt`],
+        ['トップ率', percent(summary.top_rate)],
+        ['連対率', percent(summary.top_two_rate)],
+        ['ラス率', percent(summary.last_rate)],
+        ['対局数', `${summary.total_games}戦`],
     ];
 
-    const detailMetrics = [
-        {
-            label: '1局最高ポイント',
-            value: `${formatPoints(detailedStats.best_game_points)} pt`,
-        },
-        {
-            label: '1局最低ポイント',
-            value: `${formatPoints(detailedStats.worst_game_points)} pt`,
-        },
-        {
-            label: '1セッション最高ポイント',
-            value: `${formatPoints(detailedStats.best_session_points)} pt`,
-        },
-        {
-            label: '1セッション最低ポイント',
-            value: `${formatPoints(detailedStats.worst_session_points)} pt`,
-        },
-        {
-            label: '1セッション平均ポイント',
-            value: `${formatPoints(detailedStats.average_session_points)} pt`,
-        },
-        {
-            label: '飛び率',
-            value: `${numberFormatter.format(detailedStats.flying_rate * 100)} %`,
-        },
-    ];
-
-    return (
-        <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="戦績" />
-
-            <div className="space-y-8">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>累計スタッツ</CardTitle>
-                        <CardDescription>
-                            サマリー・順位分布・詳細指標をまとめてひと目で確認できます。
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="grid gap-4 lg:grid-cols-3">
-                            <section className="space-y-3 rounded-lg border bg-muted/20 p-4">
-                                <p className="text-sm font-semibold text-muted-foreground">
-                                    累計サマリー
-                                </p>
-                                <div className="space-y-3">
-                                    {summaryMetrics.map((metric) => (
-                                        <div
-                                            key={metric.label}
-                                            className="flex items-baseline justify-between gap-4"
-                                        >
-                                            <p className="text-sm text-muted-foreground">
-                                                {metric.label}
-                                            </p>
-                                            <p className="text-xl font-semibold">
-                                                {metric.value}
-                                            </p>
-                                        </div>
-                                    ))}
-                                </div>
-                            </section>
-
-                            <section className="space-y-3 rounded-lg border bg-muted/20 p-4">
-                                <p className="text-sm font-semibold text-muted-foreground">
-                                    順位分布
-                                </p>
-                                <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-                                    <div className="flex items-center justify-center">
-                                        <svg
-                                            width={donutSize}
-                                            height={donutSize}
-                                            viewBox={`0 0 ${donutSize} ${donutSize}`}
-                                            aria-label="順位分布の円グラフ"
-                                        >
-                                            {totalRate > 0 ? (
-                                                donutSegments.map((segment) =>
-                                                    segment.rate > 0 ? (
-                                                        <path
-                                                            key={segment.title}
-                                                            d={describeSector(
-                                                                segment.startAngle,
-                                                                segment.endAngle,
-                                                            )}
-                                                            fill={segment.color}
-                                                        />
-                                                    ) : null,
-                                                )
-                                            ) : (
-                                                <circle
-                                                    cx={donutCenter}
-                                                    cy={donutCenter}
-                                                    r={donutRadius}
-                                                    fill="hsl(var(--muted))"
-                                                    opacity={0.3}
-                                                />
-                                            )}
-                                        </svg>
-                                    </div>
-                                    <div className="flex-1 space-y-2">
-                                        {rankRateMetrics.map((metric) => (
-                                            <div
-                                                key={metric.title}
-                                                className="flex items-center justify-between text-sm"
-                                            >
-                                                <div className="flex items-center gap-2">
-                                                    <span
-                                                        className={cn(
-                                                            'size-2.5 rounded-full',
-                                                            metric.colorClass,
-                                                        )}
-                                                    />
-                                                    <span className="text-muted-foreground">
-                                                        {metric.title}
-                                                    </span>
-                                                </div>
-                                                <div className="text-right">
-                                                    <p className="font-semibold">
-                                                        {numberFormatter.format(
-                                                            metric.rate * 100,
-                                                        )}
-                                                        %
-                                                    </p>
-                                                    <p className="text-xs text-muted-foreground">
-                                                        {metric.count} 戦
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            </section>
-
-                            <section className="space-y-3 rounded-lg border bg-muted/20 p-4">
-                                <p className="text-sm font-semibold text-muted-foreground">
-                                    累計詳細戦績
-                                </p>
-                                <div className="space-y-3">
-                                    {detailMetrics.map((metric) => (
-                                        <div
-                                            key={metric.label}
-                                            className="flex items-baseline justify-between gap-4"
-                                        >
-                                            <p className="text-sm text-muted-foreground">
-                                                {metric.label}
-                                            </p>
-                                            <p className="text-xl font-semibold">
-                                                {metric.value}
-                                            </p>
-                                        </div>
-                                    ))}
-                                </div>
-                            </section>
+    return <AppLayout breadcrumbs={[{ title: '戦績', href: statusRoute().url }]}>
+        <Head title="戦績" />
+        <div className="space-y-5">
+            <header className="flex items-end justify-between gap-4">
+                <div><h1 className="text-2xl font-semibold">戦績</h1><p className="mt-1 text-sm text-muted-foreground">{conditionLabel}</p></div>
+                <details className="group relative">
+                    <summary className="flex cursor-pointer list-none items-center gap-2 rounded-md border bg-background px-3 py-2 text-sm font-medium hover:bg-muted"><SlidersHorizontal className="size-4" />条件変更</summary>
+                    <div className="absolute right-0 z-20 mt-2 w-[min(34rem,calc(100vw-2rem))] rounded-lg border bg-popover p-4 text-popover-foreground shadow-xl">
+                        <div className="grid gap-3 sm:grid-cols-2">
+                            <label className="space-y-1 text-sm">期間<select className="w-full rounded-md border bg-background px-3 py-2" value={filters.period} onChange={(e) => apply({ period: e.target.value, from: null, to: null })}><option value="all">全期間</option><option value="year">今年</option><option value="month">今月</option><option value="week">今週</option><option value="custom">任意期間</option></select></label>
+                            <label className="space-y-1 text-sm">人数<select className="w-full rounded-md border bg-background px-3 py-2" value={filters.player_count ?? ''} onChange={(e) => apply({ player_count: e.target.value ? Number(e.target.value) : null })}><option value="">すべて</option><option value="3">3人打ち</option><option value="4">4人打ち</option></select></label>
+                            <label className="space-y-1 text-sm sm:col-span-2">対戦相手<select className="w-full rounded-md border bg-background px-3 py-2" value={filters.opponent_id ?? ''} onChange={(e) => apply({ opponent_id: e.target.value ? Number(e.target.value) : null })}><option value="">すべて</option>{opponents.map((opponent) => <option key={opponent.id} value={opponent.id}>{opponent.name}</option>)}</select></label>
+                            {filters.period === 'custom' && <><label className="space-y-1 text-sm">開始<input type="date" className="w-full rounded-md border bg-background px-3 py-2" value={filters.from ?? ''} onChange={(e) => apply({ from: e.target.value || null })} /></label><label className="space-y-1 text-sm">終了<input type="date" className="w-full rounded-md border bg-background px-3 py-2" value={filters.to ?? ''} onChange={(e) => apply({ to: e.target.value || null })} /></label></>}
                         </div>
-                    </CardContent>
+                    </div>
+                </details>
+            </header>
+
+            <Card className="overflow-hidden">
+                <CardContent className="p-0">
+                    <div className="grid lg:grid-cols-[1.15fr_2fr]">
+                        <div className="flex flex-col justify-center border-b bg-muted/35 p-6 lg:border-r lg:border-b-0 sm:p-8">
+                            <p className="text-sm text-muted-foreground">累計ポイント</p>
+                            <p className="mt-1 text-4xl font-bold tracking-tight sm:text-5xl">{nf.format(Number(summary.total_points))}<span className="ml-2 text-xl font-medium">pt</span></p>
+                            <p className="mt-3 text-sm text-muted-foreground">{summary.total_sessions}セッション・{summary.total_games}戦</p>
+                        </div>
+                        <div className="grid grid-cols-2 divide-x divide-y sm:grid-cols-3 sm:divide-y-0">
+                            {primaryMetrics.map(([label, value]) => <div key={label} className="flex min-h-24 flex-col justify-center px-4 py-3"><p className="text-xs text-muted-foreground">{label}</p><p className="mt-1 text-xl font-semibold">{value}</p></div>)}
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
+
+            <div className="grid gap-5 xl:grid-cols-[2fr_1fr]">
+                <Card className="min-w-0 overflow-hidden">
+                    <CardHeader className="pb-2"><div className="space-y-3"><div className="flex flex-wrap items-center justify-between gap-2"><div><CardTitle>直近{gameCount}戦の推移</CardTitle><CardDescription>最近の調子を確認できます。</CardDescription></div><div className="hidden rounded-md border p-1 md:flex">{([10,30,50] as const).map((count) => <button key={count} type="button" onClick={() => setDesktopGameCount(count)} className={`rounded px-3 py-1 text-sm ${desktopGameCount === count ? 'bg-primary text-primary-foreground' : ''}`}>{count}戦</button>)}</div></div><div className="flex w-fit max-w-full rounded-md border p-1">{([['rank','順位'],['points','ポイント'],['cumulative','累積']] as const).map(([value,label]) => <button key={value} type="button" onClick={() => setChartMode(value)} className={`rounded px-2.5 py-1 text-xs sm:px-3 sm:text-sm ${chartMode === value ? 'bg-primary text-primary-foreground' : ''}`}>{label}</button>)}</div></div></CardHeader>
+                    <CardContent className="min-w-0 px-2 sm:px-6">{visibleTrend.length === 0 ? <p className="py-16 text-center text-sm text-muted-foreground">該当する戦績がありません。</p> : <svg viewBox="0 0 720 270" className="h-auto w-full" role="img" aria-label="戦績推移">{chart.yTicks.map((tick) => <g key={tick.value}><line x1="92" x2="702" y1={tick.y} y2={tick.y} className="stroke-border" strokeDasharray="5 5" strokeWidth="1.5" /><text x="80" y={tick.y + 7} textAnchor="end" className="fill-foreground text-[19px] font-medium">{chartMode === 'rank' ? `${tick.value}位` : nf.format(tick.value)}</text></g>)}<line x1="92" x2="92" y1="18" y2="224" className="stroke-foreground" strokeWidth="2" /><line x1="92" x2="702" y1="224" y2="224" className="stroke-foreground" strokeWidth="2" />{chart.xTicks.map((tick) => <g key={tick.label}><line x1={tick.x} x2={tick.x} y1="224" y2="232" className="stroke-foreground" strokeWidth="2" /><text x={tick.x} y="258" textAnchor="middle" className="fill-foreground text-[18px] font-medium">{tick.label}</text></g>)}<polyline points={chart.points} fill="none" className="stroke-primary" strokeWidth="4" vectorEffect="non-scaling-stroke" strokeLinejoin="round" />{chart.dots.map((point, index) => <circle key={index} cx={point.x} cy={point.y} r="5" className="fill-background stroke-primary" vectorEffect="non-scaling-stroke" strokeWidth="3"><title>{`${index + 1}戦目: ${chartMode === 'rank' ? `${visibleTrend[index].rank}位` : `${nf.format(chartMode === 'points' ? Number(visibleTrend[index].points) : Number(visibleTrend[index].cumulative_points))} pt`}`}</title></circle>)}</svg>}</CardContent>
                 </Card>
 
-                <div className="grid gap-6 lg:grid-cols-2">
-                    <Card className="overflow-hidden">
-                        <CardHeader>
-                            <CardTitle>直近10戦の順位推移</CardTitle>
-                            <CardDescription>
-                                順位が低いほどグラフは上に表示されます。
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            {rankTrend.length === 0 ? (
-                                <p className="text-sm text-muted-foreground">
-                                    戦績データがまだありません。
-                                </p>
-                            ) : (
-                                <div className="overflow-x-auto">
-                                    <svg
-                                        viewBox={`0 0 ${chartWidth} ${chartHeight}`}
-                                        className="h-64 w-full"
-                                        role="img"
-                                        aria-label="直近10戦の順位推移"
-                                    >
-                                        <desc>
-                                            直近の順位推移を折れ線で表示します
-                                        </desc>
-                                        {rankLabels.map((rank, index) => {
-                                            const bandHeight =
-                                                (chartHeight -
-                                                    chartPadding * 2) /
-                                                rankLabels.length;
-                                            const yStart =
-                                                chartPadding +
-                                                index * bandHeight;
-
-                                            return (
-                                                <rect
-                                                    key={`band-${rank}`}
-                                                    x={chartPadding}
-                                                    y={yStart}
-                                                    width={
-                                                        chartWidth -
-                                                        chartPadding * 2
-                                                    }
-                                                    height={bandHeight}
-                                                    fill={
-                                                        chartBandColors[index]
-                                                    }
-                                                    opacity={0.45}
-                                                />
-                                            );
-                                        })}
-                                        {chartTicks.map((tick) => (
-                                            <g key={tick.label}>
-                                                <line
-                                                    x1={chartPadding}
-                                                    x2={
-                                                        chartWidth -
-                                                        chartPadding
-                                                    }
-                                                    y1={tick.position}
-                                                    y2={tick.position}
-                                                    className="stroke-muted"
-                                                    strokeDasharray="4 6"
-                                                    strokeWidth={0.8}
-                                                />
-                                                <text
-                                                    x={chartPadding - 18}
-                                                    y={tick.position + 4}
-                                                    className="fill-muted-foreground text-xs"
-                                                >
-                                                    {tick.label}
-                                                </text>
-                                                <text
-                                                    x={
-                                                        chartWidth -
-                                                        chartPadding +
-                                                        10
-                                                    }
-                                                    y={tick.position + 4}
-                                                    className="fill-muted-foreground text-xs"
-                                                >
-                                                    {tick.label}
-                                                </text>
-                                            </g>
-                                        ))}
-                                        {polylinePoints ? (
-                                            <polyline
-                                                points={polylinePoints}
-                                                fill="none"
-                                                stroke="hsl(var(--foreground))"
-                                                strokeWidth={4}
-                                                strokeLinejoin="round"
-                                                strokeLinecap="round"
-                                            />
-                                        ) : null}
-                                        {chartPoints.map((point, index) => (
-                                            <circle
-                                                key={`${point.label}-${index}`}
-                                                cx={point.x}
-                                                cy={point.y}
-                                                r={6}
-                                                className="fill-background stroke-primary"
-                                                strokeWidth={3}
-                                            />
-                                        ))}
-                                        <g aria-hidden>
-                                            {chartPoints.map((point, index) => (
-                                                <text
-                                                    key={`order-${index}`}
-                                                    x={point.x}
-                                                    y={
-                                                        chartHeight -
-                                                        chartPadding / 2
-                                                    }
-                                                    className="fill-muted-foreground text-xs"
-                                                    textAnchor="middle"
-                                                >
-                                                    {index + 1}
-                                                </text>
-                                            ))}
-                                        </g>
-                                    </svg>
-                                </div>
-                            )}
-                        </CardContent>
-                    </Card>
-                </div>
-
-                <Card>
-                    <CardHeader>
-                        <CardTitle>直近10戦戦績</CardTitle>
-                        <CardDescription>
-                            最新の対局結果を確認できます。
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        {recentGames.length === 0 ? (
-                            <p className="text-sm text-muted-foreground">
-                                まだ戦績がありません。
-                            </p>
-                        ) : (
-                            <div className="space-y-3">
-                                {recentGames.map((game) => (
-                                    <div
-                                        key={game.id}
-                                        className="rounded-lg border px-4 py-3"
-                                    >
-                                        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                                            <div>
-                                                <p className="text-sm font-semibold">
-                                                    {game.session?.name ??
-                                                        'セッション'}
-                                                </p>
-                                                <p className="text-xs text-muted-foreground">
-                                                    {game.played_at
-                                                        ? dateFormatter.format(
-                                                              new Date(
-                                                                  game.played_at,
-                                                              ),
-                                                          )
-                                                        : '日時不明'}
-                                                </p>
-                                            </div>
-                                            <div className="flex flex-wrap items-center gap-4 text-sm">
-                                                <div>
-                                                    <p className="text-xs text-muted-foreground">
-                                                        ポイント
-                                                    </p>
-                                                    <p className="text-lg font-semibold">
-                                                        {formatPoints(
-                                                            game.points,
-                                                        )}{' '}
-                                                        pt
-                                                    </p>
-                                                </div>
-                                                <div>
-                                                    <p className="text-xs text-muted-foreground">
-                                                        順位
-                                                    </p>
-                                                    <p className="text-lg font-semibold">
-                                                        {game.rank}位
-                                                    </p>
-                                                </div>
-                                                <div>
-                                                    <p className="text-xs text-muted-foreground">
-                                                        最終スコア
-                                                    </p>
-                                                    <p className="text-lg font-semibold">
-                                                        {formatPoints(
-                                                            game.final_score,
-                                                        )}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                    </CardContent>
+                <Card className="min-w-0 overflow-hidden">
+                    <CardHeader className="pb-2"><CardTitle>順位分布</CardTitle></CardHeader>
+                    <CardContent className="min-w-0 space-y-3">{[1,2,3,4].map((rank, index) => { const item = detailedStats.rank_rates[rank] ?? { count: 0, rate: 0 }; return <div key={rank}><div className="mb-1 flex justify-between text-sm"><span className={`font-medium ${rankTextColors[index]}`}>{rank}位</span><span>{item.count}戦 <strong className={`ml-2 ${rankTextColors[index]}`}>{percent(item.rate)}</strong></span></div><div className="h-2 overflow-hidden rounded bg-muted"><div className={`h-2 rounded ${rankColors[index]}`} style={{ width: `${item.rate * 100}%` }} /></div></div>})}</CardContent>
                 </Card>
             </div>
-        </AppLayout>
-    );
+
+            <Card>
+                <CardHeader className="pb-3"><CardTitle>詳細</CardTitle></CardHeader>
+                <CardContent className="grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-3 lg:grid-cols-6">{[
+                    ['半荘最高', detailedStats.best_game_points, 'pt'], ['半荘最低', detailedStats.worst_game_points, 'pt'], ['セッション最高', detailedStats.best_session_points, 'pt'], ['セッション最低', detailedStats.worst_session_points, 'pt'], ['セッション平均', detailedStats.average_session_points, 'pt'], ['飛び率', detailedStats.flying_rate * 100, '%'],
+                ].map(([label, value, unit]) => <div key={String(label)}><p className="text-xs text-muted-foreground">{label}</p><p className="mt-1 text-lg font-semibold">{nf.format(Number(value))}<span className="ml-1 text-sm font-normal text-muted-foreground">{unit}</span></p></div>)}</CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader className="pb-3"><CardTitle>直近10戦</CardTitle></CardHeader>
+                <CardContent className="divide-y p-0">{recentGames.length === 0 ? <p className="p-6 text-sm text-muted-foreground">該当する戦績がありません。</p> : recentGames.map((game) => <div key={game.id} className="flex items-center justify-between gap-4 px-6 py-3"><div><p className="text-sm font-medium">{game.session?.name ?? 'セッション'} <span className="font-normal text-muted-foreground">・{game.session?.player_count}人打ち</span></p><p className="text-xs text-muted-foreground">{game.played_at ? df.format(new Date(game.played_at)) : '日時不明'}</p></div><div className="flex items-baseline gap-5"><span className="text-sm">{game.rank}位</span><strong className="min-w-20 text-right">{nf.format(Number(game.points))} pt</strong></div></div>)}</CardContent>
+            </Card>
+        </div>
+    </AppLayout>;
 }
