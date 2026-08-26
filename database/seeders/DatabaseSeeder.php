@@ -23,22 +23,22 @@ class DatabaseSeeder extends Seeder
         $players = User::factory()->createMany([
             [
                 'name' => '太郎',
-                'email' => 'test1@test.com',
+                'user_id' => 'admin',
                 'password' => 'test1234',
             ],
             [
                 'name' => '二郎',
-                'email' => 'test2@test.com',
+                'user_id' => 'test2@test.com',
                 'password' => 'test1234',
             ],
             [
                 'name' => '三郎',
-                'email' => 'test3@test.com',
+                'user_id' => 'test3',
                 'password' => 'test1234',
             ],
             [
                 'name' => '四郎',
-                'email' => 'test4@test.com',
+                'user_id' => 'test4',
                 'password' => 'test1234',
             ],
         ]);

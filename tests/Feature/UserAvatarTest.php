@@ -21,9 +21,9 @@ class UserAvatarTest extends TestCase
         $this->assertNotSame($users[0]->avatar_public_id, $users[1]->avatar_public_id);
     }
 
-    public function test_default_avatar_does_not_use_an_email_derived_url(): void
+    public function test_default_avatar_does_not_use_a_user_id_derived_url(): void
     {
-        $user = User::factory()->create(['email' => 'private@example.com']);
+        $user = User::factory()->create(['user_id' => 'private_user']);
 
         $this->assertNull($user->avatar);
     }
@@ -51,7 +51,7 @@ class UserAvatarTest extends TestCase
         $viewer = User::factory()->create();
 
         $this->assertStringContainsString($owner->avatar_public_id, $owner->avatar);
-        $this->assertStringNotContainsString(md5(strtolower($owner->email)), $owner->avatar);
+        $this->assertStringNotContainsString(md5(strtolower($owner->user_id)), $owner->avatar);
 
         $this->actingAs($viewer)
             ->get($owner->avatar)

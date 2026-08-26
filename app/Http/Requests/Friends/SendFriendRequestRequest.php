@@ -5,6 +5,7 @@ namespace App\Http\Requests\Friends;
 use App\Models\User;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Str;
 
 class SendFriendRequestRequest extends FormRequest
 {
@@ -21,15 +22,15 @@ class SendFriendRequestRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'friend_code' => ['required', 'string', 'max:12', 'exists:users,friend_code'],
+            'identifier' => ['required', 'string', 'max:255'],
         ];
     }
 
     protected function prepareForValidation(): void
     {
-        if ($this->has('friend_code')) {
+        if ($this->has('identifier')) {
             $this->merge([
-                'friend_code' => strtoupper((string) $this->input('friend_code')),
+                'identifier' => trim((string) $this->input('identifier')),
             ]);
         }
     }
@@ -38,27 +39,33 @@ class SendFriendRequestRequest extends FormRequest
     {
         return [
             function (Validator $validator): void {
-                if ($validator->errors()->has('friend_code')) {
+                if ($validator->errors()->has('identifier')) {
                     return;
                 }
 
                 $recipient = $this->recipient();
                 $authUser = $this->user();
 
-                if ($recipient && $authUser && $recipient->is($authUser)) {
-                    $validator->errors()->add('friend_code', __('You cannot add yourself.'));
+                if (! $recipient) {
+                    $validator->errors()->add('identifier', 'ユーザーIDまたはフレンドコードが見つかりません。');
 
                     return;
                 }
 
-                if ($recipient && $authUser && $authUser->isFriendsWith($recipient)) {
-                    $validator->errors()->add('friend_code', __('You are already friends.'));
+                if ($authUser && $recipient->is($authUser)) {
+                    $validator->errors()->add('identifier', '自分自身をフレンドに追加することはできません。');
 
                     return;
                 }
 
-                if ($recipient && $authUser && $authUser->hasPendingFriendRequestWith($recipient)) {
-                    $validator->errors()->add('friend_code', __('You already have a pending request with this user.'));
+                if ($authUser && $authUser->isFriendsWith($recipient)) {
+                    $validator->errors()->add('identifier', 'このユーザーとはすでにフレンドです。');
+
+                    return;
+                }
+
+                if ($authUser && $authUser->hasPendingFriendRequestWith($recipient)) {
+                    $validator->errors()->add('identifier', 'このユーザーとのフレンド申請はすでに保留中です。');
                 }
             },
         ];
@@ -70,10 +77,15 @@ class SendFriendRequestRequest extends FormRequest
             return $this->recipient;
         }
 
-        if (! $this->input('friend_code')) {
+        if (! $this->input('identifier')) {
             return null;
         }
 
-        return $this->recipient = User::where('friend_code', $this->input('friend_code'))->first();
+        $identifier = (string) $this->input('identifier');
+
+        return $this->recipient = User::query()
+            ->where('friend_code', Str::upper($identifier))
+            ->orWhere('user_id', Str::lower($identifier))
+            ->first();
     }
 }

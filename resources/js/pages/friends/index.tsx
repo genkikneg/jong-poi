@@ -104,10 +104,10 @@ export default function FriendsPage({
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2 text-lg">
                             <UserRoundPlus className="size-5" />
-                            フレンドコードで追加
+                            ユーザーID・フレンドコードで追加
                         </CardTitle>
                         <CardDescription>
-                            自分のフレンドコードを共有するか、相手のコードを入力してリクエストを送信します。
+                            相手のユーザーIDまたはフレンドコードを入力して、リクエストを送信します。
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
@@ -135,26 +135,26 @@ export default function FriendsPage({
 
                         <Form
                             {...sendFriendRequest.form()}
-                            resetOnSuccess={['friend_code']}
+                            resetOnSuccess={['identifier']}
                             className="space-y-4"
                         >
                             {({ processing, errors }) => (
                                 <>
                                     <div className="grid gap-2 sm:grid-cols-[1fr_auto] sm:items-end">
                                         <div className="grid gap-2">
-                                            <Label htmlFor="friend_code">
-                                                フレンドコード
+                                            <Label htmlFor="identifier">
+                                                ユーザーIDまたはフレンドコード
                                             </Label>
                                             <Input
-                                                id="friend_code"
-                                                name="friend_code"
-                                                placeholder="例: H5KD92PQ"
+                                                id="identifier"
+                                                name="identifier"
+                                                placeholder="jongpoi_taro または H5KD92PQ"
                                                 autoComplete="off"
-                                                maxLength={12}
+                                                maxLength={255}
                                                 required
                                             />
                                             <InputError
-                                                message={errors.friend_code}
+                                                message={errors.identifier}
                                             />
                                         </div>
 

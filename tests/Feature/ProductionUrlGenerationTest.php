@@ -23,12 +23,7 @@ class ProductionUrlGenerationTest extends TestCase
             $this->get('/avatars/00000000-0000-4000-8000-000000000000')
                 ->assertRedirect('https://example.test/login');
 
-            $signedUrl = URL::temporarySignedRoute(
-                'verification.verify',
-                now()->addMinute(),
-                ['id' => 1, 'hash' => 'test'],
-            );
-            $this->assertStringStartsWith('https://example.test/', $signedUrl);
+            $this->assertSame('https://example.test/dashboard', URL::to('/dashboard'));
         } finally {
             URL::forceScheme(null);
             URL::forceRootUrl(null);

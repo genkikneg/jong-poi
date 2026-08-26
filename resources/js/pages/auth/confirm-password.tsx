@@ -24,7 +24,7 @@ export default function ConfirmPassword() {
                                 id="password"
                                 type="password"
                                 name="password"
-                                placeholder="パスワード"
+                                placeholder="Jongpoi!2026"
                                 autoComplete="current-password"
                                 autoFocus
                             />

@@ -1,10 +1,11 @@
 export type User = {
     id: number;
     name: string;
-    email: string;
+    user_id: string;
+    requires_user_id_change: boolean;
+    is_operations_admin: boolean;
     avatar?: string | null;
     friend_code: string;
-    email_verified_at: string | null;
     created_at: string;
     updated_at: string;
     [key: string]: unknown;

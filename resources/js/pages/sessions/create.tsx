@@ -137,7 +137,7 @@ export default function SessionCreatePage({ friends }: Props) {
                                             <Input
                                                 id="name"
                                                 name="name"
-                                                placeholder="例: 2/12 夜会"
+                                                placeholder="2/12 夜会"
                                                 autoComplete="off"
                                             />
                                             <InputError message={errors.name} />

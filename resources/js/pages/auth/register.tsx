@@ -1,4 +1,6 @@
 import { Form, Head } from '@inertiajs/react';
+import { Eye, EyeOff } from 'lucide-react';
+import { useState } from 'react';
 import InputError from '@/components/input-error';
 import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
@@ -10,6 +12,8 @@ import { login } from '@/routes';
 import { store } from '@/routes/register';
 
 export default function Register() {
+    const [showPassword, setShowPassword] = useState(false);
+
     return (
         <AuthLayout
             title="アカウントを作成"
@@ -35,7 +39,7 @@ export default function Register() {
                                     tabIndex={1}
                                     autoComplete="name"
                                     name="name"
-                                    placeholder="氏名"
+                                    placeholder="ジャンポイ太郎"
                                 />
                                 <InputError
                                     message={errors.name}
@@ -44,30 +48,71 @@ export default function Register() {
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="email">メールアドレス</Label>
+                                <Label htmlFor="user_id">ユーザーID</Label>
                                 <Input
-                                    id="email"
-                                    type="email"
+                                    id="user_id"
+                                    type="text"
                                     required
                                     tabIndex={2}
-                                    autoComplete="email"
-                                    name="email"
-                                    placeholder="email@example.com"
+                                    autoComplete="username"
+                                    name="user_id"
+                                    placeholder="jongpoi_taro"
                                 />
-                                <InputError message={errors.email} />
+                                <p className="text-xs text-muted-foreground">
+                                    英数字と _ - . @ +
+                                    が使用できます。登録後に変更できます。
+                                </p>
+                                <InputError message={errors.user_id} />
                             </div>
 
                             <div className="grid gap-2">
                                 <Label htmlFor="password">パスワード</Label>
-                                <Input
-                                    id="password"
-                                    type="password"
-                                    required
-                                    tabIndex={3}
-                                    autoComplete="new-password"
-                                    name="password"
-                                    placeholder="パスワード"
-                                />
+                                <div className="relative">
+                                    <Input
+                                        id="password"
+                                        type={
+                                            showPassword ? 'text' : 'password'
+                                        }
+                                        required
+                                        tabIndex={3}
+                                        autoComplete="new-password"
+                                        name="password"
+                                        placeholder="Jongpoi!2026"
+                                        className="pr-10"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            setShowPassword(
+                                                (visible) => !visible,
+                                            )
+                                        }
+                                        tabIndex={4}
+                                        className="absolute top-1/2 right-2 -translate-y-1/2 rounded-sm p-1 text-muted-foreground outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+                                        aria-label={
+                                            showPassword
+                                                ? 'パスワードを隠す'
+                                                : 'パスワードを表示する'
+                                        }
+                                        title={
+                                            showPassword
+                                                ? 'パスワードを隠す'
+                                                : 'パスワードを表示する'
+                                        }
+                                    >
+                                        {showPassword ? (
+                                            <EyeOff
+                                                className="size-4"
+                                                aria-hidden="true"
+                                            />
+                                        ) : (
+                                            <Eye
+                                                className="size-4"
+                                                aria-hidden="true"
+                                            />
+                                        )}
+                                    </button>
+                                </div>
                                 <InputError message={errors.password} />
                             </div>
 
@@ -75,15 +120,52 @@ export default function Register() {
                                 <Label htmlFor="password_confirmation">
                                     パスワード（確認）
                                 </Label>
-                                <Input
-                                    id="password_confirmation"
-                                    type="password"
-                                    required
-                                    tabIndex={4}
-                                    autoComplete="new-password"
-                                    name="password_confirmation"
-                                    placeholder="パスワードをもう一度入力"
-                                />
+                                <div className="relative">
+                                    <Input
+                                        id="password_confirmation"
+                                        type={
+                                            showPassword ? 'text' : 'password'
+                                        }
+                                        required
+                                        tabIndex={5}
+                                        autoComplete="new-password"
+                                        name="password_confirmation"
+                                        placeholder="Jongpoi!2026"
+                                        className="pr-10"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            setShowPassword(
+                                                (visible) => !visible,
+                                            )
+                                        }
+                                        tabIndex={6}
+                                        className="absolute top-1/2 right-2 -translate-y-1/2 rounded-sm p-1 text-muted-foreground outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+                                        aria-label={
+                                            showPassword
+                                                ? 'パスワードを隠す'
+                                                : 'パスワードを表示する'
+                                        }
+                                        title={
+                                            showPassword
+                                                ? 'パスワードを隠す'
+                                                : 'パスワードを表示する'
+                                        }
+                                    >
+                                        {showPassword ? (
+                                            <EyeOff
+                                                className="size-4"
+                                                aria-hidden="true"
+                                            />
+                                        ) : (
+                                            <Eye
+                                                className="size-4"
+                                                aria-hidden="true"
+                                            />
+                                        )}
+                                    </button>
+                                </div>
                                 <InputError
                                     message={errors.password_confirmation}
                                 />
@@ -92,7 +174,7 @@ export default function Register() {
                             <Button
                                 type="submit"
                                 className="mt-2 w-full"
-                                tabIndex={5}
+                                tabIndex={7}
                                 data-test="register-user-button"
                             >
                                 {processing && <Spinner />}
@@ -102,7 +184,7 @@ export default function Register() {
 
                         <div className="text-center text-sm text-muted-foreground">
                             すでにアカウントをお持ちですか？{' '}
-                            <TextLink href={login()} tabIndex={6}>
+                            <TextLink href={login()} tabIndex={8}>
                                 ログイン
                             </TextLink>
                         </div>

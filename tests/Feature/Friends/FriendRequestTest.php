@@ -20,7 +20,25 @@ class FriendRequestTest extends TestCase
         $recipient = User::factory()->create();
 
         $response = $this->actingAs($sender)->post(route('friend-requests.store'), [
-            'friend_code' => $recipient->friend_code,
+            'identifier' => $recipient->friend_code,
+        ]);
+
+        $response->assertRedirect();
+
+        $this->assertDatabaseHas('friend_requests', [
+            'sender_id' => $sender->id,
+            'recipient_id' => $recipient->id,
+            'status' => FriendRequestStatus::Pending->value,
+        ]);
+    }
+
+    public function test_user_can_send_friend_request_using_user_id(): void
+    {
+        $sender = User::factory()->create();
+        $recipient = User::factory()->create(['user_id' => 'jongpoi_taro']);
+
+        $response = $this->actingAs($sender)->post(route('friend-requests.store'), [
+            'identifier' => 'JONGPOI_TARO',
         ]);
 
         $response->assertRedirect();
@@ -37,10 +55,10 @@ class FriendRequestTest extends TestCase
         $user = User::factory()->create();
 
         $response = $this->actingAs($user)->post(route('friend-requests.store'), [
-            'friend_code' => $user->friend_code,
+            'identifier' => $user->friend_code,
         ]);
 
-        $response->assertSessionHasErrors('friend_code');
+        $response->assertSessionHasErrors('identifier');
         $this->assertDatabaseCount('friend_requests', 0);
     }
 
@@ -53,10 +71,10 @@ class FriendRequestTest extends TestCase
         Friendship::create(['user_id' => $friend->id, 'friend_id' => $user->id]);
 
         $response = $this->actingAs($user)->post(route('friend-requests.store'), [
-            'friend_code' => $friend->friend_code,
+            'identifier' => $friend->friend_code,
         ]);
 
-        $response->assertSessionHasErrors('friend_code');
+        $response->assertSessionHasErrors('identifier');
     }
 
     public function test_recipient_can_accept_friend_request(): void
@@ -138,5 +156,37 @@ class FriendRequestTest extends TestCase
                 ->etc()
             )
         );
+    }
+
+    public function test_friends_page_exposes_only_non_email_user_ids(): void
+    {
+        $user = User::factory()->create();
+        $friend = User::factory()->create(['user_id' => 'jongpoi_taro']);
+
+        Friendship::create(['user_id' => $user->id, 'friend_id' => $friend->id]);
+        Friendship::create(['user_id' => $friend->id, 'friend_id' => $user->id]);
+
+        $this->actingAs($user)
+            ->get(route('friends.index'))
+            ->assertInertia(fn (Assert $page) => $page
+                ->has('friends', 1)
+                ->where('friends.0.user_id', 'jongpoi_taro')
+            );
+    }
+
+    public function test_friends_page_does_not_expose_legacy_email_user_ids(): void
+    {
+        $user = User::factory()->create();
+        $friend = User::factory()->create(['user_id' => 'legacy@example.com']);
+
+        Friendship::create(['user_id' => $user->id, 'friend_id' => $friend->id]);
+        Friendship::create(['user_id' => $friend->id, 'friend_id' => $user->id]);
+
+        $this->actingAs($user)
+            ->get(route('friends.index'))
+            ->assertInertia(fn (Assert $page) => $page
+                ->has('friends', 1)
+                ->where('friends.0.user_id', null)
+            );
     }
 }

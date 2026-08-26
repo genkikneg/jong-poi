@@ -66,7 +66,7 @@ export default function Password() {
                                         type="password"
                                         className="mt-1 block w-full"
                                         autoComplete="current-password"
-                                        placeholder="現在のパスワード"
+                                        placeholder="Jongpoi!2026"
                                     />
 
                                     <InputError
@@ -86,7 +86,7 @@ export default function Password() {
                                         type="password"
                                         className="mt-1 block w-full"
                                         autoComplete="new-password"
-                                        placeholder="新しいパスワード"
+                                        placeholder="Jongpoi!2026"
                                     />
 
                                     <InputError message={errors.password} />
@@ -103,7 +103,7 @@ export default function Password() {
                                         type="password"
                                         className="mt-1 block w-full"
                                         autoComplete="new-password"
-                                        placeholder="もう一度入力してください"
+                                        placeholder="Jongpoi!2026"
                                     />
 
                                     <InputError

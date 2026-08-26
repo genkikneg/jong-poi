@@ -2,6 +2,7 @@
 
 use App\Enums\SessionStatus;
 use App\Http\Controllers\Rankings\RankingController;
+use App\Http\Controllers\RecoveryController;
 use App\Http\Controllers\Sessions\SessionViewController;
 use App\Http\Controllers\Status\StatusController;
 use App\Http\Controllers\UserAvatarController;
@@ -10,12 +11,21 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
+Route::get('recover-account', [RecoveryController::class, 'create'])->name('recovery.create');
+Route::post('recover-account/verify', [RecoveryController::class, 'verify'])
+    ->middleware('throttle:6,1')
+    ->name('recovery.verify');
+Route::get('recover-account/password', [RecoveryController::class, 'password'])->name('recovery.password.edit');
+Route::post('recover-account/password', [RecoveryController::class, 'store'])
+    ->middleware('throttle:6,1')
+    ->name('recovery.store');
+
 Route::middleware('auth')
     ->get('avatars/{avatarId}', UserAvatarController::class)
     ->whereUuid('avatarId')
     ->name('avatars.show');
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     $dashboardHandler = function (Request $request) {
         $activeSession = null;
 
