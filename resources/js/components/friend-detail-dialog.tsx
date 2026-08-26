@@ -30,6 +30,7 @@ export type FriendRelationStatus =
 export type FriendDetail = {
     id: number;
     name: string;
+    user_id?: string | null;
     friend_code: string;
     avatar?: string | null;
     stats?: {
@@ -126,6 +127,11 @@ export function FriendDetailDialog({
                                 <p className="text-sm text-muted-foreground">
                                     コード：{friend.friend_code}
                                 </p>
+                                {friend.user_id && (
+                                    <p className="text-sm text-muted-foreground">
+                                        ユーザーID：{friend.user_id}
+                                    </p>
+                                )}
                                 {friend.rankings &&
                                     friend.rankings.length > 0 && (
                                         <div className="mt-2 flex flex-wrap gap-1">

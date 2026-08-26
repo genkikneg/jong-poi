@@ -18,14 +18,12 @@ DROP TABLE IF EXISTS `jobs`;
 DROP TABLE IF EXISTS `cache_locks`;
 DROP TABLE IF EXISTS `cache`;
 DROP TABLE IF EXISTS `sessions`;
-DROP TABLE IF EXISTS `password_reset_tokens`;
 DROP TABLE IF EXISTS `users`;
 
 CREATE TABLE `users` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
-  `email` varchar(255) NOT NULL,
-  `email_verified_at` timestamp NULL DEFAULT NULL,
+  `user_id` varchar(255) NOT NULL,
   `friend_code` varchar(12) DEFAULT NULL,
   `password` varchar(255) NOT NULL,
   `avatar_path` varchar(255) DEFAULT NULL,
@@ -36,15 +34,8 @@ CREATE TABLE `users` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `users_email_unique` (`email`),
+  UNIQUE KEY `users_user_id_unique` (`user_id`),
   UNIQUE KEY `users_friend_code_unique` (`friend_code`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE `password_reset_tokens` (
-  `email` varchar(255) NOT NULL,
-  `token` varchar(255) NOT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `sessions` (

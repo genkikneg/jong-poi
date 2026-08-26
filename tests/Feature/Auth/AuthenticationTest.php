@@ -20,10 +20,10 @@ class AuthenticationTest extends TestCase
 
     public function test_users_can_authenticate_using_the_login_screen()
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['user_id' => 'legacy+user@example.com']);
 
         $response = $this->post(route('login.store'), [
-            'email' => $user->email,
+            'user_id' => $user->user_id,
             'password' => 'password',
         ]);
 
@@ -38,7 +38,7 @@ class AuthenticationTest extends TestCase
         $this->withSession(['url.intended' => route('status')]);
 
         $response = $this->post(route('login.store'), [
-            'email' => $user->email,
+            'user_id' => $user->user_id,
             'password' => 'password',
         ]);
 
@@ -50,7 +50,7 @@ class AuthenticationTest extends TestCase
         $user = User::factory()->create();
 
         $this->post(route('login.store'), [
-            'email' => $user->email,
+            'user_id' => $user->user_id,
             'password' => 'wrong-password',
         ]);
 
@@ -62,12 +62,12 @@ class AuthenticationTest extends TestCase
         $user = User::factory()->create();
 
         $response = $this->post(route('login.store'), [
-            'email' => $user->email,
+            'user_id' => $user->user_id,
             'password' => 'wrong-password',
         ]);
 
         $response->assertSessionHasErrors([
-            'email' => 'メールアドレスまたはパスワードが正しくありません。',
+            'user_id' => 'ユーザーIDまたはパスワードが正しくありません。',
         ]);
     }
 
@@ -85,10 +85,10 @@ class AuthenticationTest extends TestCase
     {
         $user = User::factory()->create();
 
-        RateLimiter::increment(md5('login'.implode('|', [$user->email, '127.0.0.1'])), amount: 5);
+        RateLimiter::increment(md5('login'.implode('|', [$user->user_id, '127.0.0.1'])), amount: 5);
 
         $response = $this->post(route('login.store'), [
-            'email' => $user->email,
+            'user_id' => $user->user_id,
             'password' => 'wrong-password',
         ]);
 

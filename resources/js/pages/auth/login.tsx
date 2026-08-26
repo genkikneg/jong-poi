@@ -11,25 +11,19 @@ import { Spinner } from '@/components/ui/spinner';
 import AuthLayout from '@/layouts/auth-layout';
 import { register } from '@/routes';
 import { store } from '@/routes/login';
-import { request } from '@/routes/password';
 
 type Props = {
     status?: string;
-    canResetPassword: boolean;
     canRegister: boolean;
 };
 
-export default function Login({
-    status,
-    canResetPassword,
-    canRegister,
-}: Props) {
+export default function Login({ status, canRegister }: Props) {
     const [showPassword, setShowPassword] = useState(false);
 
     return (
         <AuthLayout
             title="ログイン"
-            description="メールアドレスとパスワードを入力してください"
+            description="ユーザーIDとパスワードを入力してください"
         >
             <Head title="ログイン" />
 
@@ -42,32 +36,23 @@ export default function Login({
                     <>
                         <div className="grid gap-6">
                             <div className="grid gap-2">
-                                <Label htmlFor="email">メールアドレス</Label>
+                                <Label htmlFor="user_id">ユーザーID</Label>
                                 <Input
-                                    id="email"
-                                    type="email"
-                                    name="email"
+                                    id="user_id"
+                                    type="text"
+                                    name="user_id"
                                     required
                                     autoFocus
                                     tabIndex={1}
-                                    autoComplete="email"
-                                    placeholder="email@example.com"
+                                    autoComplete="username"
+                                    placeholder="jongpoi_taro"
                                 />
-                                <InputError message={errors.email} />
+                                <InputError message={errors.user_id} />
                             </div>
 
                             <div className="grid gap-2">
                                 <div className="flex items-center">
                                     <Label htmlFor="password">パスワード</Label>
-                                    {canResetPassword && (
-                                        <TextLink
-                                            href={request()}
-                                            className="ml-auto text-sm"
-                                            tabIndex={6}
-                                        >
-                                            パスワードをお忘れですか？
-                                        </TextLink>
-                                    )}
                                 </div>
                                 <div className="relative">
                                     <Input
@@ -79,7 +64,7 @@ export default function Login({
                                         required
                                         tabIndex={2}
                                         autoComplete="current-password"
-                                        placeholder="パスワード"
+                                        placeholder="Jongpoi!2026"
                                         className="pr-10"
                                     />
                                     <button
@@ -149,6 +134,11 @@ export default function Login({
                                 </TextLink>
                             </div>
                         )}
+                        <div className="text-center text-xs text-muted-foreground">
+                            <TextLink href="/recover-account" tabIndex={7}>
+                                ログイン情報を復旧する
+                            </TextLink>
+                        </div>
                     </>
                 )}
             </Form>

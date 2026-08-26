@@ -77,7 +77,7 @@ export default function DeleteUser() {
                                             type="password"
                                             name="password"
                                             ref={passwordInput}
-                                            placeholder="パスワード"
+                                            placeholder="Jongpoi!2026"
                                             autoComplete="current-password"
                                         />
 

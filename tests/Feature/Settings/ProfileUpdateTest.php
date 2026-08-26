@@ -29,7 +29,7 @@ class ProfileUpdateTest extends TestCase
             ->actingAs($user)
             ->patch(route('profile.update'), [
                 'name' => 'Test User',
-                'email' => 'test@example.com',
+                'user_id' => 'test_user',
             ]);
 
         $response
@@ -39,11 +39,10 @@ class ProfileUpdateTest extends TestCase
         $user->refresh();
 
         $this->assertSame('Test User', $user->name);
-        $this->assertSame('test@example.com', $user->email);
-        $this->assertNull($user->email_verified_at);
+        $this->assertSame('test_user', $user->user_id);
     }
 
-    public function test_email_verification_status_is_unchanged_when_the_email_address_is_unchanged()
+    public function test_user_id_is_normalized_to_lowercase()
     {
         $user = User::factory()->create();
 
@@ -51,14 +50,28 @@ class ProfileUpdateTest extends TestCase
             ->actingAs($user)
             ->patch(route('profile.update'), [
                 'name' => 'Test User',
-                'email' => $user->email,
+                'user_id' => 'Test_User',
             ]);
 
         $response
             ->assertSessionHasNoErrors()
             ->assertRedirect(route('profile.edit'));
 
-        $this->assertNotNull($user->refresh()->email_verified_at);
+        $this->assertSame('test_user', $user->refresh()->user_id);
+    }
+
+    public function test_email_shaped_user_id_requires_change_until_updated(): void
+    {
+        $user = User::factory()->create(['user_id' => 'legacy@example.com']);
+
+        $this->assertTrue($user->requires_user_id_change);
+
+        $this->actingAs($user)->patch(route('profile.update'), [
+            'name' => $user->name,
+            'user_id' => 'jongpoi_taro',
+        ])->assertSessionHasNoErrors();
+
+        $this->assertFalse($user->refresh()->requires_user_id_change);
     }
 
     public function test_user_can_delete_their_account()

@@ -16,9 +16,9 @@ class FriendController extends Controller
     public function index(Request $request): Response
     {
         $user = $request->user()->loadMissing([
-            'friends:id,name,friend_code,avatar_path,avatar_public_id',
-            'sentFriendRequests' => fn ($query) => $query->pending()->with('recipient:id,name,friend_code')->latest(),
-            'receivedFriendRequests' => fn ($query) => $query->pending()->with('sender:id,name,friend_code')->latest(),
+            'friends:id,name,user_id,friend_code,avatar_path,avatar_public_id',
+            'sentFriendRequests' => fn ($query) => $query->pending()->with('recipient:id,name,user_id,friend_code')->latest(),
+            'receivedFriendRequests' => fn ($query) => $query->pending()->with('sender:id,name,user_id,friend_code')->latest(),
         ]);
 
         $friends = $user->friends->sortBy('name')->values();
@@ -58,6 +58,7 @@ class FriendController extends Controller
                     return [
                         'id' => $friend->id,
                         'name' => $friend->name,
+                        'user_id' => $friend->usesEmailAsUserId() ? null : $friend->user_id,
                         'friend_code' => $friend->friend_code,
                         'avatar' => $friend->avatar,
                         'relation_status' => 'friend',
@@ -75,6 +76,7 @@ class FriendController extends Controller
                     'sender' => [
                         'id' => $request->sender->id,
                         'name' => $request->sender->name,
+                        'user_id' => $request->sender->usesEmailAsUserId() ? null : $request->sender->user_id,
                         'friend_code' => $request->sender->friend_code,
                     ],
                     'created_at' => $request->created_at?->toIso8601String(),
@@ -86,6 +88,7 @@ class FriendController extends Controller
                     'recipient' => [
                         'id' => $request->recipient->id,
                         'name' => $request->recipient->name,
+                        'user_id' => $request->recipient->usesEmailAsUserId() ? null : $request->recipient->user_id,
                         'friend_code' => $request->recipient->friend_code,
                     ],
                     'created_at' => $request->created_at?->toIso8601String(),

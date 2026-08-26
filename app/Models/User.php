@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -39,7 +38,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
-        'email',
+        'user_id',
         'password',
         'friend_code',
         'avatar_path',
@@ -60,6 +59,7 @@ class User extends Authenticatable
 
     protected $appends = [
         'avatar',
+        'requires_user_id_change',
     ];
 
     /**
@@ -70,7 +70,6 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
         ];
@@ -118,6 +117,16 @@ class User extends Authenticatable
                     });
             })
             ->exists();
+    }
+
+    public function usesEmailAsUserId(): bool
+    {
+        return filter_var($this->user_id, FILTER_VALIDATE_EMAIL) !== false;
+    }
+
+    public function getRequiresUserIdChangeAttribute(): bool
+    {
+        return $this->usesEmailAsUserId();
     }
 
     public static function generateFriendCode(): string

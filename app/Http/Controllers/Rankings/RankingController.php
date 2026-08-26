@@ -19,11 +19,12 @@ class RankingController extends Controller
 
         $players = PlayerRanking::query()
             ->where('period', $period)
-            ->with('user:id,name,friend_code,avatar_path,avatar_public_id')
+            ->with('user:id,name,user_id,friend_code,avatar_path,avatar_public_id')
             ->get()
             ->map(fn ($ranking) => [
                 'id' => $ranking->user->id,
                 'name' => $ranking->user->name,
+                'user_id' => $ranking->user->usesEmailAsUserId() ? null : $ranking->user->user_id,
                 'friend_code' => $ranking->user->friend_code,
                 'avatar' => $ranking->user->avatar,
                 'stats' => $ranking->stats,

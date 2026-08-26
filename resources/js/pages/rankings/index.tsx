@@ -13,6 +13,7 @@ import { cn } from '@/lib/utils';
 type RankingPlayer = {
     id: number;
     name: string;
+    user_id?: string | null;
     friend_code: string;
     avatar?: string | null;
     stats: FriendDetail['stats'];
@@ -176,6 +177,7 @@ export default function RankingsPage({
                                             openFriendDetail({
                                                 id: player.id,
                                                 name: player.name,
+                                                user_id: player.user_id,
                                                 friend_code: player.friend_code,
                                                 avatar: player.avatar,
                                                 stats: player.stats,

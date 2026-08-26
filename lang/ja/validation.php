@@ -26,7 +26,8 @@ return [
         'numeric' => ':attributeは:min〜:maxの範囲で入力してください。',
     ],
     'attributes' => [
-        'email' => 'メールアドレス',
+        'user_id' => 'ユーザーID',
+        'identifier' => 'ユーザーIDまたはフレンドコード',
         'password' => 'パスワード',
         'password_confirmation' => 'パスワード（確認）',
         'current_password' => '現在のパスワード',

@@ -1,4 +1,4 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import { ClipboardList, History, Play, PlusCircle } from 'lucide-react';
 import {
     Card,
@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
+import { edit as editProfile } from '@/routes/profile';
 import {
     create as sessionsCreate,
     history as sessionsHistory,
@@ -61,10 +62,28 @@ export default function Dashboard({
 }: {
     activeSession?: ActiveSessionCard | null;
 }) {
+    const { auth } = usePage().props;
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
             <div className="grid gap-6 md:grid-cols-3">
+                {auth.user.requires_user_id_change && (
+                    <div className="rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm text-amber-950 md:col-span-3 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-100">
+                        <p className="font-medium">
+                            ユーザーIDを設定してください
+                        </p>
+                        <p className="mt-1">
+                            現在のユーザーIDは旧メールアドレス形式です。メールアドレスを保存しないため、ユーザーIDを変更してください。
+                        </p>
+                        <Link
+                            href={editProfile()}
+                            className="mt-3 inline-flex font-medium underline underline-offset-4"
+                        >
+                            ユーザーIDを変更する
+                        </Link>
+                    </div>
+                )}
                 {activeSession && (
                     <Card className="border-primary/40 shadow-lg md:col-span-3">
                         <CardHeader>

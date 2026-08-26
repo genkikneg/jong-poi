@@ -36,8 +36,15 @@ class GameResultsValidator
             $errors['results'] = __('参加メンバー全員のスコアを1人1件ずつ入力してください。');
         }
 
-        if ($results->isNotEmpty() && ! $this->hasExpectedTotal($session, $results)) {
-            $errors['results'] = __('点数の合計がルールで定められた合計と一致しません。');
+        if ($results->isNotEmpty()) {
+            $total = $this->total($session, $results);
+
+            if (! $total['difference']->isZero()) {
+                $errors['results'] = sprintf(
+                    '点数の合計が一致しません（合計差分: %s点）。',
+                    $this->formatPoints($total['difference'], signed: true),
+                );
+            }
         }
 
         if (! $this->ranksMatchScores($results)) {
@@ -64,8 +71,9 @@ class GameResultsValidator
 
     /**
      * @param  Collection<int, array{user_id:int, final_score:string, rank:?int}>  $results
+     * @return array{difference:BigDecimal}
      */
-    private function hasExpectedTotal(Session $session, Collection $results): bool
+    private function total(Session $session, Collection $results): array
     {
         $actual = $results->reduce(
             fn (BigDecimal $total, array $result) => $total->plus($result['final_score']),
@@ -73,9 +81,17 @@ class GameResultsValidator
         );
         $expected = BigDecimal::of((string) $session->rule_base)
             ->multipliedBy($session->player_count);
-        $difference = $actual->minus($expected)->abs();
 
-        return $difference->isLessThanOrEqualTo(BigDecimal::one());
+        return [
+            'difference' => $actual->minus($expected),
+        ];
+    }
+
+    private function formatPoints(BigDecimal $points, bool $signed = false): string
+    {
+        $formatted = preg_replace('/\\.0+$/', '', $points->toScale(1)->__toString());
+
+        return $signed && $points->isPositive() ? "+{$formatted}" : $formatted;
     }
 
     /**

@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use App\Enums\SessionStatus;
 use App\Models\FriendRequest;
 use App\Models\SessionMember;
+use App\Services\OperationsAccess;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -42,7 +43,19 @@ class HandleInertiaRequests extends Middleware
             ...parent::share($request),
             'name' => config('app.name'),
             'auth' => [
-                'user' => $request->user(),
+                'user' => function () use ($request) {
+                    $user = $request->user();
+
+                    if ($user) {
+                        $user->setAttribute('is_operations_admin', app(OperationsAccess::class)->isAdministrator($user));
+                    }
+
+                    return $user;
+                },
+            ],
+            'flash' => [
+                'recovery_code' => fn () => $request->session()->get('recovery_code'),
+                'status' => fn () => $request->session()->get('status'),
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
             'notifications' => $this->notifications($request),
