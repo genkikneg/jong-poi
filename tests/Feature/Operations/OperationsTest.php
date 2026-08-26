@@ -25,6 +25,7 @@ class OperationsTest extends TestCase
         config()->set('operations.admin_user_ids', ['admin', 'misooon']);
         config()->set('operations.password', 'operations-secret');
         config()->set('session.driver', 'array');
+        $this->app['session']->forgetDrivers();
     }
 
     public function test_only_configured_administrators_can_open_operations_tools(): void
