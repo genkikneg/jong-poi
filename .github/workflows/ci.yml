@@ -117,6 +117,7 @@ jobs:
           push: false
           build-args: |
             VCS_REF=${{ github.sha }}
+            VITE_REVERB_APP_KEY=${{ vars.VITE_REVERB_APP_KEY }}
           cache-from: type=gha,scope=${{ matrix.target }}
           cache-to: type=gha,mode=max,scope=${{ matrix.target }}
 
@@ -158,6 +159,7 @@ jobs:
           push: true
           build-args: |
             VCS_REF=${{ github.sha }}
+            VITE_REVERB_APP_KEY=${{ vars.VITE_REVERB_APP_KEY }}
           tags: |
             ghcr.io/genkikneg/jong-poi-${{ matrix.target }}:${{ github.sha }}
             ghcr.io/genkikneg/jong-poi-${{ matrix.target }}:main
