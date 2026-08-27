@@ -57,6 +57,23 @@ services:
             disable: true
         stop_grace_period: 30s
 
+    reverb:
+        <<: *app
+        command:
+            - php
+            - artisan
+            - reverb:start
+            - --host=0.0.0.0
+            - --port=8080
+        expose:
+            - '8080'
+        healthcheck:
+            disable: true
+        networks:
+            - internal
+            - proxy
+        stop_grace_period: 30s
+
     jong-poi-web:
         image: ${WEB_IMAGE:?WEB_IMAGE is required}
         restart: unless-stopped

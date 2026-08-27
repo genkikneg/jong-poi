@@ -93,6 +93,8 @@ type Props = {
     draft: DraftData | null;
 };
 
+const reverbAppKey = import.meta.env.VITE_REVERB_APP_KEY;
+
 const formatter = new Intl.DateTimeFormat(undefined, {
     dateStyle: 'medium',
     timeStyle: 'short',
@@ -147,23 +149,27 @@ const breadcrumbs = (session: SessionData): BreadcrumbItem[] => [
     },
 ];
 
-export default function SessionShowPage({
-    session,
-    totals,
-    currentUserId,
-    draft,
-}: Props) {
+function SessionRealtimeSync({ sessionId }: { sessionId: number }) {
     useEcho<{ session_id: number; action: string }>(
-        `sessions.${session.id}`,
+        `sessions.${sessionId}`,
         '.session.state-updated',
         () => {
             router.reload({
                 only: ['session', 'draft', 'totals', 'table'],
             });
         },
-        [session.id],
+        [sessionId],
     );
 
+    return null;
+}
+
+export default function SessionShowPage({
+    session,
+    totals,
+    currentUserId,
+    draft,
+}: Props) {
     const isClosed = session.status === 'closed';
     const rankOptions = Array.from(
         { length: session.player_count },
@@ -338,6 +344,7 @@ export default function SessionShowPage({
 
     return (
         <AppLayout breadcrumbs={breadcrumbs(session)}>
+            {reverbAppKey && <SessionRealtimeSync sessionId={session.id} />}
             <Head
                 title={
                     session.name
