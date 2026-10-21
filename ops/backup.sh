@@ -33,7 +33,8 @@ compose=(
 "${compose[@]}" config --quiet
 install -d -m 700 "$BACKUP_ROOT" "$BACKUP_DIR"
 
-database_name="$("${compose[@]}" exec -T app printenv DB_DATABASE)"
+database_name="$("${compose[@]}" config --format json \
+    | python3 -c 'import json,sys; print(json.load(sys.stdin)["services"]["app"]["environment"]["DB_DATABASE"])')"
 if [[ -z "$database_name" || "$database_name" =~ [^A-Za-z0-9_-] ]]; then
     echo "Invalid database name" >&2
     exit 1
